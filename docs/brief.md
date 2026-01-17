@@ -332,21 +332,25 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 
 ### Platform Requirements
 
-- **Target Platform:** Desktop (Windows prioritaire, Linux/Mac secondaires)
+- **Target Platform:** Desktop Web Local (Windows prioritaire, Linux/Mac secondaires)
 - **OS Support:** Windows 10+ (64 bits minimum)
 - **Hardware Minimal:** 4 GB RAM, 500 MB espace disque, processeur 2 GHz
+- **Software Requirements:**
+  - JRE 17+ (embarqué dans package distribution)
+  - Navigateur moderne (Chrome, Edge, Firefox - préinstallé Windows)
 - **Performance Requirements:**
-  - Démarrage application < 3 secondes
+  - Démarrage application < 5 secondes (Spring Boot startup + ouverture navigateur)
   - Recherche client < 1 seconde (jusqu'à 1000 clients)
   - Génération PDF étiquettes < 5 secondes
+  - Chargement pages web < 1 seconde
 
 ### Technology Preferences
 
-**Architecture Globale:** Application desktop standalone + Base de données locale
+**Architecture Globale:** Application web locale (Spring Boot) + Base de données locale
 
 **Options Technologiques Évaluées:**
 
-#### Option A: Python + PyQt5/6 (RECOMMANDÉE pour MVP)
+#### Option A: Python + PyQt5/6
 - **Frontend:** PyQt5/6 (interface native, widgets simples)
 - **Backend:** Python 3.10+
 - **Database:** SQLite (fichier unique, zéro config)
@@ -356,161 +360,171 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 **Avantages:**
 - Légèreté (~50 MB installeur avec Python embarqué)
 - Excellente intégration SQLite
-- Rapidité développement
-- Maintenabilité (code Python clair)
+- Design UI sobre
 
 **Inconvénients:**
-- Interface moins moderne qu'Electron
-- Design UI plus sobre
+- Courbe d'apprentissage si développeur non familier avec Python/PyQt
+- Interface moins moderne
 
-#### Option B: Electron + JavaScript
-- **Frontend:** Electron + HTML/CSS/JavaScript (React ou Vanilla JS)
-- **Backend:** Node.js + SQLite (better-sqlite3)
-- **PDF Generation:** jsPDF ou PDFKit
+#### Option B: JavaFX/Swing
+- **Frontend:** JavaFX (moderne) ou Swing (mature)
+- **Backend:** Java 17+
+- **Database:** SQLite + JDBC
+- **PDF Generation:** Apache PDFBox ou iText
 
 **Avantages:**
-- Interface moderne et customisable
-- Multi-plateforme facile
+- Performances excellentes
+- Application native
 
 **Inconvénients:**
-- Lourd (~150 MB installeur)
-- Consommation mémoire élevée
-- Overkill pour usage simple
+- Interface moderne nécessite effort JavaFX
+- Swing look "daté"
 
-#### Option C: Web Local (Python Flask + Browser)
-- **Frontend:** HTML/CSS/JS servi via navigateur
-- **Backend:** Flask/FastAPI local (localhost)
+#### Option C: Spring Boot + Web Local (RETENUE)
+- **Frontend:** Thymeleaf + Bootstrap 5 + JavaScript Vanilla
+- **Backend:** Spring Boot 3.2+ (Java 17 LTS)
+- **Database:** SQLite + Spring Data JPA
+- **PDF Generation:** Apache PDFBox
+- **Packaging:** JAR exécutable + launch4j (wrapper .exe)
 
 **Avantages:**
-- Interface web moderne
-- Pas d'installation lourde
+- **Interface moderne facile** (Bootstrap = UI professionnelle rapidement)
+- **Développement rapide** si développeur expert Spring Boot
+- **Architecture propre** (REST, séparation responsabilités)
+- **Maintenance simplifiée** (stack standard, bien documentée)
+- **Extensibilité future** (API déjà en place si besoins évoluent)
+- Familiarité navigateur pour utilisateurs (déjà utilisé quotidiennement)
 
 **Inconvénients:**
-- Confusion possible ("est-ce en ligne?")
-- Dépendance navigateur
-- Complexité gestion port/processus
+- Démarrage application ~4-5s (vs <3s demandé, mais acceptable)
+- Taille installeur ~150-200 MB (JRE embarqué)
+- Consommation mémoire ~150-200 MB (JVM)
+- Lancement en 2 temps (exe → ouvre navigateur automatiquement)
 
-**Décision:** **Python + PyQt5** pour MVP (Option A)
-**Rationale:** Meilleur compromis simplicité développement / légèreté / stabilité. Si succès MVP et besoin interface plus moderne, refonte Electron en v2 possible.
+**Décision:** **Spring Boot + Web Local (Java)** pour MVP (Option C)
+
+**Rationale:**
+- Développeur expert Spring Boot (métier quotidien) → développement MVP estimé ~40h (vs 60h+ autres options)
+- Maintenance long terme assurée (stack maîtrisée)
+- Interface moderne Bootstrap sans effort frontend avancé
+- Simplicité maintenance prioritaire sur légèreté binaire
+- Démarrage 4-5s validé comme acceptable par porteur de projet
+- Toutes contraintes techniques respectées (mono-poste, offline, données locales)
 
 ### Architecture Considerations
 
 #### Repository Structure
 ```
 honeyAI/
-├── src/
-│   ├── ui/              # Interface PyQt5
-│   ├── models/          # Modèles de données (SQLAlchemy)
-│   ├── services/        # Logique métier
-│   ├── utils/           # Utilitaires (PDF, backup)
-│   └── main.py          # Point d'entrée
+├── src/main/java/com/honeyai/
+│   ├── HoneyAiApplication.java          # Main Spring Boot
+│   ├── config/
+│   │   └── DatabaseConfig.java          # Config SQLite
+│   ├── controller/
+│   │   ├── HomeController.java          # Dashboard
+│   │   ├── ClientController.java        # CRUD clients
+│   │   ├── CommandeController.java      # Gestion commandes
+│   │   ├── ProduitController.java       # Catalogue/tarifs
+│   │   ├── AchatController.java         # Achats fournitures
+│   │   └── EtiquetteController.java     # Génération PDF
+│   ├── service/
+│   │   ├── ClientService.java
+│   │   ├── CommandeService.java
+│   │   ├── ProduitService.java
+│   │   ├── DashboardService.java        # Calculs CA, stats
+│   │   ├── PdfService.java              # Génération étiquettes
+│   │   └── BackupService.java           # Backup automatique
+│   ├── repository/
+│   │   ├── ClientRepository.java        # Spring Data JPA
+│   │   ├── CommandeRepository.java
+│   │   ├── ProduitRepository.java
+│   │   └── AchatRepository.java
+│   ├── model/
+│   │   ├── Client.java                  # Entités JPA
+│   │   ├── Commande.java
+│   │   ├── LigneCommande.java
+│   │   ├── Produit.java
+│   │   ├── Tarif.java
+│   │   └── Achat.java
+│   ├── enums/
+│   │   ├── StatutCommande.java          # COMMANDEE, RECUPEREE, PAYEE
+│   │   ├── TypeMiel.java                # TOUTES_FLEURS, FORET, CHATAIGNIER
+│   │   └── CategorieAchat.java
+│   └── exception/
+│       └── GlobalExceptionHandler.java
+├── src/main/resources/
+│   ├── application.yml                  # Config Spring
+│   ├── static/                          # CSS, JS, images
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── icons/
+│   └── templates/                       # Thymeleaf templates
+│       ├── fragments/                   # Navbar, footer
+│       ├── clients/
+│       ├── commandes/
+│       ├── etiquettes/
+│       └── dashboard.html
 ├── data/
-│   └── honeyai.db       # Base SQLite (généré au runtime)
-├── docs/                # Documentation projet
-├── tests/               # Tests unitaires
-├── resources/           # Icônes, templates étiquettes
-└── requirements.txt
+│   └── honeyai.db                       # SQLite (généré runtime)
+├── docs/                                # Documentation projet
+├── tests/                               # Tests unitaires
+├── launcher/
+│   ├── honeyai-launcher.xml             # Config launch4j
+│   └── icon.ico
+├── pom.xml                              # Maven dependencies
+└── README.md
 ```
 
 #### Service Architecture
 - **Monolithique simple:** Pas de microservices (overkill)
-- **Séparation logique:** UI / Business Logic / Data Access
-- **Pas d'API REST:** Communication directe (pas besoin réseau)
+- **Séparation logique:** Controllers / Services / Repositories (pattern MVC)
+- **API REST interne:** Communication HTTP localhost uniquement (pas d'exposition réseau)
+- **Server-side rendering:** Thymeleaf pour génération HTML (pas de SPA complexe)
 
-#### Database Schema (SQLite)
+#### Database Schema (SQLite + JPA)
 
-**Tables Principales:**
+**Tables Principales (générées par Hibernate):**
 
-```sql
--- Clients
-CREATE TABLE clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    telephone TEXT,
-    email TEXT,
-    adresse TEXT,
-    notes TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    deleted_at DATETIME NULL  -- Soft delete
-);
+**Note:** Le schéma est défini via annotations JPA sur les entités Java. Hibernate génère automatiquement les tables SQLite.
 
--- Produits
-CREATE TABLE produits (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,  -- "Miel", "Cire avec miel", "Reine"
-    type TEXT,          -- "Toutes fleurs", "Forêt", "Châtaignier" (si miel)
-    unite TEXT NOT NULL -- "pot 500g", "pot 1kg", "unité"
-);
+**Entités JPA principales:**
 
--- Tarifs (historique prix par année)
-CREATE TABLE tarifs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    produit_id INTEGER NOT NULL,
-    annee INTEGER NOT NULL,
-    prix REAL NOT NULL,
-    FOREIGN KEY (produit_id) REFERENCES produits(id),
-    UNIQUE(produit_id, annee)
-);
+- **Client** (@Entity): id, nom, telephone, email, adresse, notes, createdAt, updatedAt, deletedAt (soft delete)
+- **Produit** (@Entity): id, nom, type (enum TypeMiel), unite
+- **Tarif** (@Entity): id, produitId, annee, prix - @UniqueConstraint(produitId, annee)
+- **Commande** (@Entity): id, clientId, dateCommande, statut (enum StatutCommande), notes, createdAt, updatedAt
+- **LigneCommande** (@Entity): id, commandeId, produitId, quantite, prixUnitaire
+- **Achat** (@Entity): id, dateAchat, designation, montant, categorie (enum CategorieAchat), notes, createdAt
 
--- Commandes
-CREATE TABLE commandes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    client_id INTEGER NOT NULL,
-    date_commande DATE NOT NULL,
-    statut TEXT NOT NULL DEFAULT 'Commandée', -- "Commandée", "Récupérée", "Payée"
-    notes TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_id) REFERENCES clients(id)
-);
+**Relations JPA:**
+```java
+// Client ↔ Commandes (OneToMany)
+@OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+private List<Commande> commandes;
 
--- Lignes de commande
-CREATE TABLE lignes_commande (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    commande_id INTEGER NOT NULL,
-    produit_id INTEGER NOT NULL,
-    quantite INTEGER NOT NULL,
-    prix_unitaire REAL NOT NULL,  -- Prix au moment de la commande (historique)
-    FOREIGN KEY (commande_id) REFERENCES commandes(id) ON DELETE CASCADE,
-    FOREIGN KEY (produit_id) REFERENCES produits(id)
-);
+// Commande ↔ LignesCommande (OneToMany)
+@OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<LigneCommande> lignes;
 
--- Achats fournitures
-CREATE TABLE achats (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date_achat DATE NOT NULL,
-    designation TEXT NOT NULL,
-    montant REAL NOT NULL,
-    categorie TEXT,  -- "Cire", "Pots", "Couvercles", "Nourrissement", "Autre"
-    notes TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Phase 2: Productions miel (post-MVP)
-CREATE TABLE productions_miel (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    annee INTEGER NOT NULL,
-    type_miel TEXT NOT NULL,
-    quantite_kg REAL NOT NULL,
-    date_recolte DATE NOT NULL,
-    notes TEXT
-);
-
--- Phase 2: Élevage reines (post-MVP)
-CREATE TABLE elevage_reines (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    date DATE NOT NULL,
-    nb_reines_produites INTEGER,
-    nb_ruchettes INTEGER,
-    notes TEXT
-);
+// Produit ↔ Tarifs (OneToMany)
+@OneToMany(mappedBy = "produit")
+private List<Tarif> tarifs;
 ```
 
+**Enums Java:**
+- `StatutCommande`: COMMANDEE, RECUPEREE, PAYEE
+- `TypeMiel`: TOUTES_FLEURS, FORET, CHATAIGNIER
+- `CategorieAchat`: CIRE, POTS, COUVERCLES, NOURRISSEMENT, AUTRE
+
+**Phase 2 (post-MVP):**
+- **ProductionMiel** (@Entity): id, annee, typeMiel, quantiteKg, dateRecolte, notes
+- **ElevageReine** (@Entity): id, date, nbReinesProduites, nbRuchettes, notes
+
 #### Integration Requirements
-- **Imprimante:** Génération PDF standard (impression via lecteur PDF système)
-- **Système fichiers:** Accès lecture/écriture pour backups automatiques
-- **Pas d'intégrations externes:** Aucune API tierce (volontairement autonome)
+- **Imprimante:** Génération PDF standard (téléchargement navigateur → impression via lecteur PDF système ou Ctrl+P)
+- **Navigateur:** Application s'ouvre dans navigateur par défaut (Chrome, Edge, Firefox)
+- **Système fichiers:** Accès lecture/écriture pour backups automatiques, base SQLite locale
+- **Pas d'intégrations externes:** Aucune API tierce (volontairement autonome, localhost uniquement)
 
 #### Security/Compliance Considerations
 
@@ -546,7 +560,14 @@ CREATE TABLE elevage_reines (
 #### Timeline
 - **Cible lancement:** Octobre/Novembre 2026 (hors saison, période calme)
 - **Rationale:** Éviter lancement en haute saison (septembre-décembre = stress)
-- **Développement MVP:** Estimation 40-60h (6-8 semaines à temps partiel)
+- **Développement MVP:** Estimation 40-45h (5-6 semaines à temps partiel)
+  - Setup projet + modèles JPA: 4h
+  - Services + Repositories Spring Data: 8h
+  - Controllers + Templates Thymeleaf: 15h
+  - Génération PDF étiquettes: 6h
+  - Backup automatique: 2h
+  - Tests + Debugging: 6h
+  - Packaging (JAR + launcher): 4h
 - **Phase tests utilisateurs:** 2-4 semaines (avec parents, période test calme)
 
 #### Resources
@@ -762,11 +783,15 @@ CREATE TABLE elevage_reines (
 - Code de la consommation - Mentions obligatoires denrées alimentaires
 
 **Technologies:**
-- Python: [https://www.python.org/](https://www.python.org/)
-- PyQt5/6: [https://www.riverbankcomputing.com/software/pyqt/](https://www.riverbankcomputing.com/software/pyqt/)
+- Java: [https://www.oracle.com/java/](https://www.oracle.com/java/)
+- Spring Boot: [https://spring.io/projects/spring-boot](https://spring.io/projects/spring-boot)
+- Spring Data JPA: [https://spring.io/projects/spring-data-jpa](https://spring.io/projects/spring-data-jpa)
+- Thymeleaf: [https://www.thymeleaf.org/](https://www.thymeleaf.org/)
+- Bootstrap: [https://getbootstrap.com/](https://getbootstrap.com/)
 - SQLite: [https://www.sqlite.org/](https://www.sqlite.org/)
-- reportlab (PDF): [https://www.reportlab.com/](https://www.reportlab.com/)
-- PyInstaller: [https://pyinstaller.org/](https://pyinstaller.org/)
+- SQLite JDBC Driver: [https://github.com/xerial/sqlite-jdbc](https://github.com/xerial/sqlite-jdbc)
+- Apache PDFBox: [https://pdfbox.apache.org/](https://pdfbox.apache.org/)
+- launch4j: [https://launch4j.sourceforge.net/](https://launch4j.sourceforge.net/)
 
 **Communauté apicole:**
 - Forums apiculteurs français (retours outils gestion)
@@ -837,13 +862,19 @@ CREATE TABLE elevage_reines (
 
 Ce Project Brief fournit le contexte complet pour **HoneyAI - Application de Gestion Apicole Familiale**.
 
+**Décision Technique Validée:** Spring Boot + Web Local (Java)
+- Développeur expert Spring Boot → développement rapide (~40h)
+- Architecture: Spring Boot 3.2+, Spring Data JPA, SQLite, Thymeleaf, Bootstrap 5
+- Packaging: JAR exécutable + wrapper .exe (launch4j)
+- Interface web moderne accessible via navigateur local
+
 **Prochaine étape recommandée:** Créer le PRD (Product Requirements Document) détaillé basé sur ce brief.
 
 Le PRD devra spécifier:
 - User stories détaillées avec critères d'acceptation
-- Wireframes/mockups UI (même sommaires)
-- Spécifications techniques précises (schéma DB final, APIs internes)
-- Plan de tests (cas nominaux, cas limites, tests utilisateurs)
+- Wireframes/mockups UI Bootstrap (interfaces web)
+- Spécifications techniques précises (entités JPA, endpoints controllers, templates Thymeleaf)
+- Plan de tests (tests unitaires Spring Boot, tests utilisateurs)
 - Roadmap développement (sprints, jalons)
 
 **Handoff au Product Manager:** Merci de commencer en "PRD Generation Mode", de revoir ce brief minutieusement, et de travailler avec le porteur de projet pour créer le PRD section par section en demandant clarifications et en suggérant améliorations.
