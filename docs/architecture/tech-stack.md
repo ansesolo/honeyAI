@@ -17,29 +17,29 @@ This is the **single source of truth** for all technology decisions in HoneyAI. 
 
 | Category | Technology | Version | Purpose | Rationale |
 |----------|------------|---------|---------|-----------|
-| **Runtime** | Java JRE | 17 LTS | Runtime environment for Spring Boot application | Long-term support until 2029; performance improvements over Java 11; required for Spring Boot 3.x; mature and stable for production |
-| **Framework** | Spring Boot | 3.2.x | Core application framework and dependency injection | Industry standard; developer's primary expertise; embedded Tomcat eliminates server setup; auto-configuration reduces boilerplate; comprehensive ecosystem |
+| **Runtime** | Java JRE | 21 LTS | Runtime environment for Spring Boot application | Long-term support until 2029; performance improvements over Java 11; required for Spring Boot 3.x; mature and stable for production |
+| **Framework** | Spring Boot | 3.5.x | Core application framework and dependency injection | Industry standard; developer's primary expertise; embedded Tomcat eliminates server setup; auto-configuration reduces boilerplate; comprehensive ecosystem |
 | **Web MVC** | Spring Web MVC | 6.1.x (included) | HTTP request handling and REST endpoints | Standard Spring Boot web stack; familiar MVC pattern; integrates seamlessly with Thymeleaf; supports PDF binary responses |
 | **Template Engine** | Thymeleaf | 3.1.x (included) | Server-side HTML template rendering | Natural templating (valid HTML); Spring Boot integration; fragment reusability; no JavaScript framework learning curve |
-| **ORM** | Spring Data JPA | 3.2.x (included) | Data access abstraction layer | Eliminates repository boilerplate; query derivation from method names; reduces SQL writing by 80%; pagination support |
+| **ORM** | Spring Data JPA | 3.5.x (included) | Data access abstraction layer | Eliminates repository boilerplate; query derivation from method names; reduces SQL writing by 80%; pagination support |
 | **JPA Provider** | Hibernate ORM | 6.4.x (included) | JPA implementation and database abstraction | Industry standard JPA provider; Spring Boot default; mature SQLite integration via community dialects |
 | **Database** | SQLite | 3.45+ | Embedded relational database | Zero-configuration; single file backup; ACID compliant; no server process; 1MB footprint; perfect for desktop apps |
 | **JDBC Driver** | xerial sqlite-jdbc | 3.45.0.0 | SQLite JDBC connectivity | Official SQLite JDBC driver; Maven Central availability; actively maintained; handles SQLite-specific features |
 | **Hibernate Dialect** | hibernate-community-dialects | 6.4.x | SQLite dialect for Hibernate | Bridges Hibernate ORM to SQLite; handles SQLite SQL syntax differences; enables JPA annotations on SQLite |
-| **Validation** | Spring Boot Starter Validation | 3.2.x (included) | Bean validation with Hibernate Validator | JSR-380 annotations (@NotBlank, @Min, @Positive); automatic controller validation; localized error messages |
+| **Validation** | Spring Boot Starter Validation | 3.5.x (included) | Bean validation with Hibernate Validator | JSR-380 annotations (@NotBlank, @Min, @Positive); automatic controller validation; localized error messages |
 | **PDF Generation** | Apache PDFBox | 3.0.1 | PDF document creation for honey labels | Pure Java; no external dependencies; embeddable fonts; precise coordinate control; open-source with active community |
 | **Frontend CSS** | Bootstrap | 5.3.2 (CDN) | Responsive UI component library | Modern design; mobile-first responsive grid; large button components; accessibility features; no custom CSS framework needed |
 | **Frontend JS** | Vanilla JavaScript | ES6+ | Dynamic form interactions | No build step; fast page loads; progressive enhancement; adequate for add/remove product lines; modern browser support |
 | **Icons** | Font Awesome | 6.4.2 (CDN) | Icon library for UI elements | Comprehensive icon set; web font delivery; recognizable standard icons; no SVG management needed |
 | **Build Tool** | Maven | 3.8+ | Dependency management and build automation | Spring Boot standard; familiar to developer; mature ecosystem; Maven Central repository access; POM-based configuration |
-| **Bundler** | Spring Boot Maven Plugin | 3.2.x | Executable JAR packaging | Creates fat JAR with embedded Tomcat; single deployable artifact; manifest configuration for main class |
+| **Bundler** | Spring Boot Maven Plugin | 3.5.x | Executable JAR packaging | Creates fat JAR with embedded Tomcat; single deployable artifact; manifest configuration for main class |
 | **Packaging** | launch4j | 3.50 | Windows .exe wrapper generation | Cross-platform build support; splash screen; custom icon; JRE bundling; version info embedding; no installer complexity |
 | **CI/CD** | Git + Manual Build | N/A | Version control and release process | GitHub for source control; manual Maven build for releases; no automated CI needed for family project; simple deployment |
 | **Development Tools** | Spring Boot DevTools | 3.2.x (included) | Hot reload and development utilities | Automatic restart on code changes; LiveReload integration; faster development cycle; disabled in production |
 | **Testing Framework** | JUnit 5 (Jupiter) | 5.10.x (included) | Unit test framework | Modern test framework; parameterized tests; Spring Boot integration; IDE support |
 | **Mocking** | Mockito | 5.x (included) | Mock objects for unit tests | Service layer testing with mocked repositories; Spring Boot Test includes; familiar API |
 | **Integration Testing** | Spring Boot Test | 3.2.x (included) | Integration test support | @WebMvcTest for controllers; @DataJpaTest for repositories; embedded database testing; application context loading |
-| **Monitoring** | Spring Boot Actuator | 3.2.x (included) | Application health and metrics | /actuator/health endpoint; basic monitoring; graceful shutdown support; minimal overhead |
+| **Monitoring** | Spring Boot Actuator | 3.5.x (included) | Application health and metrics | /actuator/health endpoint; basic monitoring; graceful shutdown support; minimal overhead |
 | **Logging Framework** | Logback | 1.4.x (included) | Logging implementation | SLF4J binding; Spring Boot default; file appenders; rolling policies; pattern configuration |
 | **Utility Library** | Lombok | 1.18.30 | Boilerplate code reduction | @Data for getters/setters; @Builder for entities; @Slf4j for logging; reduces code by ~30% |
 
@@ -269,8 +269,8 @@ logging:
 
 ## Version Constraints
 
-**Java:** Must be 17 LTS (not 11, not 21)
-**Spring Boot:** Must be 3.2.x (not 2.x)
+**Java:** Must be 21 LTS (not 11)
+**Spring Boot:** Must be 3.5.x (not 2.x)
 **SQLite:** Must be 3.45+ (for better JSON support)
 **PDFBox:** Must be 3.0.x (not 2.x - API changed)
 
