@@ -1,0 +1,24 @@
+schema: 1
+story: '1.1'
+gate: CONCERNS
+status_reason: 'Implementation appears complete but application startup not verified and P0 E2E test missing.'
+reviewer: 'Quinn'
+updated: '2026-01-20T20:30:00Z'
+top_issues:
+  - id: 'TEST-001'
+    severity: medium
+    finding: 'P0 E2E test (1.1-E2E-001) not implemented - application responds on startup'
+    suggested_action: 'Add ApplicationStartupTest with WebEnvironment.RANDOM_PORT'
+  - id: 'TEST-002'
+    severity: medium
+    finding: 'P0 integration test for SQLite datasource connection not implemented'
+    suggested_action: 'Add ConfigurationTest validating DataSource injection'
+  - id: 'REQ-001'
+    severity: low
+    finding: 'Application startup not manually verified (Java unavailable in dev environment)'
+    suggested_action: 'Run ./mvnw spring-boot:run and verify localhost:8080 responds'
+  - id: 'REQ-002'
+    severity: low
+    finding: 'Database auto-creation not verified'
+    suggested_action: 'Confirm ./data/honeyai.db created on first run'
+waiver: { active: false }

@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: HoneyAI
+
+  datasource:
+    url: jdbc:sqlite:./data/honeyai.db
+    driver-class-name: org.sqlite.JDBC
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+        format_sql: true
+        show_sql: false
+    open-in-view: false
+
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    root: INFO
+    com.honeyai: DEBUG
