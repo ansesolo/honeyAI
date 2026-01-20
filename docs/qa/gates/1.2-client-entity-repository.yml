@@ -1,0 +1,43 @@
+schema: 1
+story: '1.2'
+story_title: 'Client Entity & Repository with Soft Delete'
+gate: PASS
+status_reason: 'All 7 acceptance criteria implemented with comprehensive test coverage (13 tests). Code follows all standards.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2026-01-20T21:30:00Z'
+
+top_issues: []
+
+waiver: { active: false }
+
+quality_score: 100
+expires: '2026-02-03T21:30:00Z'
+
+evidence:
+  tests_reviewed: 13
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6, 7]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Input validation via @NotBlank, soft delete prevents data loss'
+  performance:
+    status: PASS
+    notes: 'Efficient queries, no N+1 issues'
+  reliability:
+    status: PASS
+    notes: 'Soft delete pattern ensures data safety'
+  maintainability:
+    status: PASS
+    notes: 'Clean code with Lombok, proper documentation'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'Add @Email validation on email field'
+      refs: ['src/main/java/com/honeyai/model/Client.java']
+    - action: 'Consider database index on nom column for performance'
+      refs: ['src/main/java/com/honeyai/model/Client.java']
