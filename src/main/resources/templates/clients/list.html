@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Mes Clients</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}">Message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Header Row -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h1>
+                    <i class="fas fa-users me-2"></i>Mes Clients
+                </h1>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a th:href="@{/clients/nouveau}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Nouveau Client
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <form th:action="@{/clients}" method="get" class="d-flex">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Rechercher un client par nom ou telephone..."
+                               th:value="${search}"
+                               aria-label="Rechercher un client">
+                        <button type="submit" class="btn btn-primary">
+                            Rechercher
+                        </button>
+                        <a th:if="${search != null and !search.isEmpty()}"
+                           th:href="@{/clients}"
+                           class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Effacer
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search Results Info -->
+        <div th:if="${search != null and !search.isEmpty()}" class="mb-3">
+            <p class="text-muted">
+                <span th:text="${#lists.size(clients)}">0</span> resultat(s) pour
+                "<span th:text="${search}" class="fw-bold">terme</span>"
+            </p>
+        </div>
+
+        <!-- Client List -->
+        <div th:if="${#lists.isEmpty(clients)}" class="text-center py-5">
+            <i class="fas fa-users fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">Aucun client trouve</h3>
+            <p class="text-muted" th:if="${search != null}">
+                Essayez avec d'autres termes de recherche.
+            </p>
+            <p class="text-muted" th:unless="${search != null}">
+                Commencez par ajouter votre premier client.
+            </p>
+            <a th:href="@{/clients/nouveau}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Ajouter un client
+            </a>
+        </div>
+
+        <!-- Client Table (Desktop) -->
+        <div th:unless="${#lists.isEmpty(clients)}" class="table-responsive d-none d-md-block">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Telephone</th>
+                        <th>Email</th>
+                        <th class="text-center">Commandes</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="client : ${clients}">
+                        <td>
+                            <a th:href="@{/clients/{id}(id=${client.id})}"
+                               th:text="${client.name}"
+                               class="text-decoration-none fw-medium">
+                                Nom
+                            </a>
+                        </td>
+                        <td th:text="${client.phone ?: '-'}">Telephone</td>
+                        <td th:text="${client.email ?: '-'}">Email</td>
+                        <td class="text-center">
+                            <span class="badge bg-secondary">0</span>
+                        </td>
+                        <td class="text-end">
+                            <a th:href="@{/clients/{id}(id=${client.id})}"
+                               class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            <a th:href="@{/clients/{id}/edit(id=${client.id})}"
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Client Cards (Mobile) -->
+        <div th:unless="${#lists.isEmpty(clients)}" class="d-md-none">
+            <div th:each="client : ${clients}" class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a th:href="@{/clients/{id}(id=${client.id})}"
+                           th:text="${client.name}"
+                           class="text-decoration-none">
+                            Nom
+                        </a>
+                    </h5>
+                    <p class="card-text mb-1" th:if="${client.phone}">
+                        <i class="fas fa-phone me-2 text-muted"></i>
+                        <span th:text="${client.phone}">Telephone</span>
+                    </p>
+                    <p class="card-text mb-1" th:if="${client.email}">
+                        <i class="fas fa-envelope me-2 text-muted"></i>
+                        <span th:text="${client.email}">Email</span>
+                    </p>
+                    <p class="card-text mb-3">
+                        <i class="fas fa-shopping-cart me-2 text-muted"></i>
+                        <span class="badge bg-secondary">0 commandes</span>
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/clients/{id}(id=${client.id})}"
+                           class="btn btn-outline-primary flex-fill">
+                            <i class="fas fa-eye me-1"></i> Voir
+                        </a>
+                        <a th:href="@{/clients/{id}/edit(id=${client.id})}"
+                           class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-edit me-1"></i> Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
