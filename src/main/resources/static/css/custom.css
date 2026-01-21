@@ -1,0 +1,148 @@
+/* HoneyAI Custom Styles */
+
+/* Color Palette */
+:root {
+    --honey-amber: #F4B942;
+    --forest-green: #2D5016;
+    --off-white: #FAFAF8;
+}
+
+/* Base Typography - minimum 16px */
+body {
+    font-size: 16px;
+    line-height: 1.5;
+    background-color: var(--off-white);
+}
+
+/* Navigation Styling */
+.bg-forest-green {
+    background-color: var(--forest-green) !important;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    font-size: 1rem;
+    padding: 0.75rem 1rem !important;
+}
+
+.nav-link.active {
+    background-color: rgba(244, 185, 66, 0.2);
+    border-radius: 0.25rem;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+/* Button Touch Targets - minimum 44x44px */
+.btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--forest-green);
+    border-color: var(--forest-green);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #1e3a0f;
+    border-color: #1e3a0f;
+}
+
+.btn-secondary {
+    background-color: var(--honey-amber);
+    border-color: var(--honey-amber);
+    color: #212529;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #d9a439;
+    border-color: #d9a439;
+    color: #212529;
+}
+
+/* Form Controls - minimum touch target */
+.form-control,
+.form-select {
+    min-height: 44px;
+    font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Main Content Area */
+main {
+    min-height: calc(100vh - 160px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    .navbar-nav {
+        padding-top: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Cards */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: var(--forest-green);
+    color: white;
+    font-weight: 500;
+}
+
+/* Tables */
+.table th {
+    background-color: var(--forest-green);
+    color: white;
+}
+
+/* Links */
+a {
+    color: var(--forest-green);
+}
+
+a:hover {
+    color: #1e3a0f;
+}
+
+/* Alerts with brand colors */
+.alert-success {
+    background-color: rgba(45, 80, 22, 0.1);
+    border-color: var(--forest-green);
+    color: var(--forest-green);
+}
+
+.alert-warning {
+    background-color: rgba(244, 185, 66, 0.2);
+    border-color: var(--honey-amber);
+    color: #856404;
+}

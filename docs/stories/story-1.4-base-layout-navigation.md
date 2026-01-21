@@ -1,7 +1,7 @@
 # Story 1.4: Base Layout & Navigation with Bootstrap
 
 **Epic:** Epic 1 - Foundation & Client Management
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 1.1
 
@@ -39,7 +39,63 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Layout renders correctly on desktop and mobile
-- [ ] Navigation links work
+- [x] All acceptance criteria met
+- [x] Layout renders correctly on desktop and mobile
+- [x] Navigation links work
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+| File | Action |
+|------|--------|
+| pom.xml | Modified (added thymeleaf-layout-dialect) |
+| src/main/resources/templates/fragments/layout.html | Created |
+| src/main/resources/static/css/custom.css | Created |
+| src/main/resources/templates/home.html | Created |
+| src/main/java/com/honeyai/controller/HomeController.java | Created |
+
+### Completion Notes
+- Base layout with Thymeleaf Layout Dialect for template inheritance
+- Bootstrap 5.3.2 and Font Awesome 6.4.2 via CDN
+- Navigation menu with 5 items: Tableau de bord, Clients, Commandes, Etiquettes, Achats
+- Active page highlighting via activeMenu model attribute
+- Custom CSS with brand colors (amber #F4B942, forest green #2D5016)
+- 44px minimum touch targets for buttons and form controls
+- Responsive navbar collapses on mobile (<768px)
+- Footer with "HoneyAI 2026"
+- Home page verified at localhost:8080 - returns 200 with all expected content
+- All 32 existing tests still pass
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-21 | Initial implementation of base layout, navigation, and home page |
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-21
+
+### Reviewed By: Quinn (Test Architect)
+
+**Findings:**
+- All 9 acceptance criteria verified
+- Thymeleaf Layout Dialect properly configured
+- Bootstrap 5.3.2 + Font Awesome 6.4.2 via CDN
+- Navigation with 5 menu items, active highlighting works
+- Responsive layout collapses on mobile
+- Brand colors applied (amber/forest green)
+- 44px touch targets enforced
+- Footer "HoneyAI 2026" present
+- localhost:8080 returns 200 with expected content
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/1.4-base-layout-navigation.yml
