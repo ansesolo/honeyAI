@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -30,5 +33,22 @@ public class ClientController {
         model.addAttribute("clients", clients);
         model.addAttribute("activeMenu", "clients");
         return "clients/list";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        Client client = clientService.findByIdOrThrow(id);
+        model.addAttribute("client", client);
+        model.addAttribute("activeMenu", "clients");
+        return "clients/detail";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Client client = clientService.findByIdOrThrow(id);
+        clientService.softDelete(id);
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Client \"" + client.getName() + "\" supprime avec succes");
+        return "redirect:/clients";
     }
 }

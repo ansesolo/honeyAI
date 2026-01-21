@@ -1,7 +1,7 @@
 # Story 1.6: Client Detail View with History Placeholder
 
 **Epic:** Epic 1 - Foundation & Client Management
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 1.5
 
@@ -39,7 +39,41 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] 404 handling works correctly
-- [ ] Delete confirmation modal functional
+- [x] All acceptance criteria met
+- [x] 404 handling works correctly
+- [x] Delete confirmation modal functional
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+| File | Action |
+|------|--------|
+| src/main/java/com/honeyai/controller/ClientController.java | Modified (added detail, delete endpoints) |
+| src/main/resources/templates/clients/detail.html | Created |
+| src/main/resources/templates/error/404.html | Created |
+| src/main/java/com/honeyai/exception/GlobalExceptionHandler.java | Created |
+| src/main/resources/templates/fragments/layout.html | Modified (added tooltip init, scripts fragment) |
+
+### Completion Notes
+- GET /clients/{id} endpoint returns detail view with client info
+- Detail page shows contact info, notes, timestamps (DD/MM/YYYY HH:mm format)
+- "Modifier" button links to /clients/{id}/edit
+- "Supprimer" button triggers Bootstrap modal confirmation
+- POST /clients/{id}/delete performs soft delete with flash message
+- "Retour a la liste" link present
+- Order history placeholder with "a venir dans Epic 2" message
+- "Nouvelle commande" button disabled with tooltip
+- 404 page with friendly message when client not found
+- GlobalExceptionHandler catches ClientNotFoundException
+- All 32 tests pass
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-21 | Initial implementation of client detail view with modal and 404 handling |

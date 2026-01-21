@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title th:text="${client.name}">Client</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Header with client name -->
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/clients}">
+                                <i class="fas fa-users me-1"></i>Clients
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"
+                            th:text="${client.name}">Client</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1>
+                    <i class="fas fa-user me-2"></i>
+                    <span th:text="${client.name}">Nom du client</span>
+                </h1>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a th:href="@{/clients/{id}/edit(id=${client.id})}"
+                   class="btn btn-primary btn-lg me-2">
+                    <i class="fas fa-edit me-1"></i>Modifier
+                </a>
+            </div>
+        </div>
+
+        <!-- Client Information Card -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-address-card me-2"></i>Informations de contact
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Telephone</dt>
+                            <dd class="col-sm-8">
+                                <span th:if="${client.phone}" th:text="${client.phone}">Telephone</span>
+                                <span th:unless="${client.phone}" class="text-muted">Non renseigne</span>
+                            </dd>
+
+                            <dt class="col-sm-4">Email</dt>
+                            <dd class="col-sm-8">
+                                <a th:if="${client.email}"
+                                   th:href="'mailto:' + ${client.email}"
+                                   th:text="${client.email}">email@example.com</a>
+                                <span th:unless="${client.email}" class="text-muted">Non renseigne</span>
+                            </dd>
+
+                            <dt class="col-sm-4">Adresse</dt>
+                            <dd class="col-sm-8">
+                                <span th:if="${client.address}" th:text="${client.address}">Adresse</span>
+                                <span th:unless="${client.address}" class="text-muted">Non renseignee</span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="fas fa-sticky-note me-2"></i>Notes
+                    </div>
+                    <div class="card-body">
+                        <p th:if="${client.notes}" th:text="${client.notes}" class="mb-0">Notes</p>
+                        <p th:unless="${client.notes}" class="text-muted mb-0">Aucune note</p>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        <i class="fas fa-clock me-1"></i>
+                        Cree le <span th:text="${#temporals.format(client.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</span>
+                        <span th:if="${client.updatedAt}">
+                            &bull; Modifie le <span th:text="${#temporals.format(client.updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History Placeholder -->
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-shopping-cart me-2"></i>Historique des commandes
+                        </span>
+                        <button type="button"
+                                class="btn btn-secondary btn-sm"
+                                disabled
+                                data-bs-toggle="tooltip"
+                                title="Disponible dans Epic 2">
+                            <i class="fas fa-plus me-1"></i>Nouvelle commande
+                        </button>
+                    </div>
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">
+                            Historique des commandes (a venir dans Epic 2)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col-12">
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a th:href="@{/clients}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Retour a la liste
+                    </a>
+                    <button type="button"
+                            class="btn btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-1"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirmer la suppression
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer ce client ?</p>
+                        <p class="fw-bold" th:text="${client.name}">Nom du client</p>
+                        <p class="text-muted small mb-0">
+                            Cette action est irreversible. Le client sera marque comme supprime
+                            et n'apparaitra plus dans les listes.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Annuler
+                        </button>
+                        <form th:action="@{/clients/{id}/delete(id=${client.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
