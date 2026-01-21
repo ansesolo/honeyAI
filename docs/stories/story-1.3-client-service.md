@@ -1,7 +1,7 @@
 # Story 1.3: Client Service with Business Logic
 
 **Epic:** Epic 1 - Foundation & Client Management
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 1.2
 
@@ -36,6 +36,32 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Unit tests passing with 80%+ coverage
+- [x] All acceptance criteria met
+- [x] Unit tests passing with 80%+ coverage
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+| File | Action |
+|------|--------|
+| src/main/java/com/honeyai/exception/ClientNotFoundException.java | Created |
+| src/main/java/com/honeyai/service/ClientService.java | Created |
+| src/test/java/com/honeyai/service/ClientServiceTest.java | Created |
+
+### Completion Notes
+- ClientService implements all required methods: findAllActive(), findById(), findByIdOrThrow(), save(), softDelete(), searchClients()
+- Added @Transactional annotations (class-level default, readOnly=true for queries)
+- ClientNotFoundException supports both message and ID-based constructors
+- 15 unit tests covering all business logic paths including edge cases (null/empty search, not found scenarios)
+- All 32 tests pass (including existing tests from stories 1.1 and 1.2)
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-21 | Initial implementation of ClientService and ClientNotFoundException |
