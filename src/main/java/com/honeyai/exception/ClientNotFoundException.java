@@ -7,6 +7,6 @@ public class ClientNotFoundException extends RuntimeException {
     }
 
     public ClientNotFoundException(Long id) {
-        super("Client #" + id + " not found");
+        super("Ce client n'existe pas ou a ete supprime");
     }
 }

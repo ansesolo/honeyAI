@@ -116,7 +116,7 @@ class ClientServiceTest {
         // When/Then
         assertThatThrownBy(() -> clientService.findByIdOrThrow(99L))
                 .isInstanceOf(ClientNotFoundException.class)
-                .hasMessageContaining("99");
+                .hasMessageContaining("n'existe pas");
     }
 
     @Test

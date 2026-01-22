@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -129,5 +130,35 @@ class ClientControllerTest {
                         .param("phone", "0033612345678"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/clients"));
+    }
+
+    @Test
+    void delete_shouldRedirectToList_withSuccessMessage() throws Exception {
+        when(clientService.findByIdOrThrow(1L)).thenReturn(existingClient);
+
+        mockMvc.perform(post("/clients/1/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/clients"))
+                .andExpect(flash().attributeExists("successMessage"));
+
+        verify(clientService).softDelete(1L);
+    }
+
+    @Test
+    void delete_shouldReturn404_whenClientNotFound() throws Exception {
+        when(clientService.findByIdOrThrow(99L)).thenThrow(new ClientNotFoundException(99L));
+
+        mockMvc.perform(post("/clients/99/delete"))
+                .andExpect(status().isNotFound());
+
+        verify(clientService, never()).softDelete(anyLong());
+    }
+
+    @Test
+    void detail_shouldReturn404_whenClientNotFound() throws Exception {
+        when(clientService.findByIdOrThrow(99L)).thenThrow(new ClientNotFoundException(99L));
+
+        mockMvc.perform(get("/clients/99"))
+                .andExpect(status().isNotFound());
     }
 }

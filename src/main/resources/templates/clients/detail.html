@@ -148,11 +148,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Etes-vous sur de vouloir supprimer ce client ?</p>
-                        <p class="fw-bold" th:text="${client.name}">Nom du client</p>
+                        <p>Etes-vous sur de vouloir supprimer le client <strong th:text="${client.name}">Nom</strong> ?</p>
                         <p class="text-muted small mb-0">
-                            Cette action est irreversible. Le client sera marque comme supprime
-                            et n'apparaitra plus dans les listes.
+                            Cette action peut etre annulee par l'administrateur.
                         </p>
                     </div>
                     <div class="modal-footer">
