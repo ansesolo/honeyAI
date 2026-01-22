@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title th:text="${client.id != null} ? 'Modifier Client' : 'Nouveau Client'">Client</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-user me-2"></i>
+                    <span th:if="${client.id == null}">Nouveau Client</span>
+                    <span th:if="${client.id != null}">Modifier Client - <span th:text="${client.name}">Nom</span></span>
+                </h1>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="row">
+            <div class="col-lg-8">
+                <form th:action="@{/clients}" th:object="${client}" method="post" novalidate>
+                    <!-- Hidden ID for updates -->
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{createdAt}">
+                    <input type="hidden" th:field="*{deletedAt}">
+
+                    <!-- Nom (Required) -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            Nom <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               id="name"
+                               th:field="*{name}"
+                               class="form-control form-control-lg"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                               placeholder="Nom du client"
+                               required
+                               autofocus>
+                        <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                            <span th:errors="*{name}">Le nom est obligatoire</span>
+                        </div>
+                    </div>
+
+                    <!-- Telephone -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telephone</label>
+                        <input type="tel"
+                               id="phone"
+                               th:field="*{phone}"
+                               class="form-control form-control-lg"
+                               placeholder="06 12 34 56 78">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email"
+                               id="email"
+                               th:field="*{email}"
+                               class="form-control form-control-lg"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                               placeholder="client@example.com">
+                        <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                            <span th:errors="*{email}">Email invalide</span>
+                        </div>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Adresse</label>
+                        <textarea id="address"
+                                  th:field="*{address}"
+                                  class="form-control"
+                                  rows="2"
+                                  placeholder="Adresse postale"></textarea>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea id="notes"
+                                  th:field="*{notes}"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="Notes supplementaires sur le client..."></textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save me-2"></i>Enregistrer
+                        </button>
+                        <a th:href="${client.id != null} ? @{/clients/{id}(id=${client.id})} : @{/clients}"
+                           class="btn btn-secondary btn-lg">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

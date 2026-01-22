@@ -1,7 +1,7 @@
 # Story 1.7: Client Create & Edit Forms
 
 **Epic:** Epic 1 - Foundation & Client Management
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 1.5
 
@@ -41,7 +41,45 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Form validation works correctly
-- [ ] Create and edit both functional
+- [x] All acceptance criteria met
+- [x] Form validation works correctly
+- [x] Create and edit both functional
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### Debug Log References
+None - implementation completed without issues.
+
+### Completion Notes
+- Implemented GET /clients/nouveau endpoint returning empty Client for creation
+- Implemented GET /clients/{id}/edit endpoint returning populated Client for editing
+- Implemented POST /clients endpoint with @Valid validation and BindingResult error handling
+- Created clients/form.html template with:
+  - All required form fields (name, phone, email, address, notes)
+  - Bootstrap form-control-lg styling
+  - Dynamic title (Nouveau Client vs Modifier Client)
+  - Required field marker (asterisk) on name field
+  - Inline validation error display with is-invalid class
+  - Green "Enregistrer" button and grey "Annuler" button
+  - Proper label-for associations for accessibility
+  - Autofocus on name field
+- Added 8 unit tests for ClientController form endpoints (all passing)
+- All 40 project tests pass
+
+### File List
+| File | Action |
+|------|--------|
+| src/main/java/com/honeyai/controller/ClientController.java | Modified - Added createForm, editForm, save endpoints |
+| src/main/resources/templates/clients/form.html | Created - Client create/edit form template |
+| src/test/java/com/honeyai/controller/ClientControllerTest.java | Created - Unit tests for controller |
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-22 | Initial implementation of story 1.7 |
