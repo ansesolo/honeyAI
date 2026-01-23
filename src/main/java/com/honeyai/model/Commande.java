@@ -66,4 +66,19 @@ public class Commande {
         lignes.remove(ligne);
         ligne.setCommande(null);
     }
+
+    /**
+     * Check if transition to new status is allowed.
+     * Only forward transitions are permitted: COMMANDEE -> RECUPEREE -> PAYEE
+     */
+    public boolean canTransitionTo(StatutCommande newStatut) {
+        if (this.statut == null || newStatut == null) {
+            return false;
+        }
+        return switch (this.statut) {
+            case COMMANDEE -> newStatut == StatutCommande.RECUPEREE;
+            case RECUPEREE -> newStatut == StatutCommande.PAYEE;
+            case PAYEE -> false; // Terminal state
+        };
+    }
 }
