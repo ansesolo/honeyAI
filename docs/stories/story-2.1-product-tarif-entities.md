@@ -79,3 +79,39 @@
 ### Agent Model Used
 
 Claude Opus 4.5
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-23
+
+### Reviewed By: Quinn (Test Architect)
+
+**Acceptance Criteria Review:**
+
+| AC | Requirement | Status |
+|----|-------------|--------|
+| 1 | Product.java entity with id, name, type, unit fields | ✅ PASS |
+| 2 | HoneyType enum with TOUTES_FLEURS, FORET, CHATAIGNIER + French labels | ✅ PASS |
+| 3 | Price.java entity with unique constraint on (product_id, price_year) | ✅ PASS |
+| 4 | @OneToMany/@ManyToOne relationships between Product and Price | ✅ PASS |
+| 5 | ProductRepository.findAllByOrderByNameAsc() | ✅ PASS |
+| 6 | PriceRepository.findByProductIdAndYear() and findByYear() | ✅ PASS |
+| 7 | Hibernate creates tables in SQLite | ✅ PASS |
+| 8 | Unit tests for products, prices, unique constraint | ✅ PASS |
+| 9 | Seed data: 8 products with 2024 prices | ✅ PASS |
+
+**Code Quality:**
+- Follows coding standards (@Enumerated(EnumType.STRING), BigDecimal for money)
+- Proper Lombok annotations
+- Column renamed from 'year' to 'price_year' to avoid H2 reserved keyword
+- H2 test database added for reliable constraint testing
+
+**Test Coverage:**
+- 17 tests for Story 2.1 entities/repositories
+- Unique constraint violation properly tested
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/2.1-product-tarif-entities.yml

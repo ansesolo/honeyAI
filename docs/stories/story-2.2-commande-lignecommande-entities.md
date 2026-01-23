@@ -1,7 +1,7 @@
 # Story 2.2: Command & CommandLine Entities with Status Workflow
 
 **Epic:** Epic 2 - Order Management & Product Catalog
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 2.1, Story 1.2
 
@@ -39,7 +39,79 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Cascade operations work correctly
-- [ ] Unit tests passing
+- [x] All acceptance criteria met
+- [x] Cascade operations work correctly
+- [x] Unit tests passing
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### File List
+
+**New Files:**
+- `src/main/java/com/honeyai/enums/StatutCommande.java` - Order status enum (COMMANDEE, RECUPEREE, PAYEE)
+- `src/main/java/com/honeyai/model/Commande.java` - Order entity with client relation and status
+- `src/main/java/com/honeyai/model/LigneCommande.java` - Order line entity with product and price
+- `src/main/java/com/honeyai/repository/CommandeRepository.java` - Order data access with filtering methods
+- `src/main/java/com/honeyai/repository/LigneCommandeRepository.java` - Order line data access
+- `src/test/java/com/honeyai/enums/StatutCommandeTest.java` - Status enum tests
+- `src/test/java/com/honeyai/repository/CommandeRepositoryTest.java` - Order repository tests (cascade, orphan removal)
+
+**Modified Files:**
+- `src/main/java/com/honeyai/model/Client.java` - Added @OneToMany commandes relationship
+
+### Change Log
+
+- Created StatutCommande enum with French display labels (Commandée, Récupérée, Payée)
+- Created Commande entity with cascade ALL and orphanRemoval for lignes
+- Created LigneCommande entity with prixUnitaire for historical price capture
+- Created CommandeRepository with findByClientIdOrderByDateCommandeDesc, findByStatut, findByDateCommandeBetween
+- Created LigneCommandeRepository with standard CRUD
+- Updated Client entity to add bidirectional @OneToMany commandes relationship
+- Added 12 new tests verifying cascade save, orphan removal, status string persistence
+
+### Agent Model Used
+
+Claude Opus 4.5
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-23
+
+### Reviewed By: Quinn (Test Architect)
+
+**Acceptance Criteria Review:**
+
+| AC | Requirement | Status |
+|----|-------------|--------|
+| 1 | StatutCommande enum with COMMANDEE, RECUPEREE, PAYEE + French labels | ✅ PASS |
+| 2 | Commande.java entity with all required fields | ✅ PASS |
+| 3 | LigneCommande.java entity with prixUnitaire | ✅ PASS |
+| 4 | @OneToMany(cascade=ALL, orphanRemoval=true) relationships | ✅ PASS |
+| 5 | Client @OneToMany commandes bidirectional relation | ✅ PASS |
+| 6 | CommandeRepository with filtering methods | ✅ PASS |
+| 7 | LigneCommandeRepository standard CRUD | ✅ PASS |
+| 8 | Hibernate creates tables with proper FK/cascade | ✅ PASS |
+| 9 | Unit tests for cascade, orphan removal, status persistence | ✅ PASS |
+
+**Code Quality:**
+- Follows coding standards (French naming: Commande, LigneCommande, StatutCommande)
+- Uses @Enumerated(EnumType.STRING) per standards
+- BigDecimal for monetary values
+- Proper Lombok annotations (@Data, @Builder, @NoArgsConstructor, @AllArgsConstructor)
+- Auditing with @CreatedDate/@LastModifiedDate
+
+**Test Coverage:**
+- 12 new tests added
+- Cascade save verified
+- Orphan removal verified
+- Status string persistence verified
+- Repository query methods tested
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/2.2-commande-lignecommande-entities.yml
