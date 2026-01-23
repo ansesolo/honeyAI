@@ -148,4 +148,12 @@ public class CommandeService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
+
+    /**
+     * Save an existing commande (for updates).
+     */
+    public Commande save(Commande commande) {
+        log.info("Saving commande #{}", commande.getId());
+        return commandeRepository.save(commande);
+    }
 }

@@ -4,14 +4,18 @@
       layout:decorate="~{fragments/layout}"
       lang="fr">
 <head>
-    <title>Nouvelle Commande</title>
+    <title th:text="${isEdit} ? 'Modifier Commande #' + ${commandeId} : 'Nouvelle Commande'">Commande</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="fas fa-shopping-cart me-2"></i>Nouvelle Commande</h1>
+            <h1>
+                <i class="fas fa-shopping-cart me-2"></i>
+                <span th:if="${isEdit}">Modifier Commande #<span th:text="${commandeId}">1</span></span>
+                <span th:unless="${isEdit}">Nouvelle Commande</span>
+            </h1>
         </div>
 
         <!-- Error Alert -->
@@ -20,7 +24,8 @@
         </div>
 
         <!-- Form -->
-        <form th:action="@{/commandes}" th:object="${commandeForm}" method="post" id="commandeForm" novalidate>
+        <form th:action="${isEdit} ? @{/commandes/{id}/edit(id=${commandeId})} : @{/commandes}"
+              th:object="${commandeForm}" method="post" id="commandeForm" novalidate>
             <div class="row">
                 <!-- Left Column: Client & Date -->
                 <div class="col-lg-4">
@@ -174,7 +179,8 @@
 
                     <!-- Form Buttons -->
                     <div class="d-flex gap-2 justify-content-end">
-                        <a th:href="@{/commandes}" class="btn btn-secondary btn-lg">
+                        <a th:href="${isEdit} ? @{/commandes/{id}(id=${commandeId})} : @{/commandes}"
+                           class="btn btn-secondary btn-lg">
                             Annuler
                         </a>
                         <button type="submit" class="btn btn-success btn-lg">

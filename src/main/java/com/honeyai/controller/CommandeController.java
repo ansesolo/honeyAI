@@ -4,6 +4,7 @@ import com.honeyai.dto.CommandeFormDto;
 import com.honeyai.dto.LigneCommandeDto;
 import com.honeyai.dto.ProductPriceDto;
 import com.honeyai.enums.StatutCommande;
+import com.honeyai.exception.InvalidStatusTransitionException;
 import com.honeyai.model.Client;
 import com.honeyai.model.Commande;
 import com.honeyai.model.LigneCommande;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -165,6 +167,134 @@ public class CommandeController {
         model.addAttribute("activeMenu", "commandes");
 
         return "commandes/detail";
+    }
+
+    @PostMapping("/{id}/statut")
+    public String updateStatut(
+            @PathVariable Long id,
+            @RequestParam StatutCommande newStatut,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            Commande updated = commandeService.updateStatut(id, newStatut);
+            log.info("Updated commande #{} status to {}", id, newStatut);
+            redirectAttributes.addFlashAttribute("success",
+                    "Statut mis a jour: " + updated.getStatut().getDisplayLabel());
+        } catch (InvalidStatusTransitionException e) {
+            log.warn("Invalid status transition for commande #{}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Transition invalide");
+        } catch (Exception e) {
+            log.error("Error updating status for commande #{}", id, e);
+            redirectAttributes.addFlashAttribute("error",
+                    "Erreur lors de la mise a jour du statut: " + e.getMessage());
+        }
+
+        return "redirect:/commandes/" + id;
+    }
+
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Commande commande = commandeService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvee: " + id));
+
+        // Convert Commande to CommandeFormDto for form binding
+        CommandeFormDto form = CommandeFormDto.builder()
+                .clientId(commande.getClient().getId())
+                .dateCommande(commande.getDateCommande())
+                .notes(commande.getNotes())
+                .build();
+
+        // Convert lignes
+        for (LigneCommande ligne : commande.getLignes()) {
+            LigneCommandeDto ligneDto = LigneCommandeDto.builder()
+                    .productId(ligne.getProduct().getId())
+                    .quantite(ligne.getQuantite())
+                    .prixUnitaire(ligne.getPrixUnitaire())
+                    .build();
+            form.getLignes().add(ligneDto);
+        }
+
+        // Add empty ligne if no lignes exist
+        if (form.getLignes().isEmpty()) {
+            form.addEmptyLigne();
+        }
+
+        model.addAttribute("commandeId", id);
+        model.addAttribute("isEdit", true);
+        prepareFormModel(model, form);
+        return "commandes/form";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateCommande(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("commandeForm") CommandeFormDto form,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        // Remove empty lignes (where productId is null) before validation
+        if (form.getLignes() != null) {
+            form.getLignes().removeIf(ligne -> ligne.getProductId() == null);
+        }
+
+        // Check if at least one ligne remains
+        if (form.getLignes() == null || form.getLignes().isEmpty()) {
+            result.rejectValue("lignes", "Size.commandeForm.lignes",
+                    "La commande doit contenir au moins une ligne");
+        }
+
+        if (result.hasErrors()) {
+            log.warn("Validation errors in edit form: {}", result.getAllErrors());
+            if (form.getLignes() == null || form.getLignes().isEmpty()) {
+                form.addEmptyLigne();
+            }
+            model.addAttribute("commandeId", id);
+            model.addAttribute("isEdit", true);
+            prepareFormModel(model, form);
+            return "commandes/form";
+        }
+
+        try {
+            Commande commande = commandeService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Commande non trouvee: " + id));
+
+            // Update basic fields
+            Client client = clientService.findByIdOrThrow(form.getClientId());
+            commande.setClient(client);
+            commande.setDateCommande(form.getDateCommande());
+            commande.setNotes(form.getNotes());
+
+            // Clear existing lignes and add new ones
+            commande.getLignes().clear();
+            for (LigneCommandeDto ligneDto : form.getLignes()) {
+                Product product = productService.findById(ligneDto.getProductId())
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Produit non trouve: " + ligneDto.getProductId()));
+
+                LigneCommande ligne = LigneCommande.builder()
+                        .product(product)
+                        .quantite(ligneDto.getQuantite())
+                        .prixUnitaire(ligneDto.getPrixUnitaire())
+                        .build();
+
+                commande.addLigne(ligne);
+            }
+
+            commandeService.save(commande);
+            log.info("Updated commande #{}", id);
+
+            redirectAttributes.addFlashAttribute("success", "Commande modifiee avec succes");
+            return "redirect:/commandes/" + id;
+
+        } catch (Exception e) {
+            log.error("Error updating commande #{}", id, e);
+            model.addAttribute("error", "Erreur lors de la modification: " + e.getMessage());
+            model.addAttribute("commandeId", id);
+            model.addAttribute("isEdit", true);
+            prepareFormModel(model, form);
+            return "commandes/form";
+        }
     }
 
     private void prepareFormModel(Model model, CommandeFormDto form) {

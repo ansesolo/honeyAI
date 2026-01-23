@@ -2,6 +2,7 @@ package com.honeyai.controller;
 
 import com.honeyai.dto.ProductPriceDto;
 import com.honeyai.enums.StatutCommande;
+import com.honeyai.exception.InvalidStatusTransitionException;
 import com.honeyai.model.Client;
 import com.honeyai.model.Commande;
 import com.honeyai.model.LigneCommande;
@@ -286,5 +287,82 @@ class CommandeControllerTest {
 
         verify(commandeService).findById(1L);
         verify(commandeService).calculateTotal(1L);
+    }
+
+    @Test
+    void updateStatut_shouldRedirectWithSuccess() throws Exception {
+        // Given
+        Commande updated = Commande.builder()
+                .id(1L)
+                .client(client)
+                .statut(StatutCommande.RECUPEREE)
+                .lignes(new ArrayList<>())
+                .build();
+        when(commandeService.updateStatut(1L, StatutCommande.RECUPEREE)).thenReturn(updated);
+
+        // When/Then
+        mockMvc.perform(post("/commandes/1/statut")
+                        .param("newStatut", "RECUPEREE"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/commandes/1"))
+                .andExpect(flash().attributeExists("success"));
+
+        verify(commandeService).updateStatut(1L, StatutCommande.RECUPEREE);
+    }
+
+    @Test
+    void updateStatut_withInvalidTransition_shouldRedirectWithError() throws Exception {
+        // Given
+        when(commandeService.updateStatut(1L, StatutCommande.PAYEE))
+                .thenThrow(new InvalidStatusTransitionException(StatutCommande.COMMANDEE, StatutCommande.PAYEE));
+
+        // When/Then
+        mockMvc.perform(post("/commandes/1/statut")
+                        .param("newStatut", "PAYEE"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/commandes/1"))
+                .andExpect(flash().attribute("error", "Transition invalide"));
+
+        verify(commandeService).updateStatut(1L, StatutCommande.PAYEE);
+    }
+
+    @Test
+    void showEditForm_shouldReturnFormViewWithCommandeData() throws Exception {
+        // Given
+        when(commandeService.findById(1L)).thenReturn(Optional.of(commande1));
+        when(clientService.findAllActive()).thenReturn(List.of(client));
+        when(productService.findAllWithCurrentYearPrices()).thenReturn(List.of(productPriceDto));
+
+        // When/Then
+        mockMvc.perform(get("/commandes/1/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("commandes/form"))
+                .andExpect(model().attributeExists("commandeForm"))
+                .andExpect(model().attribute("commandeId", 1L))
+                .andExpect(model().attribute("isEdit", true));
+
+        verify(commandeService).findById(1L);
+    }
+
+    @Test
+    void updateCommande_withValidData_shouldRedirectToDetail() throws Exception {
+        // Given
+        when(commandeService.findById(1L)).thenReturn(Optional.of(commande1));
+        when(clientService.findByIdOrThrow(1L)).thenReturn(client);
+        when(productService.findById(1L)).thenReturn(Optional.of(product));
+        when(commandeService.save(any(Commande.class))).thenReturn(commande1);
+
+        // When/Then
+        mockMvc.perform(post("/commandes/1/edit")
+                        .param("clientId", "1")
+                        .param("dateCommande", "2026-01-15")
+                        .param("lignes[0].productId", "1")
+                        .param("lignes[0].quantite", "3")
+                        .param("lignes[0].prixUnitaire", "12.50"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/commandes/1"))
+                .andExpect(flash().attribute("success", "Commande modifiee avec succes"));
+
+        verify(commandeService).save(any(Commande.class));
     }
 }
