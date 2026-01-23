@@ -37,7 +37,7 @@ optional:
 ## Prerequisites
 
 - Repository builds and tests run locally (Deno 2)
-- Lint and test commands available:
+- Lint and test orders available:
   - `deno lint`
   - `deno test -A`
 
@@ -96,7 +96,7 @@ CRITICAL: Dev agent is ONLY authorized to update these sections of the story fil
 - Tasks / Subtasks Checkboxes (mark any fix subtask you added as done)
 - Dev Agent Record →
   - Agent Model Used (if changed)
-  - Debug Log References (commands/results, e.g., lint/tests)
+  - Debug Log References (orders/results, e.g., lint/tests)
   - Completion Notes List (what changed, why, how)
   - File List (all added/modified/deleted files)
 - Change Log (new dated entry describing applied fixes)

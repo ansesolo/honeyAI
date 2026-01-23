@@ -172,7 +172,7 @@ honeyAI/
 │       │   ├── list.html
 │       │   ├── detail.html
 │       │   └── form.html
-│       ├── commandes/
+│       ├── orders/
 │       │   ├── list.html
 │       │   ├── detail.html
 │       │   └── form.html
@@ -493,7 +493,7 @@ public class Client {
 
     // Bidirectional relationship to orders
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Commande> commandes = new ArrayList<>();
+    private List<Commande> orders = new ArrayList<>();
 
     // Helper method for soft delete check
     public boolean isDeleted() {
@@ -552,12 +552,12 @@ POST /clients/{id}/delete      # Soft delete client
 **Order Management Endpoints:**
 
 ```
-GET  /commandes                      # List orders (filtered by year/status)
-GET  /commandes/nouvelle             # Display new order form
-POST /commandes                      # Create order
-GET  /commandes/{id}                 # Display order details
-POST /commandes/{id}/statut          # Transition order status
-GET  /commandes/{id}/edit            # Display edit form
+GET  /orders                      # List orders (filtered by year/status)
+GET  /orders/nouvelle             # Display new order form
+POST /orders                      # Create order
+GET  /orders/{id}                 # Display order details
+POST /orders/{id}/statut          # Transition order status
+GET  /orders/{id}/edit            # Display edit form
 ```
 
 **Product Catalog Endpoints:**
@@ -725,8 +725,8 @@ sequenceDiagram
     participant DB
 
     User->>Browser: Fill order form
-    Browser->>CommandeCtrl: POST /commandes
-    CommandeCtrl->>CommandeSvc: create(commande)
+    Browser->>CommandeCtrl: POST /orders
+    CommandeCtrl->>CommandeSvc: create(order)
 
     loop For each product line
         CommandeSvc->>ProduitSvc: getCurrentYearTarif(produitId)
@@ -735,10 +735,10 @@ sequenceDiagram
         CommandeSvc->>CommandeSvc: Auto-fill prixUnitaire
     end
 
-    CommandeSvc->>DB: INSERT commande + lignes
+    CommandeSvc->>DB: INSERT order + lignes
     DB-->>CommandeSvc: Success
     CommandeSvc-->>CommandeCtrl: Saved Commande
-    CommandeCtrl-->>Browser: Redirect to /commandes/{id}
+    CommandeCtrl-->>Browser: Redirect to /orders/{id}
     Browser-->>User: Display order details + success message
 ```
 
@@ -777,7 +777,7 @@ CREATE INDEX idx_client_deleted ON clients(deleted_at);
 
 ### Tables 2-8: Additional Tables
 
-_(Complete DDL for commandes, lignes_commande, produits, tarifs, achats, lots_etiquettes, historique_etiquettes follows the same pattern)_
+_(Complete DDL for orders, lignes_commande, produits, tarifs, achats, lots_etiquettes, historique_etiquettes follows the same pattern)_
 
 **Key Schema Features:**
 - Foreign key constraints enabled
@@ -802,7 +802,7 @@ templates/
 │   ├── list.html
 │   ├── detail.html
 │   └── form.html
-├── commandes/
+├── orders/
 │   ├── list.html
 │   ├── detail.html
 │   └── form.html

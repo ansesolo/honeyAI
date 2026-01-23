@@ -46,7 +46,7 @@ public class ClientController {
         return "clients/detail";
     }
 
-    @GetMapping("/nouveau")
+    @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("client", new Client());
         model.addAttribute("activeMenu", "clients");

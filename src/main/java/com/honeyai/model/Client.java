@@ -51,7 +51,7 @@ public class Client {
 
     @OneToMany(mappedBy = "client")
     @Builder.Default
-    private List<Commande> commandes = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     /**
      * Soft delete helper method.

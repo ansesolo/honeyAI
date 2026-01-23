@@ -13,8 +13,8 @@
 
 Les objectifs à atteindre si ce PRD est implémenté avec succès:
 
-- Remplacer complètement le système papier (cahier de commandes) par une solution numérique intuitive
-- Réduire de 50% le temps passé sur les tâches administratives (étiquettes, recherche commandes)
+- Remplacer complètement le système papier (cahier de orders) par une solution numérique intuitive
+- Réduire de 50% le temps passé sur les tâches administratives (étiquettes, recherche orders)
 - Générer des étiquettes réglementaires conformes en moins de 2 minutes pour 10 étiquettes
 - Fournir une visibilité financière claire (CA, dépenses, bénéfices) sans complexité comptable
 - Permettre aux parents apiculteurs (utilisateurs non-techniques) d'être autonomes après 2 démonstrations
@@ -24,7 +24,7 @@ Les objectifs à atteindre si ce PRD est implémenté avec succès:
 
 ### Background Context
 
-HoneyAI répond au besoin d'une exploitation apicole familiale (~40 ruches) actuellement gérée via un système papier (cahier de commandes) qui présente des limites critiques: gestion fragmentée des commandes, préparation chronophage d'étiquettes réglementaires, suivi financier approximatif, et absence de centralisation des données clients et production.
+HoneyAI répond au besoin d'une exploitation apicole familiale (~40 ruches) actuellement gérée via un système papier (cahier de orders) qui présente des limites critiques: gestion fragmentée des orders, préparation chronophage d'étiquettes réglementaires, suivi financier approximatif, et absence de centralisation des données clients et production.
 
 L'application vise à transformer ces processus tout en préservant la simplicité du workflow actuel. Contrairement aux solutions professionnelles existantes (trop complexes et coûteuses) ou aux alternatives génériques (Excel, applications cloud), HoneyAI est conçue sur mesure pour des utilisateurs non-techniques (50-65 ans, compétences informatiques basiques) qui ont besoin d'une solution standalone, offline-first, avec une courbe d'apprentissage nulle. Le développement est assuré par un membre de la famille expert Spring Boot, garantissant maintenance et support à long terme. La décision technique (Spring Boot + interface web locale Bootstrap) permet un développement rapide (~40h) tout en offrant une interface moderne sans nécessiter d'expertise frontend avancée.
 
@@ -44,19 +44,19 @@ L'application vise à transformer ces processus tout en préservant la simplicit
 
 **FR2:** Le système doit fournir une fonction de recherche de clients par nom ou numéro de téléphone avec résultats instantanés (<1 seconde).
 
-**FR3:** Le système doit afficher automatiquement l'historique complet des commandes pour chaque client sur sa fiche détaillée.
+**FR3:** Le système doit afficher automatiquement l'historique complet des orders pour chaque client sur sa fiche détaillée.
 
-**FR4:** Le système doit permettre de créer une commande en sélectionnant un client et en ajoutant des produits avec leurs quantités.
+**FR4:** Le système doit permettre de créer une order en sélectionnant un client et en ajoutant des produits avec leurs quantités.
 
-**FR5:** Le système doit gérer trois statuts de commande avec transitions simples via boutons: "Commandée" → "Récupérée" → "Payée".
+**FR5:** Le système doit gérer trois statuts de order avec transitions simples via boutons: "Commandée" → "Récupérée" → "Payée".
 
-**FR6:** Le système doit mettre à jour automatiquement le stock de produits finis lors du passage d'une commande au statut "Récupérée".
+**FR6:** Le système doit mettre à jour automatiquement le stock de produits finis lors du passage d'une order au statut "Récupérée".
 
-**FR7:** Le système doit permettre de filtrer et rechercher les commandes par client, statut, et date avec vue par année (année en cours par défaut).
+**FR7:** Le système doit permettre de filtrer et rechercher les orders par client, statut, et date avec vue par année (année en cours par défaut).
 
 **FR8:** Le système doit gérer un catalogue de produits prédéfinis: Miel (500g/1kg), Cire avec miel, Reines avec types de miel (Toutes fleurs, Forêt, Châtaignier).
 
-**FR9:** Le système doit permettre de définir des tarifs par produit et par année, avec application automatique des tarifs de l'année en cours lors de la création de commandes.
+**FR9:** Le système doit permettre de définir des tarifs par produit et par année, avec application automatique des tarifs de l'année en cours lors de la création de orders.
 
 **FR10:** Le système doit générer des étiquettes réglementaires pour pots de miel au format PDF téléchargeable via un formulaire simple (type miel, format pot, date récolte, quantité).
 
@@ -74,13 +74,13 @@ L'application vise à transformer ces processus tout en préservant la simplicit
 
 **FR17:** Le système doit afficher des messages de confirmation clairs après chaque action importante (enregistrement, suppression, modification) pour rassurer l'utilisateur.
 
-**FR18:** Le système doit permettre d'ajouter des notes libres sur les commandes (ex: "livraison prévue 15/10") pour capturer des informations non structurées.
+**FR18:** Le système doit permettre d'ajouter des notes libres sur les orders (ex: "livraison prévue 15/10") pour capturer des informations non structurées.
 
 ### Non-Functional Requirements
 
 **NFR1:** L'application doit démarrer en moins de 5 secondes (démarrage Spring Boot + ouverture automatique du navigateur).
 
-**NFR2:** Toutes les recherches et requêtes doivent retourner des résultats en moins de 1 seconde pour des volumes allant jusqu'à 1000 clients et 2000 commandes.
+**NFR2:** Toutes les recherches et requêtes doivent retourner des résultats en moins de 1 seconde pour des volumes allant jusqu'à 1000 clients et 2000 orders.
 
 **NFR3:** La génération d'une planche de 10 étiquettes PDF doit prendre moins de 5 secondes.
 
@@ -125,7 +125,7 @@ HoneyAI adopte une philosophie de "cahier numérique augmenté" - une interface 
 - **Simplicité radicale:** Aucune fonctionnalité inutile, navigation évidente, pas de menus cachés
 - **Confiance et contrôle:** Messages de confirmation clairs, impossible de "casser" l'application, actions réversibles
 - **Lisibilité optimale:** Police grande (16px minimum), contraste élevé, espacement généreux pour utilisateurs 50-65 ans
-- **Efficacité immédiate:** Les tâches fréquentes (nouvelle commande, génération étiquettes) accessibles en 2 clics maximum
+- **Efficacité immédiate:** Les tâches fréquentes (nouvelle order, génération étiquettes) accessibles en 2 clics maximum
 
 ### Key Interaction Paradigms
 
@@ -157,11 +157,11 @@ HoneyAI adopte une philosophie de "cahier numérique augmenté" - une interface 
 
 ### Core Screens and Views
 
-1. **Tableau de bord (Home/Dashboard)** - Résumé financier en cartes visuelles (CA, dépenses, bénéfice), commandes récentes/en cours, accès rapide aux actions fréquentes
+1. **Tableau de bord (Home/Dashboard)** - Résumé financier en cartes visuelles (CA, dépenses, bénéfice), orders récentes/en cours, accès rapide aux actions fréquentes
 
-2. **Liste Clients** - Barre de recherche proéminente, vue tableau ou cartes avec nom, téléphone, nombre de commandes, bouton "Nouveau Client"
+2. **Liste Clients** - Barre de recherche proéminente, vue tableau ou cartes avec nom, téléphone, nombre de orders, bouton "Nouveau Client"
 
-3. **Fiche Client (Détail)** - Informations client éditables, historique complet des commandes en dessous, bouton "Nouvelle commande pour ce client"
+3. **Fiche Client (Détail)** - Informations client éditables, historique complet des orders en dessous, bouton "Nouvelle order pour ce client"
 
 4. **Formulaire Client (Création/Édition)** - Formulaire vertical simple (Nom, Téléphone, Email, Adresse, Notes), boutons "Enregistrer" et "Annuler"
 
@@ -272,14 +272,14 @@ honeyAI/
 **Couverture cible:**
 - **Unit Tests (JUnit 5 + Mockito):** Services layer avec 80%+ couverture, focus sur calculs critiques (financiers, DLUO, transitions statuts)
 - **Integration Tests (Spring Boot Test):** Controllers principaux, requêtes custom repositories, contraintes database
-- **Tests manuels critiques:** Génération PDF (conformité visuelle), workflow complet commandes, backup automatique, performance, UX avec parents (2-4 semaines)
+- **Tests manuels critiques:** Génération PDF (conformité visuelle), workflow complet orders, backup automatique, performance, UX avec parents (2-4 semaines)
 - **Pas de tests E2E automatisés:** Coût/maintenance vs. bénéfice défavorable pour projet familial
 
 ### Additional Technical Assumptions and Requests
 
 **Database & Data Management:**
 - Hibernate ddl-auto: update (pas de migrations Flyway/Liquibase pour MVP)
-- Indexes SQLite sur colonnes recherchées fréquemment (clients.nom, commandes.date_commande)
+- Indexes SQLite sur colonnes recherchées fréquemment (clients.nom, orders.date_commande)
 - Transactions @Transactional Spring pour opérations multi-tables
 - Isolation niveau READ_COMMITTED (mono-utilisateur)
 
@@ -336,7 +336,7 @@ honeyAI/
 Établir l'infrastructure projet (Spring Boot, SQLite, structure Maven) et livrer la première fonctionnalité complète: gestion des clients avec CRUD, recherche, et interface Bootstrap fonctionnelle.
 
 ### Epic 2: Order Management & Product Catalog
-Implémenter le système de commandes avec workflow de statuts (Commandée → Récupérée → Payée) et le catalogue produits avec gestion des tarifs par année, permettant la création et le suivi complet des commandes clients.
+Implémenter le système de orders avec workflow de statuts (Commandée → Récupérée → Payée) et le catalogue produits avec gestion des tarifs par année, permettant la création et le suivi complet des orders clients.
 
 ### Epic 3: Label Generation (Killer Feature)
 Développer la fonctionnalité de génération d'étiquettes réglementaires PDF avec Apache PDFBox, incluant calcul automatique DLUO, numéro de lot, et conformité DGCCRF - la fonctionnalité "coup de cœur" qui apporte une valeur immédiate.
@@ -429,7 +429,7 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 #### Acceptance Criteria:
 
 1. ClientController.java created with @Controller, @RequestMapping("/clients"), GET endpoint /clients returns "clients/list" view with model containing list of active clients
-2. templates/clients/list.html created using base layout with: page title "Mes Clients" with user icon, prominent search bar (large input, placeholder "Rechercher un client par nom ou téléphone..."), "Nouveau Client" button (green, large, top-right), table or card grid displaying clients with columns: Nom, Téléphone, Email, Nombre de commandes (placeholder 0 for now), Actions (Voir, Modifier buttons)
+2. templates/clients/list.html created using base layout with: page title "Mes Clients" with user icon, prominent search bar (large input, placeholder "Rechercher un client par nom ou téléphone..."), "Nouveau Client" button (green, large, top-right), table or card grid displaying clients with columns: Nom, Téléphone, Email, Nombre de orders (placeholder 0 for now), Actions (Voir, Modifier buttons)
 3. Search bar submits GET request to /clients?search={query}, controller filters clients using ClientService.searchClients(), results displayed in same view
 4. Empty state message displayed if no clients found: "Aucun client trouvé" with icon
 5. Success flash message displayed if redirected from save/delete (e.g., "Client enregistré avec succès") using Bootstrap alerts dismissible
@@ -451,8 +451,8 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 3. "Modifier" button links to /clients/{id}/edit (green, prominent)
 4. "Supprimer" button triggers soft delete with confirmation modal ("Êtes-vous sûr de vouloir supprimer ce client?"), POST to /clients/{id}/delete, red button positioned away from primary actions
 5. "Retour à la liste" link to /clients (secondary styling)
-6. Order history section with placeholder message: "Historique des commandes (à venir dans Epic 2)" or empty state "Aucune commande pour ce client"
-7. "Nouvelle commande pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
+6. Order history section with placeholder message: "Historique des orders (à venir dans Epic 2)" or empty state "Aucune order pour ce client"
+7. "Nouvelle order pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
 8. 404 error page displayed (friendly message) if client id doesn't exist or is soft-deleted
 9. Page layout clean, readable, no clutter, respects accessibility guidelines
 
@@ -498,7 +498,7 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 
 ## Epic 2: Order Management & Product Catalog
 
-**Epic Goal:** Implémenter le cœur métier de HoneyAI en livrant le système complet de gestion des commandes et du catalogue produits. Les utilisateurs pourront créer et suivre des commandes clients à travers les trois statuts métier (Commandée → Récupérée → Payée), gérer un catalogue de produits miel avec leurs tarifs évolutifs par année, et bénéficier d'une application automatique des prix lors de la création des commandes.
+**Epic Goal:** Implémenter le cœur métier de HoneyAI en livrant le système complet de gestion des orders et du catalogue produits. Les utilisateurs pourront créer et suivre des orders clients à travers les trois statuts métier (Commandée → Récupérée → Payée), gérer un catalogue de produits miel avec leurs tarifs évolutifs par année, et bénéficier d'une application automatique des prix lors de la création des orders.
 
 ### Story 2.1: Product & Tarif Entities with Year-based Pricing
 
@@ -529,12 +529,12 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 1. StatutCommande enum created in enums package with values: COMMANDEE, RECUPEREE, PAYEE with French display labels ("Commandée", "Récupérée", "Payée")
 2. Commande.java entity created with fields: id (Long), clientId (Long, @ManyToOne to Client), dateCommande (LocalDate, @NotNull), statut (StatutCommande, @Enumerated(STRING), default COMMANDEE), notes (String, @Column(length=1000)), createdAt (LocalDateTime), updatedAt (LocalDateTime)
 3. LigneCommande.java entity created with fields: id (Long), commandeId (Long, @ManyToOne to Commande), produitId (Long, @ManyToOne to Produit), quantite (Integer, @Min(1)), prixUnitaire (BigDecimal, price at time of order for historical accuracy)
-4. Relation: Commande has @OneToMany(cascade=ALL, orphanRemoval=true) List<LigneCommande> lignes, LigneCommande has @ManyToOne Commande commande and @ManyToOne Produit produit
-5. Relation: Client has @OneToMany List<Commande> commandes (update Client.java from Epic 1)
+4. Relation: Commande has @OneToMany(cascade=ALL, orphanRemoval=true) List<LigneCommande> lignes, LigneCommande has @ManyToOne Commande order and @ManyToOne Produit produit
+5. Relation: Client has @OneToMany List<Commande> orders (update Client.java from Epic 1)
 6. CommandeRepository interface extending JpaRepository<Commande, Long> with methods: findByClientIdOrderByDateCommandeDesc(Long clientId), findByStatut(StatutCommande statut), findByDateCommandeBetween(LocalDate start, LocalDate end) for filtering
 7. LigneCommandeRepository interface extending JpaRepository<LigneCommande, Long> (standard CRUD sufficient)
-8. Hibernate creates commandes and lignes_commande tables with proper foreign keys and cascade rules
-9. Unit tests: create commande with 2-3 lignes, verify cascade save (lignes auto-saved with commande), verify orphan removal (delete ligne removes it), verify status enum persists as string, verify client.commandes bidirectional relation works
+8. Hibernate creates orders and lignes_commande tables with proper foreign keys and cascade rules
+9. Unit tests: create order with 2-3 lignes, verify cascade save (lignes auto-saved with order), verify orphan removal (delete ligne removes it), verify status enum persists as string, verify client.orders bidirectional relation works
 
 ### Story 2.3: CommandeService & ProduitService with Business Logic
 
@@ -545,11 +545,11 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 #### Acceptance Criteria:
 
 1. ProduitService.java created with methods: findAll() returns all products ordered by name, findById(Long id) returns Optional<Produit>, getCurrentYearTarif(Long produitId) returns current year price or throws PriceNotFoundException, updateTarif(Long produitId, Integer annee, BigDecimal prix) saves/updates tarif for product/year
-2. CommandeService.java created with methods: findAll(), findById(Long id), findByClientId(Long clientId), findByStatut(StatutCommande statut), create(Commande commande) validates and saves, updateStatut(Long commandeId, StatutCommande newStatut) transitions status with validation, calculateTotal(Long commandeId) sums ligne.quantite * ligne.prixUnitaire for all lignes
+2. CommandeService.java created with methods: findAll(), findById(Long id), findByClientId(Long clientId), findByStatut(StatutCommande statut), create(Commande order) validates and saves, updateStatut(Long commandeId, StatutCommande newStatut) transitions status with validation, calculateTotal(Long commandeId) sums ligne.quantite * ligne.prixUnitaire for all lignes
 3. Business rules in CommandeService.create(): auto-populate dateCommande with today if null, set statut to COMMANDEE if null, for each LigneCommande auto-fetch prixUnitaire from ProduitService.getCurrentYearTarif() if not provided, validate at least one ligne exists
 4. Business rules in updateStatut(): only allow forward transitions (COMMANDEE→RECUPEREE→PAYEE), throw InvalidStatusTransitionException if invalid (e.g., PAYEE→COMMANDEE), log status change with timestamp
 5. Unit tests with mocked repositories: verify create() auto-fills prices from current year tarifs, verify calculateTotal() sums correctly, verify updateStatut() enforces transition rules and throws exception for invalid transitions, verify findByClientId() returns orders sorted by date descending
-6. Integration test: create real commande with 2 lignes, verify prices auto-populated, calculate total, transition through all statuses successfully
+6. Integration test: create real order with 2 lignes, verify prices auto-populated, calculate total, transition through all statuses successfully
 
 ### Story 2.4: Product Catalog & Tarif Management UI
 
@@ -578,13 +578,13 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 
 #### Acceptance Criteria:
 
-1. CommandeController created with GET /commandes endpoint returning "commandes/list" view with all commandes, model includes: list of commandes, current year, list of years (distinct from commandes.dateCommande for filter dropdown), list of statuts (enum values)
-2. templates/commandes/list.html created displaying: page title "Commandes", filter bar with dropdowns: Année (default: current year), Statut (default: Tous), "Filtrer" button, "Nouvelle Commande" button (green, prominent, top-right)
-3. Orders table with columns: N° (id), Client (nom), Date commande (DD/MM/YYYY), Statut (badge colored: COMMANDEE=blue, RECUPEREE=orange, PAYEE=green), Montant total (calculated via CommandeService.calculateTotal()), Actions (Voir)
-4. Filtering: GET /commandes?annee=2024&statut=COMMANDEE filters results server-side using CommandeService methods, results update in same view
+1. CommandeController created with GET /orders endpoint returning "orders/list" view with all orders, model includes: list of orders, current year, list of years (distinct from orders.dateCommande for filter dropdown), list of statuts (enum values)
+2. templates/orders/list.html created displaying: page title "Commandes", filter bar with dropdowns: Année (default: current year), Statut (default: Tous), "Filtrer" button, "Nouvelle Commande" button (green, prominent, top-right)
+3. Orders table with columns: N° (id), Client (nom), Date order (DD/MM/YYYY), Statut (badge colored: COMMANDEE=blue, RECUPEREE=orange, PAYEE=green), Montant total (calculated via CommandeService.calculateTotal()), Actions (Voir)
+4. Filtering: GET /orders?annee=2024&statut=COMMANDEE filters results server-side using CommandeService methods, results update in same view
 5. Status badges styled with Bootstrap badge component and appropriate colors for quick visual scanning
 6. Orders sorted by date descending (most recent first) within filtered results
-7. Empty state if no orders match filters: "Aucune commande trouvée pour les filtres sélectionnés"
+7. Empty state if no orders match filters: "Aucune order trouvée pour les filtres sélectionnés"
 8. "Tous" option in statut filter shows all statuses
 9. Navigation link "Commandes" added to sidebar menu (update layout.html)
 10. Montant total formatted as French currency "123,45 €"
@@ -597,13 +597,13 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 
 #### Acceptance Criteria:
 
-1. GET /commandes/nouvelle returns "commandes/form" view with: empty Commande object, list of all active clients (for dropdown), list of all products with current year prices (for product selection)
-2. templates/commandes/form.html created with: title "Nouvelle Commande", client selection dropdown (searchable/autocomplete preferred, or simple select), date commande field (datepicker, default today), notes textarea, dynamic product lines section
+1. GET /orders/nouvelle returns "orders/form" view with: empty Commande object, list of all active clients (for dropdown), list of all products with current year prices (for product selection)
+2. templates/orders/form.html created with: title "Nouvelle Commande", client selection dropdown (searchable/autocomplete preferred, or simple select), date order field (datepicker, default today), notes textarea, dynamic product lines section
 3. Product lines: initial empty row with: Produit dropdown (showing "Miel 500g Toutes Fleurs - 12,50 €"), Quantité input (number, min=1), Prix unitaire (readonly, auto-filled from product selection), Sous-total (readonly, calculated quantite × prix), "Supprimer ligne" button (icon), "+ Ajouter un produit" button to add new line
-4. JavaScript (vanilla) handles: add/remove product lines dynamically, auto-fill prix unitaire when product selected, calculate and display sous-total per line, calculate and display total commande at bottom (sum of all sous-totals)
-5. POST /commandes endpoint accepts: clientId, dateCommande, notes, List<LigneCommandeDto> (produitId, quantite, prixUnitaire), calls CommandeService.create(), redirects to /commandes/{id} (detail view) with success message "Commande créée avec succès"
+4. JavaScript (vanilla) handles: add/remove product lines dynamically, auto-fill prix unitaire when product selected, calculate and display sous-total per line, calculate and display total order at bottom (sum of all sous-totals)
+5. POST /orders endpoint accepts: clientId, dateCommande, notes, List<LigneCommandeDto> (produitId, quantite, prixUnitaire), calls CommandeService.create(), redirects to /orders/{id} (detail view) with success message "Commande créée avec succès"
 6. Validation: at least one product line required, client selection required, quantite must be ≥1, prix unitaire auto-populated but editable (for special discounts)
-7. Form buttons: "Enregistrer" (green), "Annuler" (grey, back to /commandes)
+7. Form buttons: "Enregistrer" (green), "Annuler" (grey, back to /orders)
 8. Price override: allow user to manually edit prix unitaire if needed (e.g., discount), with visual indicator it differs from catalog price
 9. Mobile responsive: form usable on tablet (future consideration), stacks vertically
 10. Minimum 1 product line pre-filled on load (empty dropdown) for UX clarity
@@ -616,13 +616,13 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 
 #### Acceptance Criteria:
 
-1. GET /commandes/{id} returns "commandes/detail" view with Commande object including: client info, dateCommande, current statut, notes, list of lignes (produit, quantite, prix, sous-total), total calculated
-2. templates/commandes/detail.html created displaying: page title "Commande #{id}", client info section (name, phone with link to client detail), date and current status badge (large, prominent), notes if present, table of ordered products (columns: Produit, Quantité, Prix unitaire, Sous-total), Total row (bold, larger font)
+1. GET /orders/{id} returns "orders/detail" view with Commande object including: client info, dateCommande, current statut, notes, list of lignes (produit, quantite, prix, sous-total), total calculated
+2. templates/orders/detail.html created displaying: page title "Commande #{id}", client info section (name, phone with link to client detail), date and current status badge (large, prominent), notes if present, table of ordered products (columns: Produit, Quantité, Prix unitaire, Sous-total), Total row (bold, larger font)
 3. Status transition buttons displayed based on current status: if COMMANDEE show "Marquer comme Récupérée" (orange button), if RECUPEREE show "Marquer comme Payée" (green button), if PAYEE show "Payée ✓" (disabled green badge, no button)
-4. POST /commandes/{id}/statut endpoint accepts newStatut parameter, calls CommandeService.updateStatut(), redirects back to /commandes/{id} with success message "Statut mis à jour: {newStatut}"
+4. POST /orders/{id}/statut endpoint accepts newStatut parameter, calls CommandeService.updateStatut(), redirects back to /orders/{id} with success message "Statut mis à jour: {newStatut}"
 5. Status transition validation: invalid transitions display error message "Transition invalide" and do not update status
-6. "Modifier" button to edit commande (link to /commandes/{id}/edit, grey button) - edit form similar to create form but pre-populated
-7. "Retour à la liste" link to /commandes
+6. "Modifier" button to edit order (link to /orders/{id}/edit, grey button) - edit form similar to create form but pre-populated
+7. "Retour à la liste" link to /orders
 8. Future actions section (placeholder): "Imprimer bon de livraison" button disabled with tooltip "Disponible prochainement"
 9. Timestamps: display "Créée le {date}", "Modifiée le {date}" at bottom
 10. Responsive: readable on mobile/tablet, buttons stack vertically if needed
@@ -635,16 +635,16 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 
 #### Acceptance Criteria:
 
-1. Update ClientController GET /clients/{id} endpoint to include client.commandes in model (fetched via Client entity @OneToMany relation or CommandeService.findByClientId())
-2. Update templates/clients/detail.html to replace placeholder "Historique des commandes (à venir)" with actual order list table
-3. Order history table displays: Date commande, Statut (badge), Montant total, Actions (Voir link to /commandes/{id})
+1. Update ClientController GET /clients/{id} endpoint to include client.orders in model (fetched via Client entity @OneToMany relation or CommandeService.findByClientId())
+2. Update templates/clients/detail.html to replace placeholder "Historique des orders (à venir)" with actual order list table
+3. Order history table displays: Date order, Statut (badge), Montant total, Actions (Voir link to /orders/{id})
 4. Orders sorted by date descending (most recent first)
-5. Empty state if client has no orders: "Aucune commande pour ce client" with encouragement "Créez la première commande"
-6. "Nouvelle commande pour ce client" button (previously disabled in Story 1.6) now active, links to /commandes/nouvelle?clientId={id} (pre-selects client in form)
-7. Summary stats above table: Total commandes ({count}), Total dépensé ({sum of all PAYEE commandes}), Dernière commande le {date}
+5. Empty state if client has no orders: "Aucune order pour ce client" with encouragement "Créez la première order"
+6. "Nouvelle order pour ce client" button (previously disabled in Story 1.6) now active, links to /orders/nouvelle?clientId={id} (pre-selects client in form)
+7. Summary stats above table: Total orders ({count}), Total dépensé ({sum of all PAYEE orders}), Dernière order le {date}
 8. Clicking order row or "Voir" navigates to order detail page
 9. Table responsive: scrolls horizontally on mobile, stacks on very small screens
-10. Performance: limit display to last 50 orders with "Voir toutes les commandes" link if more exist (pagination or "show more")
+10. Performance: limit display to last 50 orders with "Voir toutes les orders" link if more exist (pagination or "show more")
 
 ---
 
@@ -850,7 +850,7 @@ Implémenter le système de backup automatique quotidien, créer le packaging .e
 #### Acceptance Criteria:
 
 1. DashboardService.java created with constructor injection of CommandeRepository, AchatRepository
-2. Method calculateChiffreAffaires(LocalDate start, LocalDate end) returns BigDecimal: sum of amounts from commandes with statut=PAYEE in date range
+2. Method calculateChiffreAffaires(LocalDate start, LocalDate end) returns BigDecimal: sum of amounts from orders with statut=PAYEE in date range
 3. Method calculateTotalDepenses(LocalDate start, LocalDate end) delegates to AchatService
 4. Method calculateBenefice(LocalDate start, LocalDate end) returns CA - dépenses
 5. Method getTopProduits(LocalDate start, LocalDate end, int limit) returns List<TopProduitDto>: aggregates from paid orders, groups by product, sorts by quantity
@@ -1242,7 +1242,7 @@ DELIVERABLES NEEDED:
       - Plus: LotsEtiquettes (lot number tracking), HistoriqueEtiquettes (label history)
       - JPA relationships: @OneToMany, @ManyToOne, cascade rules, orphanRemoval
       - Soft delete strategy: deletedAt timestamp on Client (preserve data integrity)
-      - Indexes needed: clients.nom, commandes.date_commande, commandes.statut
+      - Indexes needed: clients.nom, orders.date_commande, orders.statut
 
    C. Service Layer Design
       - ClientService: CRUD + soft delete + search
@@ -1257,7 +1257,7 @@ DELIVERABLES NEEDED:
    D. Controller & Endpoint Design
       - RESTful-style endpoints (even though server-side rendered):
         - GET /clients, POST /clients, GET /clients/{id}, POST /clients/{id}/delete
-        - GET /commandes, POST /commandes, GET /commandes/{id}, POST /commandes/{id}/statut
+        - GET /orders, POST /orders, GET /orders/{id}, POST /orders/{id}/statut
         - GET /produits, POST /produits/{id}/tarif
         - GET /etiquettes, POST /etiquettes/generer (returns PDF byte[])
         - GET /achats, POST /achats

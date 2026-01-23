@@ -4,7 +4,7 @@
 Établir l'infrastructure projet (Spring Boot, SQLite, structure Maven) et livrer la première fonctionnalité complète: gestion des clients avec CRUD, recherche, et interface Bootstrap fonctionnelle.
 
 ## Epic 2: Order Management & Product Catalog
-Implémenter le système de commandes avec workflow de statuts (Commandée → Récupérée → Payée) et le catalogue produits avec gestion des tarifs par année, permettant la création et le suivi complet des commandes clients.
+Implémenter le système de orders avec workflow de statuts (Commandée → Récupérée → Payée) et le catalogue produits avec gestion des tarifs par année, permettant la création et le suivi complet des orders clients.
 
 ## Epic 3: Label Generation (Killer Feature)
 Développer la fonctionnalité de génération d'étiquettes réglementaires PDF avec Apache PDFBox, incluant calcul automatique DLUO, numéro de lot, et conformité DGCCRF - la fonctionnalité "coup de cœur" qui apporte une valeur immédiate.

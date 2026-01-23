@@ -10,20 +10,20 @@
 ## User Story
 
 **As a** beekeeper (parent user),
-**I want** to view order details and transition it through workflow statuses (Commandee -> Recuperee -> Payee),
+**I want** to view order details and transition it through workflow statuses (Ordered -> recovered -> Paid),
 **so that** I can track the lifecycle of each order from creation to payment completion.
 
 ---
 
 ## Acceptance Criteria
 
-1. GET /commandes/{id} returns "commandes/detail" view with Commande object including: client info, dateCommande, current statut, notes, list of lignes (produit, quantite, prix, sous-total), total calculated
-2. templates/commandes/detail.html created displaying: page title "Commande #{id}", client info section (name, phone with link to client detail), date and current status badge (large, prominent), notes if present, table of ordered products (columns: Produit, Quantite, Prix unitaire, Sous-total), Total row (bold, larger font)
+1. GET /orders/{id} returns "orders/detail" view with Order object including: client info, OrderDate, current status, notes, list of lignes (produit, quantite, prix, sous-total), total calculated
+2. templates/orders/detail.html created displaying: page title "Commande #{id}", client info section (name, phone with link to client detail), date and current status badge (large, prominent), notes if present, table of ordered products (columns: Produit, Quantite, Prix unitaire, Sous-total), Total row (bold, larger font)
 3. Status transition buttons displayed based on current status: if COMMANDEE show "Marquer comme Recuperee" (orange button), if RECUPEREE show "Marquer comme Payee" (green button), if PAYEE show "Payee" (disabled green badge, no button)
-4. POST /commandes/{id}/statut endpoint accepts newStatut parameter, calls CommandeService.updateStatut(), redirects back to /commandes/{id} with success message "Statut mis a jour: {newStatut}"
+4. POST /orders/{id}/statut endpoint accepts newStatus parameter, calls CommandeService.updateStatut(), redirects back to /orders/{id} with success message "Statut mis a jour: {newStatut}"
 5. Status transition validation: invalid transitions display error message "Transition invalide" and do not update status
-6. "Modifier" button to edit commande (link to /commandes/{id}/edit, grey button) - edit form similar to create form but pre-populated
-7. "Retour a la liste" link to /commandes
+6. "Modifier" button to edit order (link to /orders/{id}/edit, grey button) - edit form similar to create form but pre-populated
+7. "Retour a la liste" link to /orders
 8. Future actions section (placeholder): "Imprimer bon de livraison" button disabled with tooltip "Disponible prochainement"
 9. Timestamps: display "Creee le {date}", "Modifiee le {date}" at bottom
 10. Responsive: readable on mobile/tablet, buttons stack vertically if needed
@@ -54,14 +54,14 @@
 **Agent Model:** Claude Opus 4.5
 
 ### Files Modified
-- `src/main/java/com/honeyai/controller/CommandeController.java` - Added POST /commandes/{id}/statut, GET /commandes/{id}/edit, POST /commandes/{id}/edit endpoints
+- `src/main/java/com/honeyai/controller/CommandeController.java` - Added POST /orders/{id}/statut, GET /orders/{id}/edit, POST /orders/{id}/edit endpoints
 - `src/main/java/com/honeyai/service/CommandeService.java` - Added save() method for updates
-- `src/main/resources/templates/commandes/detail.html` - Enhanced with status transition buttons, client info card, timestamps, edit button, future actions placeholder
-- `src/main/resources/templates/commandes/form.html` - Updated to support edit mode with conditional title and action URL
+- `src/main/resources/templates/orders/detail.html` - Enhanced with status transition buttons, client info card, timestamps, edit button, future actions placeholder
+- `src/main/resources/templates/orders/form.html` - Updated to support edit mode with conditional title and action URL
 - `src/test/java/com/honeyai/controller/CommandeControllerTest.java` - Added 4 new tests for status transition and edit endpoints
 
 ### Implementation Details
-1. **Status Transition** - POST /commandes/{id}/statut with validation, success/error flash messages
+1. **Status Transition** - POST /orders/{id}/statut with validation, success/error flash messages
 2. **Status Buttons** - Conditional display based on current status (COMMANDEE->Recuperee button, RECUPEREE->Payee button, PAYEE->disabled)
 3. **Edit Form** - Pre-populated form with existing data, converts Commande to DTO and back
 4. **Client Info Card** - Displays client name and phone with link
@@ -74,10 +74,10 @@
 - Full regression: 117 tests passed
 
 ### Acceptance Criteria Verification
-- AC1: GET /commandes/{id} with all details - DONE (Story 2.6, enhanced)
+- AC1: GET /orders/{id} with all details - DONE (Story 2.6, enhanced)
 - AC2: detail.html with all display elements - DONE
 - AC3: Status transition buttons based on current status - DONE
-- AC4: POST /commandes/{id}/statut with redirect and message - DONE
+- AC4: POST /orders/{id}/statut with redirect and message - DONE
 - AC5: Invalid transition displays error message - DONE
 - AC6: Modifier button links to edit form - DONE
 - AC7: Retour a la liste link - DONE

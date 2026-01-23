@@ -80,7 +80,7 @@ BMad transforms you into a "Vibe CEO" - directing a team of specialized AI agent
 2. Copy `team-fullstack.txt` content
 3. Create new Gemini Gem or CustomGPT
 4. Upload file with instructions: "Your critical operating instructions are attached, do not break character as directed"
-5. Type `/help` to see available commands
+5. Type `/help` to see available orders
 
 #### Option 2: IDE Integration
 
@@ -110,7 +110,7 @@ npx bmad-method install
 
 - `.bmad-core/` folder created with all agents
 - IDE-specific integration files created
-- All agent commands/rules/modes available
+- All agent orders/rules/modes available
 
 **Remember**: At its core, BMAD-METHOD™ is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
 
@@ -313,7 +313,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 **Common Task Commands**:
 
-- `*help` - Show available commands
+- `*help` - Show available orders
 - `*status` - Show current context/progress
 - `*exit` - Exit the agent mode
 - `*shard-doc docs/prd.md prd` - Shard PRD into manageable pieces
@@ -326,7 +326,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 /pm create-doc prd
 /architect review system design
 /dev implement story 1.2
-/help - Show available commands
+/help - Show available orders
 /switch agent-name - Change active agent (if orchestrator available)
 ```
 
@@ -802,7 +802,7 @@ Use the **expansion-creator** pack to build your own:
 
 ## Getting Help
 
-- **Commands**: Use `*/*help` in any environment to see available commands
+- **Commands**: Use `*/*help` in any environment to see available orders
 - **Agent Switching**: Use `*/*switch agent-name` with orchestrator for role changes
 - **Documentation**: Check `docs/` folder for project-specific context
 - **Community**: Discord and GitHub resources available for support

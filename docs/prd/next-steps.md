@@ -101,7 +101,7 @@ DELIVERABLES NEEDED:
       - Plus: LotsEtiquettes (lot number tracking), HistoriqueEtiquettes (label history)
       - JPA relationships: @OneToMany, @ManyToOne, cascade rules, orphanRemoval
       - Soft delete strategy: deletedAt timestamp on Client (preserve data integrity)
-      - Indexes needed: clients.nom, commandes.date_commande, commandes.statut
+      - Indexes needed: clients.nom, orders.date_commande, orders.statut
 
    C. Service Layer Design
       - ClientService: CRUD + soft delete + search
@@ -116,7 +116,7 @@ DELIVERABLES NEEDED:
    D. Controller & Endpoint Design
       - RESTful-style endpoints (even though server-side rendered):
         - GET /clients, POST /clients, GET /clients/{id}, POST /clients/{id}/delete
-        - GET /commandes, POST /commandes, GET /commandes/{id}, POST /commandes/{id}/statut
+        - GET /orders, POST /orders, GET /orders/{id}, POST /orders/{id}/statut
         - GET /produits, POST /produits/{id}/tarif
         - GET /etiquettes, POST /etiquettes/generer (returns PDF byte[])
         - GET /achats, POST /achats

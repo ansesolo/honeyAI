@@ -1,6 +1,6 @@
 package com.honeyai.exception;
 
-import com.honeyai.enums.StatutCommande;
+import com.honeyai.enums.OrderStatus;
 
 public class InvalidStatusTransitionException extends RuntimeException {
 
@@ -8,7 +8,7 @@ public class InvalidStatusTransitionException extends RuntimeException {
         super(message);
     }
 
-    public InvalidStatusTransitionException(StatutCommande from, StatutCommande to) {
+    public InvalidStatusTransitionException(OrderStatus from, OrderStatus to) {
         super(String.format("Invalid status transition from %s to %s", from, to));
     }
 }

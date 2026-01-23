@@ -12,7 +12,7 @@
         <!-- Page Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-shopping-cart me-2"></i>Commandes</h1>
-            <a th:href="@{/commandes/nouvelle}" class="btn btn-success">
+            <a th:href="@{/orders/new}" class="btn btn-success">
                 <i class="fas fa-plus me-1"></i>Nouvelle Commande
             </a>
         </div>
@@ -20,10 +20,10 @@
         <!-- Filter Bar -->
         <div class="card mb-4">
             <div class="card-body">
-                <form th:action="@{/commandes}" method="get" class="row g-3 align-items-end">
+                <form th:action="@{/orders}" method="get" class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <label for="annee" class="form-label">Annee</label>
-                        <select class="form-select" id="annee" name="annee">
+                        <label for="year" class="form-label">Annee</label>
+                        <select class="form-select" id="year" name="year">
                             <option value="">Toutes les annees</option>
                             <option th:each="year : ${years}"
                                     th:value="${year}"
@@ -33,13 +33,13 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="statut" class="form-label">Statut</label>
-                        <select class="form-select" id="statut" name="statut">
+                        <label for="status" class="form-label">Statut</label>
+                        <select class="form-select" id="status" name="status">
                             <option value="">Tous</option>
-                            <option th:each="s : ${statuts}"
+                            <option th:each="s : ${status}"
                                     th:value="${s.name()}"
                                     th:text="${s.displayLabel}"
-                                    th:selected="${selectedStatut != null and selectedStatut == s}">
+                                    th:selected="${selectedStatus != null and selectedStatus == s}">
                             </option>
                         </select>
                     </div>
@@ -53,11 +53,11 @@
         </div>
 
         <!-- Orders Table -->
-        <div th:if="${#lists.isEmpty(commandes)}" class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>Aucune commande trouvee pour les filtres selectionnes
+        <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>Aucune order trouvee pour les filtres selectionnes
         </div>
 
-        <div th:unless="${#lists.isEmpty(commandes)}" class="card">
+        <div th:unless="${#lists.isEmpty(orders)}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
@@ -72,26 +72,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="commande : ${commandes}">
-                                <td th:text="${commande.id}">1</td>
-                                <td th:text="${commande.client?.name}">Client Name</td>
-                                <td th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">01/01/2026</td>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.id}">1</td>
+                                <td th:text="${order.client?.name}">Client Name</td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">01/01/2026</td>
                                 <td>
-                                    <span th:if="${commande.statut.name() == 'COMMANDEE'}"
+                                    <span th:if="${order.status.name() == 'ORDERED'}"
                                           class="badge bg-primary"
-                                          th:text="${commande.statut.displayLabel}">Commandee</span>
-                                    <span th:if="${commande.statut.name() == 'RECUPEREE'}"
+                                          th:text="${order.status.displayLabel}">Commandee</span>
+                                    <span th:if="${order.status.name() == 'RECOVERED'}"
                                           class="badge bg-warning text-dark"
-                                          th:text="${commande.statut.displayLabel}">Recuperee</span>
-                                    <span th:if="${commande.statut.name() == 'PAYEE'}"
+                                          th:text="${order.status.displayLabel}">Recuperee</span>
+                                    <span th:if="${order.status.name() == 'PAID'}"
                                           class="badge bg-success"
-                                          th:text="${commande.statut.displayLabel}">Payee</span>
+                                          th:text="${order.status.displayLabel}">Payee</span>
                                 </td>
-                                <td class="text-end" th:with="total=${commandeService.calculateTotal(commande.id)}">
+                                <td class="text-end" th:with="total=${orderService.calculateTotal(order.id)}">
                                     <span th:text="${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
                                 </td>
                                 <td class="text-center">
-                                    <a th:href="@{/commandes/{id}(id=${commande.id})}" class="btn btn-sm btn-outline-primary">
+                                    <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye"></i> Voir
                                     </a>
                                 </td>

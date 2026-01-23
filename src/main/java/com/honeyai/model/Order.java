@@ -1,6 +1,6 @@
 package com.honeyai.model;
 
-import com.honeyai.enums.StatutCommande;
+import com.honeyai.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "commandes")
+@Table(name = "orders")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Commande {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,20 +35,20 @@ public class Commande {
     private Client client;
 
     @NotNull(message = "La date de commande est obligatoire")
-    @Column(name = "date_commande", nullable = false)
-    private LocalDate dateCommande;
+    @Column(name = "command_date", nullable = false)
+    private LocalDate orderDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private StatutCommande statut = StatutCommande.COMMANDEE;
+    private OrderStatus status = OrderStatus.ORDERED;
 
     @Column(length = 1000)
     private String notes;
 
-    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<LigneCommande> lignes = new ArrayList<>();
+    private List<OrderLine> lines = new ArrayList<>();
 
     @CreatedDate
     @Column(updatable = false)
@@ -57,28 +57,28 @@ public class Commande {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public void addLigne(LigneCommande ligne) {
-        lignes.add(ligne);
-        ligne.setCommande(this);
+    public void addLigne(OrderLine ligne) {
+        lines.add(ligne);
+        ligne.setOrder(this);
     }
 
-    public void removeLigne(LigneCommande ligne) {
-        lignes.remove(ligne);
-        ligne.setCommande(null);
+    public void removeLine(OrderLine line) {
+        lines.remove(line);
+        line.setOrder(null);
     }
 
     /**
      * Check if transition to new status is allowed.
-     * Only forward transitions are permitted: COMMANDEE -> RECUPEREE -> PAYEE
+     * Only forward transitions are permitted: ORDERED -> RECOVERED -> PAID
      */
-    public boolean canTransitionTo(StatutCommande newStatut) {
-        if (this.statut == null || newStatut == null) {
+    public boolean canTransitionTo(OrderStatus newStatus) {
+        if (this.status == null || newStatus == null) {
             return false;
         }
-        return switch (this.statut) {
-            case COMMANDEE -> newStatut == StatutCommande.RECUPEREE;
-            case RECUPEREE -> newStatut == StatutCommande.PAYEE;
-            case PAYEE -> false; // Terminal state
+        return switch (this.status) {
+            case ORDERED -> newStatus == OrderStatus.RECOVERED;
+            case RECOVERED -> newStatus == OrderStatus.PAID;
+            case PAID -> false; // Terminal state
         };
     }
 }

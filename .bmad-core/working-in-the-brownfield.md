@@ -546,7 +546,7 @@ Document:
 
 ### Test Architect Commands for Brownfield
 
-Note: Short forms shown below. Full commands: `*risk-profile`, `*test-design`, `*nfr-assess`, `*trace-requirements`
+Note: Short forms shown below. Full orders: `*risk-profile`, `*test-design`, `*nfr-assess`, `*trace-requirements`
 
 ```bash
 # BEFORE DEVELOPMENT (Planning)

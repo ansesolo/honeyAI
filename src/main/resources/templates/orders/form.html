@@ -4,7 +4,7 @@
       layout:decorate="~{fragments/layout}"
       lang="fr">
 <head>
-    <title th:text="${isEdit} ? 'Modifier Commande #' + ${commandeId} : 'Nouvelle Commande'">Commande</title>
+    <title th:text="${isEdit} ? 'Modifier Commande #' + ${orderId} : 'Nouvelle Commande'">Commande</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -13,7 +13,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>
                 <i class="fas fa-shopping-cart me-2"></i>
-                <span th:if="${isEdit}">Modifier Commande #<span th:text="${commandeId}">1</span></span>
+                <span th:if="${isEdit}">Modifier Commande #<span th:text="${orderId}">1</span></span>
                 <span th:unless="${isEdit}">Nouvelle Commande</span>
             </h1>
         </div>
@@ -24,8 +24,8 @@
         </div>
 
         <!-- Form -->
-        <form th:action="${isEdit} ? @{/commandes/{id}/edit(id=${commandeId})} : @{/commandes}"
-              th:object="${commandeForm}" method="post" id="commandeForm" novalidate>
+        <form th:action="${isEdit} ? @{/orders/{id}/edit(id=${orderId})} : @{/orders}"
+              th:object="${orderForm}" method="post" id="orderForm" novalidate>
             <div class="row">
                 <!-- Left Column: Client & Date -->
                 <div class="col-lg-4">
@@ -48,7 +48,7 @@
                                     <option th:each="client : ${clients}"
                                             th:value="${client.id}"
                                             th:text="${client.name}"
-                                            th:selected="${commandeForm.clientId == client.id}">
+                                            th:selected="${orderForm.clientId == client.id}">
                                     </option>
                                 </select>
                                 <div th:if="${#fields.hasErrors('clientId')}" class="invalid-feedback">
@@ -58,17 +58,17 @@
 
                             <!-- Date Commande -->
                             <div class="mb-3">
-                                <label for="dateCommande" class="form-label">
-                                    Date de commande <span class="text-danger">*</span>
+                                <label for="orderDate" class="form-label">
+                                    Date de order <span class="text-danger">*</span>
                                 </label>
                                 <input type="date"
                                        class="form-control form-control-lg"
-                                       id="dateCommande"
-                                       th:field="*{dateCommande}"
-                                       th:classappend="${#fields.hasErrors('dateCommande')} ? 'is-invalid' : ''"
+                                       id="orderDate"
+                                       th:field="*{orderDate}"
+                                       th:classappend="${#fields.hasErrors('orderDate')} ? 'is-invalid' : ''"
                                        required>
-                                <div th:if="${#fields.hasErrors('dateCommande')}" class="invalid-feedback">
-                                    <span th:errors="*{dateCommande}">La date est obligatoire</span>
+                                <div th:if="${#fields.hasErrors('orderDate')}" class="invalid-feedback">
+                                    <span th:errors="*{orderDate}">La date est obligatoire</span>
                                 </div>
                             </div>
 
@@ -90,48 +90,48 @@
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span><i class="fas fa-list me-2"></i>Lignes de commande</span>
-                            <button type="button" class="btn btn-sm btn-success" id="addLigneBtn">
+                            <button type="button" class="btn btn-sm btn-success" id="addLineBtn">
                                 <i class="fas fa-plus me-1"></i>Ajouter un produit
                             </button>
                         </div>
                         <div class="card-body">
-                            <!-- Validation Error for Lignes -->
-                            <div th:if="${#fields.hasErrors('lignes')}" class="alert alert-danger mb-3">
-                                <span th:errors="*{lignes}">Au moins une ligne est requise</span>
+                            <!-- Validation Error for Lines -->
+                            <div th:if="${#fields.hasErrors('lines')}" class="alert alert-danger mb-3">
+                                <span th:errors="*{lines}">Au moins une ligne est requise</span>
                             </div>
 
                             <!-- Product Lines Table -->
                             <div class="table-responsive">
-                                <table class="table table-hover" id="lignesTable">
+                                <table class="table table-hover" id="linesTable">
                                     <thead class="table-light">
                                         <tr>
                                             <th style="width: 40%">Produit</th>
-                                            <th style="width: 15%" class="text-center">Quantite</th>
+                                            <th style="width: 15%" class="text-center">Quantité</th>
                                             <th style="width: 20%" class="text-end">Prix unitaire</th>
                                             <th style="width: 15%" class="text-end">Sous-total</th>
                                             <th style="width: 10%" class="text-center">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="lignesBody">
-                                        <tr th:each="ligne, iterStat : ${commandeForm.lignes}" class="ligne-row">
+                                    <tbody id="linesBody">
+                                        <tr th:each="line, iterStat : ${orderForm.lines}" class="line-row">
                                             <td>
                                                 <select class="form-select product-select"
-                                                        th:name="${'lignes[' + iterStat.index + '].productId'}"
+                                                        th:name="${'lines[' + iterStat.index + '].productId'}"
                                                         onchange="updatePrice(this)">
                                                     <option value="">-- Choisir un produit --</option>
                                                     <option th:each="product : ${products}"
                                                             th:value="${product.id}"
                                                             th:text="${product.displayLabel}"
                                                             th:data-price="${product.price}"
-                                                            th:selected="${ligne.productId == product.id}">
+                                                            th:selected="${line.productId == product.id}">
                                                     </option>
                                                 </select>
                                             </td>
                                             <td>
                                                 <input type="number"
-                                                       class="form-control text-center quantite-input"
-                                                       th:name="${'lignes[' + iterStat.index + '].quantite'}"
-                                                       th:value="${ligne.quantite}"
+                                                       class="form-control text-center quantity-input"
+                                                       th:name="${'lines[' + iterStat.index + '].quantity'}"
+                                                       th:value="${line.quantity}"
                                                        min="1"
                                                        placeholder="1"
                                                        onchange="calculateSubtotal(this)">
@@ -139,9 +139,9 @@
                                             <td>
                                                 <div class="input-group">
                                                     <input type="number"
-                                                           class="form-control text-end prix-input"
-                                                           th:name="${'lignes[' + iterStat.index + '].prixUnitaire'}"
-                                                           th:value="${ligne.prixUnitaire}"
+                                                           class="form-control text-end price-input"
+                                                           th:name="${'lines[' + iterStat.index + '].unitPrice'}"
+                                                           th:value="${line.unitPrice}"
                                                            step="0.01"
                                                            min="0"
                                                            placeholder="0,00"
@@ -157,7 +157,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm btn-outline-danger remove-ligne-btn"
-                                                        onclick="removeLigne(this)" title="Supprimer">
+                                                        onclick="removeLine(this)" title="Supprimer">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </td>
@@ -167,7 +167,7 @@
                                         <tr class="table-light">
                                             <td colspan="3" class="text-end fw-bold">Total Commande:</td>
                                             <td class="text-end">
-                                                <span id="totalCommande" class="fs-5 fw-bold text-primary">0,00</span> EUR
+                                                <span id="totalOrder" class="fs-5 fw-bold text-primary">0,00</span> EUR
                                             </td>
                                             <td></td>
                                         </tr>
@@ -179,7 +179,7 @@
 
                     <!-- Form Buttons -->
                     <div class="d-flex gap-2 justify-content-end">
-                        <a th:href="${isEdit} ? @{/commandes/{id}(id=${commandeId})} : @{/commandes}"
+                        <a th:href="${isEdit} ? @{/orders/{id}(id=${orderId})} : @{/orders}"
                            class="btn btn-secondary btn-lg">
                             Annuler
                         </a>
@@ -200,7 +200,7 @@
 
 <!-- Custom JavaScript for dynamic form -->
 <th:block layout:fragment="scripts">
-    <script th:src="@{/js/commande-form.js}"></script>
+    <script th:src="@{/js/order-form.js}"></script>
 </th:block>
 </body>
 </html>

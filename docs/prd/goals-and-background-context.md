@@ -4,8 +4,8 @@
 
 Les objectifs à atteindre si ce PRD est implémenté avec succès:
 
-- Remplacer complètement le système papier (cahier de commandes) par une solution numérique intuitive
-- Réduire de 50% le temps passé sur les tâches administratives (étiquettes, recherche commandes)
+- Remplacer complètement le système papier (cahier de orders) par une solution numérique intuitive
+- Réduire de 50% le temps passé sur les tâches administratives (étiquettes, recherche orders)
 - Générer des étiquettes réglementaires conformes en moins de 2 minutes pour 10 étiquettes
 - Fournir une visibilité financière claire (CA, dépenses, bénéfices) sans complexité comptable
 - Permettre aux parents apiculteurs (utilisateurs non-techniques) d'être autonomes après 2 démonstrations
@@ -15,7 +15,7 @@ Les objectifs à atteindre si ce PRD est implémenté avec succès:
 
 ## Background Context
 
-HoneyAI répond au besoin d'une exploitation apicole familiale (~40 ruches) actuellement gérée via un système papier (cahier de commandes) qui présente des limites critiques: gestion fragmentée des commandes, préparation chronophage d'étiquettes réglementaires, suivi financier approximatif, et absence de centralisation des données clients et production.
+HoneyAI répond au besoin d'une exploitation apicole familiale (~40 ruches) actuellement gérée via un système papier (cahier de orders) qui présente des limites critiques: gestion fragmentée des orders, préparation chronophage d'étiquettes réglementaires, suivi financier approximatif, et absence de centralisation des données clients et production.
 
 L'application vise à transformer ces processus tout en préservant la simplicité du workflow actuel. Contrairement aux solutions professionnelles existantes (trop complexes et coûteuses) ou aux alternatives génériques (Excel, applications cloud), HoneyAI est conçue sur mesure pour des utilisateurs non-techniques (50-65 ans, compétences informatiques basiques) qui ont besoin d'une solution standalone, offline-first, avec une courbe d'apprentissage nulle. Le développement est assuré par un membre de la famille expert Spring Boot, garantissant maintenance et support à long terme. La décision technique (Spring Boot + interface web locale Bootstrap) permet un développement rapide (~40h) tout en offrant une interface moderne sans nécessiter d'expertise frontend avancée.
 

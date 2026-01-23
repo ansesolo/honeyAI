@@ -22,8 +22,8 @@
 3. "Modifier" button links to /clients/{id}/edit (green, prominent)
 4. "Supprimer" button triggers soft delete with confirmation modal ("Etes-vous sur de vouloir supprimer ce client?"), POST to /clients/{id}/delete, red button positioned away from primary actions
 5. "Retour a la liste" link to /clients (secondary styling)
-6. Order history section with placeholder message: "Historique des commandes (a venir dans Epic 2)" or empty state "Aucune commande pour ce client"
-7. "Nouvelle commande pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
+6. Order history section with placeholder message: "Historique des orders (a venir dans Epic 2)" or empty state "Aucune order pour ce client"
+7. "Nouvelle order pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
 8. 404 error page displayed (friendly message) if client id doesn't exist or is soft-deleted
 9. Page layout clean, readable, no clutter, respects accessibility guidelines
 
@@ -68,7 +68,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - POST /clients/{id}/delete performs soft delete with flash message
 - "Retour a la liste" link present
 - Order history placeholder with "a venir dans Epic 2" message
-- "Nouvelle commande" button disabled with tooltip
+- "Nouvelle order" button disabled with tooltip
 - 404 page with friendly message when client not found
 - GlobalExceptionHandler catches ClientNotFoundException
 - All 32 tests pass

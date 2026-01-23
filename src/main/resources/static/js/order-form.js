@@ -1,5 +1,5 @@
 /**
- * Commande Form - Dynamic Product Lines Handler
+ * Order Form - Dynamic Product Lines Handler
  * Vanilla JavaScript for Story 2.6
  */
 
@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize existing rows
     initializeExistingRows();
 
-    // Add ligne button handler
-    document.getElementById('addLigneBtn').addEventListener('click', addNewLigne);
+    // Add line button handler
+    document.getElementById('addLineBtn').addEventListener('click', addNewLine);
 
     // Calculate totals on page load
     calculateAllTotals();
@@ -18,38 +18,38 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialize existing rows (from server-side rendering)
  */
 function initializeExistingRows() {
-    var rows = document.querySelectorAll('#lignesBody .ligne-row');
+    var rows = document.querySelectorAll('#linesBody .line-row');
     rows.forEach(function(row) {
         var productSelect = row.querySelector('.product-select');
-        var prixInput = row.querySelector('.prix-input');
+        var priceInput = row.querySelector('.price-input');
 
         // Store original price for override detection
         if (productSelect && productSelect.value) {
             var option = productSelect.options[productSelect.selectedIndex];
             if (option && option.dataset.price) {
-                prixInput.dataset.originalPrice = option.dataset.price;
+                priceInput.dataset.originalPrice = option.dataset.price;
             }
         }
 
-        calculateSubtotal(row.querySelector('.quantite-input'));
+        calculateSubtotal(row.querySelector('.quantity-input'));
     });
 }
 
 /**
  * Add a new product line to the table
  */
-function addNewLigne() {
-    var tbody = document.getElementById('lignesBody');
-    var rowCount = tbody.querySelectorAll('.ligne-row').length;
+function addNewLine() {
+    var tbody = document.getElementById('linesBody');
+    var rowCount = tbody.querySelectorAll('.line-row').length;
 
     // Create new row
     var newRow = document.createElement('tr');
-    newRow.className = 'ligne-row';
+    newRow.className = 'line-row';
 
     newRow.innerHTML = `
         <td>
             <select class="form-select product-select"
-                    name="lignes[${rowCount}].productId"
+                    name="lines[${rowCount}].productId"
                     onchange="updatePrice(this)">
                 <option value="">-- Choisir un produit --</option>
                 ${getProductOptionsHtml()}
@@ -57,8 +57,8 @@ function addNewLigne() {
         </td>
         <td>
             <input type="number"
-                   class="form-control text-center quantite-input"
-                   name="lignes[${rowCount}].quantite"
+                   class="form-control text-center quantity-input"
+                   name="lines[${rowCount}].quantity"
                    min="1"
                    value="1"
                    placeholder="1"
@@ -67,8 +67,8 @@ function addNewLigne() {
         <td>
             <div class="input-group">
                 <input type="number"
-                       class="form-control text-end prix-input"
-                       name="lignes[${rowCount}].prixUnitaire"
+                       class="form-control text-end price-input"
+                       name="lines[${rowCount}].unitPrice"
                        step="0.01"
                        min="0"
                        placeholder="0,00"
@@ -76,15 +76,15 @@ function addNewLigne() {
                 <span class="input-group-text">EUR</span>
             </div>
             <small class="text-warning price-override-indicator" style="display: none;">
-                <i class="fas fa-exclamation-triangle"></i> Prix modifie
+                <i class="fas fa-exclamation-triangle"></i> Prix modifié
             </small>
         </td>
         <td class="text-end">
             <span class="subtotal-display fw-bold">0,00</span> EUR
         </td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-ligne-btn"
-                    onclick="removeLigne(this)" title="Supprimer">
+            <button type="button" class="btn btn-sm btn-outline-danger remove-line-btn"
+                    onclick="removeLine(this)" title="Supprimer">
                 <i class="fas fa-trash"></i>
             </button>
         </td>
@@ -116,25 +116,25 @@ function getProductOptionsHtml() {
 /**
  * Remove a product line
  */
-function removeLigne(button) {
-    var row = button.closest('.ligne-row');
-    var tbody = document.getElementById('lignesBody');
+function removeLine(button) {
+    var row = button.closest('.line-row');
+    var tbody = document.getElementById('linesBody');
 
     // Only remove if more than one row exists
-    if (tbody.querySelectorAll('.ligne-row').length > 1) {
+    if (tbody.querySelectorAll('.line-row').length > 1) {
         row.remove();
         reindexRows();
         calculateTotal();
     } else {
         // Clear the row instead of removing it
         var productSelect = row.querySelector('.product-select');
-        var quantiteInput = row.querySelector('.quantite-input');
-        var prixInput = row.querySelector('.prix-input');
+        var quantityInput = row.querySelector('.quantity-input');
+        var priceInput = row.querySelector('.price-input');
 
         productSelect.value = '';
-        quantiteInput.value = '';
-        prixInput.value = '';
-        prixInput.dataset.originalPrice = '';
+        quantityInput.value = '';
+        priceInput.value = '';
+        priceInput.dataset.originalPrice = '';
 
         row.querySelector('.subtotal-display').textContent = '0,00';
         row.querySelector('.price-override-indicator').style.display = 'none';
@@ -147,11 +147,11 @@ function removeLigne(button) {
  * Re-index row names after removal
  */
 function reindexRows() {
-    var rows = document.querySelectorAll('#lignesBody .ligne-row');
+    var rows = document.querySelectorAll('#linesBody .line-row');
     rows.forEach(function(row, index) {
-        row.querySelector('.product-select').name = 'lignes[' + index + '].productId';
-        row.querySelector('.quantite-input').name = 'lignes[' + index + '].quantite';
-        row.querySelector('.prix-input').name = 'lignes[' + index + '].prixUnitaire';
+        row.querySelector('.product-select').name = 'lines[' + index + '].productId';
+        row.querySelector('.quantity-input').name = 'lines[' + index + '].quantity';
+        row.querySelector('.price-input').name = 'lines[' + index + '].unitPrice';
     });
 }
 
@@ -159,40 +159,40 @@ function reindexRows() {
  * Update price when product is selected
  */
 function updatePrice(selectElement) {
-    var row = selectElement.closest('.ligne-row');
-    var prixInput = row.querySelector('.prix-input');
+    var row = selectElement.closest('.line-row');
+    var priceInput = row.querySelector('.price-input');
     var option = selectElement.options[selectElement.selectedIndex];
 
     if (option && option.dataset.price && option.dataset.price !== '') {
         var price = parseFloat(option.dataset.price);
-        prixInput.value = price.toFixed(2);
-        prixInput.dataset.originalPrice = price.toFixed(2);
+        priceInput.value = price.toFixed(2);
+        priceInput.dataset.originalPrice = price.toFixed(2);
     } else {
-        prixInput.value = '';
-        prixInput.dataset.originalPrice = '';
+        priceInput.value = '';
+        priceInput.dataset.originalPrice = '';
     }
 
     // Hide override indicator
     row.querySelector('.price-override-indicator').style.display = 'none';
 
     // Set default quantity if empty
-    var quantiteInput = row.querySelector('.quantite-input');
-    if (!quantiteInput.value) {
-        quantiteInput.value = 1;
+    var quantityInput = row.querySelector('.quantity-input');
+    if (!quantityInput.value) {
+        quantityInput.value = 1;
     }
 
-    calculateSubtotal(prixInput);
+    calculateSubtotal(priceInput);
 }
 
 /**
  * Calculate subtotal for a row
  */
 function calculateSubtotal(inputElement) {
-    var row = inputElement.closest('.ligne-row');
-    var quantite = parseInt(row.querySelector('.quantite-input').value) || 0;
-    var prix = parseFloat(row.querySelector('.prix-input').value) || 0;
+    var row = inputElement.closest('.line-row');
+    var quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+    var price = parseFloat(row.querySelector('.price-input').value) || 0;
 
-    var subtotal = quantite * prix;
+    var subtotal = quantity * price;
     row.querySelector('.subtotal-display').textContent = formatNumber(subtotal);
 
     calculateTotal();
@@ -203,23 +203,23 @@ function calculateSubtotal(inputElement) {
  */
 function calculateTotal() {
     var total = 0;
-    document.querySelectorAll('#lignesBody .ligne-row').forEach(function(row) {
-        var quantite = parseInt(row.querySelector('.quantite-input').value) || 0;
-        var prix = parseFloat(row.querySelector('.prix-input').value) || 0;
-        total += quantite * prix;
+    document.querySelectorAll('#linesBody .line-row').forEach(function(row) {
+        var quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
+        var price = parseFloat(row.querySelector('.price-input').value) || 0;
+        total += quantity * price;
     });
 
-    document.getElementById('totalCommande').textContent = formatNumber(total);
+    document.getElementById('totalOrdered').textContent = formatNumber(total);
 }
 
 /**
  * Calculate all subtotals and total
  */
 function calculateAllTotals() {
-    document.querySelectorAll('#lignesBody .ligne-row').forEach(function(row) {
-        var quantiteInput = row.querySelector('.quantite-input');
-        if (quantiteInput) {
-            calculateSubtotal(quantiteInput);
+    document.querySelectorAll('#linesBody .line-row').forEach(function(row) {
+        var quantityInput = row.querySelector('.quantity-input');
+        if (quantityInput) {
+            calculateSubtotal(quantityInput);
         }
     });
 }
@@ -227,11 +227,11 @@ function calculateAllTotals() {
 /**
  * Check if price has been manually overridden
  */
-function checkPriceOverride(prixInput) {
-    var row = prixInput.closest('.ligne-row');
+function checkPriceOverride(priceInput) {
+    var row = priceInput.closest('.line-row');
     var indicator = row.querySelector('.price-override-indicator');
-    var originalPrice = prixInput.dataset.originalPrice;
-    var currentPrice = prixInput.value;
+    var originalPrice = priceInput.dataset.originalPrice;
+    var currentPrice = priceInput.value;
 
     if (originalPrice && currentPrice &&
         parseFloat(originalPrice).toFixed(2) !== parseFloat(currentPrice).toFixed(2)) {

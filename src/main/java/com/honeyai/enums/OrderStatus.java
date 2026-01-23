@@ -3,14 +3,14 @@ package com.honeyai.enums;
 /**
  * Order status workflow: COMMANDEE -> RECUPEREE -> PAYEE
  */
-public enum StatutCommande {
-    COMMANDEE("Commandée"),
-    RECUPEREE("Récupérée"),
-    PAYEE("Payée");
+public enum OrderStatus {
+    ORDERED("Commandée"),
+    RECOVERED("Récupérée"),
+    PAID("Payée");
 
     private final String displayLabel;
 
-    StatutCommande(String displayLabel) {
+    OrderStatus(String displayLabel) {
         this.displayLabel = displayLabel;
     }
 

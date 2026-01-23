@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/produits")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 @Slf4j
 public class ProductController {
@@ -29,28 +29,28 @@ public class ProductController {
         model.addAttribute("products", products);
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("productService", productService);
-        model.addAttribute("activeMenu", "produits");
+        model.addAttribute("activeMenu", "products");
 
-        return "produits/list";
+        return "products/list";
     }
 
-    @PostMapping("/{id}/tarif")
-    public String updateTarif(
+    @PostMapping("/{id}/price")
+    public String updatePrice(
             @PathVariable Long id,
-            @RequestParam Integer annee,
-            @RequestParam BigDecimal prix,
+            @RequestParam Integer year,
+            @RequestParam BigDecimal price,
             RedirectAttributes redirectAttributes) {
 
-        log.info("Updating tarif for product #{} year {} price {}", id, annee, prix);
+        log.info("Updating price for product #{} year {} price {}", id, year, price);
 
         Product product = productService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produit introuvable: " + id));
 
-        productService.updatePrice(id, annee, prix);
+        productService.updatePrice(id, year, price);
 
         redirectAttributes.addFlashAttribute("success",
-                String.format("Prix mis à jour pour %s en %d", product.getName(), annee));
+                String.format("Prix mis à jour pour %s en %d", product.getName(), year));
 
-        return "redirect:/produits";
+        return "redirect:/products";
     }
 }

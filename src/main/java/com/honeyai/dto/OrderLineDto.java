@@ -18,16 +18,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LigneCommandeDto {
+public class OrderLineDto {
 
     @NotNull(message = "Le produit est obligatoire")
     private Long productId;
 
     @NotNull(message = "La quantite est obligatoire")
     @Min(value = 1, message = "La quantite doit etre au moins 1")
-    private Integer quantite;
+    private Integer quantity;
 
     @NotNull(message = "Le prix unitaire est obligatoire")
     @Positive(message = "Le prix unitaire doit etre positif")
-    private BigDecimal prixUnitaire;
+    private BigDecimal unitPrice;
 }

@@ -4,7 +4,7 @@
       layout:decorate="~{fragments/layout}"
       lang="fr">
 <head>
-    <title th:text="'Commande #' + ${commande.id}">Commande</title>
+    <title th:text="'Commande #' + ${order.id}">Commande</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -25,13 +25,13 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>
                 <i class="fas fa-shopping-cart me-2"></i>
-                Commande #<span th:text="${commande.id}">1</span>
+                Commande #<span th:text="${order.id}">1</span>
             </h1>
             <div class="d-flex gap-2 flex-wrap">
-                <a th:href="@{/commandes/{id}/edit(id=${commande.id})}" class="btn btn-secondary">
+                <a th:href="@{/orders/{id}/edit(id=${order.id})}" class="btn btn-secondary">
                     <i class="fas fa-edit me-1"></i>Modifier
                 </a>
-                <a th:href="@{/commandes}" class="btn btn-outline-secondary">
+                <a th:href="@{/orders}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i>Retour a la liste
                 </a>
             </div>
@@ -43,42 +43,42 @@
                 <!-- Status Card with Transition Buttons -->
                 <div class="card mb-4 border-primary">
                     <div class="card-header bg-primary text-white">
-                        <i class="fas fa-flag me-2"></i>Statut de la commande
+                        <i class="fas fa-flag me-2"></i>Statut de la order
                     </div>
                     <div class="card-body text-center">
                         <!-- Current Status Badge (large) -->
                         <div class="mb-3">
-                            <span th:if="${commande.statut.name() == 'COMMANDEE'}"
+                            <span th:if="${order.status.name() == 'ORDERED'}"
                                   class="badge bg-primary fs-4 px-4 py-2"
-                                  th:text="${commande.statut.displayLabel}">Commandee</span>
-                            <span th:if="${commande.statut.name() == 'RECUPEREE'}"
+                                  th:text="${order.status.displayLabel}">Commandée</span>
+                            <span th:if="${order.status.name() == 'RECOVERED'}"
                                   class="badge bg-warning text-dark fs-4 px-4 py-2"
-                                  th:text="${commande.statut.displayLabel}">Recuperee</span>
-                            <span th:if="${commande.statut.name() == 'PAYEE'}"
+                                  th:text="${order.status.displayLabel}">Recuperée</span>
+                            <span th:if="${order.status.name() == 'PAID'}"
                                   class="badge bg-success fs-4 px-4 py-2"
-                                  th:text="${commande.statut.displayLabel}">Payee</span>
+                                  th:text="${order.status.displayLabel}">Payée</span>
                         </div>
 
                         <!-- Status Transition Buttons -->
-                        <div th:if="${commande.statut.name() == 'COMMANDEE'}">
-                            <form th:action="@{/commandes/{id}/statut(id=${commande.id})}" method="post">
-                                <input type="hidden" name="newStatut" value="RECUPEREE">
+                        <div th:if="${order.status.name() == 'ORDERED'}">
+                            <form th:action="@{/orders/{id}/status(id=${order.id})}" method="post">
+                                <input type="hidden" name="newStatus" value="RECOVERED">
                                 <button type="submit" class="btn btn-warning btn-lg w-100">
-                                    <i class="fas fa-box me-2"></i>Marquer comme Recuperee
+                                    <i class="fas fa-box me-2"></i>Marquer comme Recuperée
                                 </button>
                             </form>
                         </div>
-                        <div th:if="${commande.statut.name() == 'RECUPEREE'}">
-                            <form th:action="@{/commandes/{id}/statut(id=${commande.id})}" method="post">
-                                <input type="hidden" name="newStatut" value="PAYEE">
+                        <div th:if="${order.status.name() == 'RECOVERED'}">
+                            <form th:action="@{/orders/{id}/status(id=${order.id})}" method="post">
+                                <input type="hidden" name="newStatus" value="PAID">
                                 <button type="submit" class="btn btn-success btn-lg w-100">
-                                    <i class="fas fa-check-circle me-2"></i>Marquer comme Payee
+                                    <i class="fas fa-check-circle me-2"></i>Marquer comme Payée
                                 </button>
                             </form>
                         </div>
-                        <div th:if="${commande.statut.name() == 'PAYEE'}">
+                        <div th:if="${order.status.name() == 'PAID'}">
                             <span class="text-muted">
-                                <i class="fas fa-check-double me-1"></i>Commande terminee
+                                <i class="fas fa-check-double me-1"></i>Commande terminée
                             </span>
                         </div>
                     </div>
@@ -91,13 +91,13 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title mb-2">
-                            <a th:href="@{/clients/{id}(id=${commande.client.id})}"
-                               th:text="${commande.client.name}">Client Name</a>
+                            <a th:href="@{/clients/{id}(id=${order.client.id})}"
+                               th:text="${order.client.name}">Client Name</a>
                         </h5>
-                        <p th:if="${commande.client.phone != null}" class="card-text mb-0">
+                        <p th:if="${order.client.phone != null}" class="card-text mb-0">
                             <i class="fas fa-phone me-2 text-muted"></i>
-                            <a th:href="'tel:' + ${commande.client.phone}"
-                               th:text="${commande.client.phone}">06 12 34 56 78</a>
+                            <a th:href="'tel:' + ${order.client.phone}"
+                               th:text="${order.client.phone}">06 12 34 56 78</a>
                         </p>
                     </div>
                 </div>
@@ -110,24 +110,24 @@
                     <div class="card-body">
                         <dl class="row mb-0">
                             <dt class="col-sm-5">Date:</dt>
-                            <dd class="col-sm-7" th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">01/01/2026</dd>
+                            <dd class="col-sm-7" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">01/01/2026</dd>
 
-                            <dt class="col-sm-5">Creee le:</dt>
-                            <dd class="col-sm-7" th:text="${commande.createdAt != null ? #temporals.format(commande.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</dd>
+                            <dt class="col-sm-5">Créée le:</dt>
+                            <dd class="col-sm-7" th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</dd>
 
-                            <dt class="col-sm-5">Modifiee le:</dt>
-                            <dd class="col-sm-7" th:text="${commande.updatedAt != null ? #temporals.format(commande.updatedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</dd>
+                            <dt class="col-sm-5">Modifiée le:</dt>
+                            <dd class="col-sm-7" th:text="${order.updatedAt != null ? #temporals.format(order.updatedAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</dd>
                         </dl>
                     </div>
                 </div>
 
                 <!-- Notes Card -->
-                <div th:if="${commande.notes != null and !commande.notes.isEmpty()}" class="card mb-4">
+                <div th:if="${order.notes != null and !order.notes.isEmpty()}" class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-sticky-note me-2"></i>Notes
                     </div>
                     <div class="card-body">
-                        <p class="card-text mb-0" th:text="${commande.notes}">Notes content</p>
+                        <p class="card-text mb-0" th:text="${order.notes}">Notes content</p>
                     </div>
                 </div>
 
@@ -158,20 +158,20 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Produit</th>
-                                        <th class="text-center">Quantite</th>
+                                        <th class="text-center">Quantité</th>
                                         <th class="text-end">Prix unitaire</th>
                                         <th class="text-end">Sous-total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="ligne : ${commande.lignes}">
-                                        <td th:text="${ligne.product.name}">Product Name</td>
-                                        <td class="text-center" th:text="${ligne.quantite}">1</td>
+                                    <tr th:each="ligne : ${order.lines}">
+                                        <td th:text="${line.product.name}">Product Name</td>
+                                        <td class="text-center" th:text="${line.quantity}">1</td>
                                         <td class="text-end">
-                                            <span th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
+                                            <span th:text="${#numbers.formatDecimal(line.unitPrice, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
                                         </td>
                                         <td class="text-end">
-                                            <span th:text="${#numbers.formatDecimal(ligne.total, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
+                                            <span th:text="${#numbers.formatDecimal(line.total, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
                                         </td>
                                     </tr>
                                 </tbody>

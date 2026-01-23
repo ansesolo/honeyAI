@@ -178,7 +178,7 @@ If you want to do the planning on the web with Claude (Sonnet 4 or Opus), Gemini
 2. Copy `team-fullstack.txt`
 3. Create new Gemini Gem or CustomGPT
 4. Upload file with instructions: "Your critical operating instructions are attached, do not break character as directed"
-5. Type `/help` to see available commands
+5. Type `/help` to see available orders
 
 ### IDE Project Setup
 
@@ -196,11 +196,11 @@ BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.jso
   - The installer will detect an existing `opencode.jsonc`/`opencode.json` or create a minimal `opencode.jsonc` if missing.
   - It will:
     - Ensure `instructions` includes `.bmad-core/core-config.yaml` (and each selected expansion pack’s `config.yaml`).
-    - Merge BMAD agents and commands using file references (`{file:./.bmad-core/...}`), idempotently.
+    - Merge BMAD agents and orders using file references (`{file:./.bmad-core/...}`), idempotently.
     - Preserve other top-level fields and user-defined entries.
 
 - Prefixes and collisions:
-  - You can opt-in to prefix agent keys with `bmad-` and command keys with `bmad:tasks:` to avoid name collisions.
+  - You can opt-in to prefix agent keys with `bmad-` and order keys with `bmad:tasks:` to avoid name collisions.
   - If a key already exists and is not BMAD-managed, the installer will skip it and suggest enabling prefixes.
 
 - What gets added:
@@ -210,7 +210,7 @@ BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.jso
     - `mode`: `primary` for orchestrators, otherwise `all`
     - `tools`: `{ write: true, edit: true, bash: true }`
     - `description`: extracted from the agent’s `whenToUse`
-  - `command`: BMAD tasks from core and selected packs.
+  - `order`: BMAD tasks from core and selected packs.
     - `template`: `{file:./.bmad-core/tasks/<id>.md}` (or pack path)
     - `description`: extracted from the task’s “Purpose” section
 
@@ -266,7 +266,7 @@ There are two BMad agents — in the future they'll be consolidated into a singl
 
 ### BMad-Master
 
-This agent can do any task or command that all other agents can do, aside from actual story implementation. Additionally, this agent can help explain the BMad Method when on the web by accessing the knowledge base and explaining anything to you about the process.
+This agent can do any task or order that all other agents can do, aside from actual story implementation. Additionally, this agent can help explain the BMad Method when on the web by accessing the knowledge base and explaining anything to you about the process.
 
 If you don't want to bother switching between different agents aside from the dev, this is the agent for you. Just remember that as the context grows, the performance of the agent degrades, therefore it is important to instruct the agent to compact the conversation and start a new conversation with the compacted conversation as the initial message. Do this often, preferably after each story is implemented.
 
@@ -308,7 +308,7 @@ dependencies:
 @architect Design the system architecture
 @dev Implement the user authentication
 
-# Some IDEs, like Claude Code, use slash commands instead
+# Some IDEs, like Claude Code, use slash orders instead
 /pm Create user stories
 /dev Fix the login bug
 ```

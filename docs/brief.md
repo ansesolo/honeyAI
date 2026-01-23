@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-HoneyAI est une application desktop standalone dédiée à la gestion d'une exploitation apicole familiale (~40 ruches). Elle remplace le système papier actuel (cahier de commandes) par une solution numérique simple et intuitive, conçue pour des utilisateurs non-techniques. L'application centralise la gestion des clients, des commandes, des stocks, de la production de miel et de l'élevage de reines, tout en facilitant l'impression d'étiquettes réglementaires. Elle vise à simplifier les tâches administratives chronophages (préparation d'étiquettes, suivi des ventes) et à fournir une visibilité financière claire (CA, dépenses, bénéfices) sans complexité comptable.
+HoneyAI est une application desktop standalone dédiée à la gestion d'une exploitation apicole familiale (~40 ruches). Elle remplace le système papier actuel (cahier de orders) par une solution numérique simple et intuitive, conçue pour des utilisateurs non-techniques. L'application centralise la gestion des clients, des orders, des stocks, de la production de miel et de l'élevage de reines, tout en facilitant l'impression d'étiquettes réglementaires. Elle vise à simplifier les tâches administratives chronophages (préparation d'étiquettes, suivi des ventes) et à fournir une visibilité financière claire (CA, dépenses, bénéfices) sans complexité comptable.
 
 **Public cible:** Apiculteurs familiaux (2-3 utilisateurs), utilisation mono-poste, installation minimale requise.
 
@@ -21,15 +21,15 @@ HoneyAI est une application desktop standalone dédiée à la gestion d'une expl
 
 ### Situation Actuelle
 
-Les parents du porteur de projet sont apiculteurs avec ~40 ruches et des ruchettes d'élevage de reines. Ils gèrent actuellement leur activité avec un système papier (cahier de commandes) qui présente plusieurs limites:
+Les parents du porteur de projet sont apiculteurs avec ~40 ruches et des ruchettes d'élevage de reines. Ils gèrent actuellement leur activité avec un système papier (cahier de orders) qui présente plusieurs limites:
 
 **Pain Points Identifiés:**
 
-1. **Gestion des commandes fragmentée**
+1. **Gestion des orders fragmentée**
    - Commandes notées manuellement dans un cahier annuel
    - Difficulté à retrouver rapidement l'historique d'un client
-   - Risque d'oublis ou d'erreurs dans le suivi (commande/récupération/paiement)
-   - Pas de vision consolidée du statut des commandes en cours
+   - Risque d'oublis ou d'erreurs dans le suivi (order/récupération/paiement)
+   - Pas de vision consolidée du statut des orders en cours
 
 2. **Préparation d'étiquettes chronophage**
    - Étiquettes réglementaires préparées manuellement ou semi-manuellement
@@ -88,7 +88,7 @@ HoneyAI est une **application desktop standalone ultra-simple**, pensée comme u
 ### Différenciateurs
 
 **vs. Cahier papier:**
-- Recherche instantanée de clients/commandes
+- Recherche instantanée de clients/orders
 - Calculs automatiques (CA, stocks, DLUO)
 - Étiquettes générées en quelques clics
 - Historique complet conservé
@@ -123,12 +123,12 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 
 **Workflow Actuel:**
 - **Printemps/Été:** Récolte du miel, mise en pots anticipée (500g/1kg), travail au rucher
-- **Septembre:** Période de commandes (clients réguliers contactent)
-- **Septembre-Décembre:** Préparation commandes, livraisons/récupérations, encaissements
+- **Septembre:** Période de orders (clients réguliers contactent)
+- **Septembre-Décembre:** Préparation orders, livraisons/récupérations, encaissements
 - **Toute l'année:** Achats fournitures occasionnels, élevage de reines
 
 **Besoins Spécifiques:**
-- Centraliser les commandes clients (comme le cahier, mais mieux)
+- Centraliser les orders clients (comme le cahier, mais mieux)
 - Imprimer étiquettes réglementaires rapidement
 - Suivre les clients réguliers (historique, préférences)
 - Avoir une vision du CA et des dépenses
@@ -167,13 +167,13 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 ### Business Objectives
 
 - **Adoption complète:** Parents abandonnent le cahier papier dans les 2 mois suivant le déploiement
-- **Gain de temps:** Réduction de 50% du temps passé sur tâches administratives (étiquettes, recherche commandes)
-- **Qualité des données:** 100% des commandes tracées avec statuts clairs (vs. approximations papier)
+- **Gain de temps:** Réduction de 50% du temps passé sur tâches administratives (étiquettes, recherche orders)
+- **Qualité des données:** 100% des orders tracées avec statuts clairs (vs. approximations papier)
 - **Satisfaction utilisateurs:** Retour positif des parents ("c'est plus simple qu'avant")
 
 ### User Success Metrics
 
-- **Facilité d'usage:** Parents capables d'enregistrer une commande seuls après 2 démos
+- **Facilité d'usage:** Parents capables d'enregistrer une order seuls après 2 démos
 - **Fréquence d'usage:** Utilisation quotidienne en haute saison (septembre-décembre)
 - **Autonomie:** Moins de 2 appels d'aide technique par mois après le premier mois
 - **Confiance:** Parents font confiance aux données de l'application (ne vérifient plus sur papier)
@@ -182,8 +182,8 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 
 - **Temps préparation étiquettes:** < 2 minutes pour 10 étiquettes (vs. 15 minutes manuellement)
 - **Temps recherche client:** < 10 secondes (vs. 2-5 minutes dans cahier)
-- **Erreurs commandes:** 0 commande oubliée ou perdue
-- **Taux d'adoption:** 100% des nouvelles commandes saisies dans l'app dès semaine 3
+- **Erreurs orders:** 0 order oubliée ou perdue
+- **Taux d'adoption:** 100% des nouvelles orders saisies dans l'app dès semaine 3
 - **Disponibilité:** 99.9% (application stable, pas de crashs)
 
 ---
@@ -199,23 +199,23 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 - Créer/Modifier/Supprimer client (avec confirmation)
 - Champs: Nom, Téléphone, Email (optionnel), Adresse, Notes libres
 - Recherche par nom/téléphone
-- Vue historique commandes automatique
+- Vue historique orders automatique
 - Soft delete (données non effacées physiquement)
 
 #### 2. Gestion Commandes
-**Description:** Workflow complet de la commande au paiement
+**Description:** Workflow complet de la order au paiement
 **Rationale:** Remplace directement le cahier papier, fonctionnalité #1 prioritaire
 **Fonctionnalités:**
-- Créer commande: Sélection client + ajout produits (quantités)
+- Créer order: Sélection client + ajout produits (quantités)
 - Statuts: "Commandée" → "Récupérée" → "Payée" (transitions simples via boutons)
 - Vue liste par année (filtre année en cours par défaut)
 - Recherche/Filtres: client, statut, date
 - Impact stock automatique à la récupération
-- Notes libres par commande (ex: "livraison prévue 15/10")
+- Notes libres par order (ex: "livraison prévue 15/10")
 
 #### 3. Catalogue Produits
 **Description:** Liste des produits vendus avec tarifs annuels
-**Rationale:** Nécessaire pour commandes et étiquettes
+**Rationale:** Nécessaire pour orders et étiquettes
 **Fonctionnalités:**
 - Produits prédéfinis: Miel 500g, Miel 1kg, Cire avec miel, Reines
 - Types de miel: Toutes fleurs, Forêt, Châtaignier
@@ -267,10 +267,10 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 
 **L'application MVP sera considérée comme réussie si:**
 
-1. Les parents enregistrent toutes leurs nouvelles commandes dans l'application (abandon du cahier)
+1. Les parents enregistrent toutes leurs nouvelles orders dans l'application (abandon du cahier)
 2. Les étiquettes générées sont conformes et imprimables sur leur imprimante
 3. Aucune perte de données durant les 3 premiers mois
-4. Les parents sont autonomes pour les opérations courantes (commandes, clients, étiquettes)
+4. Les parents sont autonomes pour les opérations courantes (orders, clients, étiquettes)
 5. Feedback utilisateurs positif: "C'est plus pratique qu'avant"
 
 ---
@@ -294,7 +294,7 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
 3. **Module Élevage de Reines**
    - Comptage ruchettes d'élevage
    - Production reines (date, quantité, notes)
-   - Ventes reines (intégré commandes)
+   - Ventes reines (intégré orders)
    - Rationale: Important pour engagement utilisateur (père), mais non critique pour MVP
 
 4. **Gestion Stocks Fournitures Avancée**
@@ -303,7 +303,7 @@ Une application qui disparaît derrière l'usage: les parents l'utilisent nature
    - Consommation automatique lors mise en pots
 
 5. **Exports et Reporting**
-   - Export CSV (clients, commandes, achats) pour comptable/tableur
+   - Export CSV (clients, orders, achats) pour comptable/tableur
    - Génération rapport annuel (synthèse année)
    - Graphiques avancés (évolution CA multi-années)
 
@@ -423,7 +423,7 @@ honeyAI/
 │   ├── controller/
 │   │   ├── HomeController.java          # Dashboard
 │   │   ├── ClientController.java        # CRUD clients
-│   │   ├── CommandeController.java      # Gestion commandes
+│   │   ├── CommandeController.java      # Gestion orders
 │   │   ├── ProduitController.java       # Catalogue/tarifs
 │   │   ├── AchatController.java         # Achats fournitures
 │   │   └── EtiquetteController.java     # Génération PDF
@@ -461,7 +461,7 @@ honeyAI/
 │   └── templates/                       # Thymeleaf templates
 │       ├── fragments/                   # Navbar, footer
 │       ├── clients/
-│       ├── commandes/
+│       ├── orders/
 │       ├── etiquettes/
 │       └── dashboard.html
 ├── data/
@@ -500,10 +500,10 @@ honeyAI/
 ```java
 // Client ↔ Commandes (OneToMany)
 @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-private List<Commande> commandes;
+private List<Commande> orders;
 
 // Commande ↔ LignesCommande (OneToMany)
-@OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 private List<LigneCommande> lignes;
 
 // Produit ↔ Tarifs (OneToMany)
@@ -608,7 +608,7 @@ private List<Tarif> tarifs;
   - **Risque:** Changement législation nécessite refonte
   - **Mitigation:** Template étiquettes configurable/modifiable
 
-- **Assumption 7:** Volumétrie reste faible (<500 clients, <2000 commandes)
+- **Assumption 7:** Volumétrie reste faible (<500 clients, <2000 orders)
   - **Risque:** Performances si croissance activité
   - **Mitigation:** SQLite performant jusqu'à 10k+ entrées, index DB
 
@@ -630,7 +630,7 @@ private List<Tarif> tarifs;
 
 #### Risque 2: Perte de Données (Probabilité: MOYENNE | Impact: CATASTROPHIQUE)
 **Description:** Crash ordinateur, corruption DB, suppression accidentelle.
-**Impact:** Perte historique clients (10+ ans), perte commandes en cours, perte confiance totale.
+**Impact:** Perte historique clients (10+ ans), perte orders en cours, perte confiance totale.
 **Mitigations (OBLIGATOIRES):**
 - Backup automatique quotidien (dossier local + clé USB)
 - Export manuel facile ("Sauvegarder mes données")
@@ -695,7 +695,7 @@ private List<Tarif> tarifs;
 4. **Template étiquettes:** Dimensions exactes des étiquettes utilisées? (60x40mm, 70x37mm, autre?)
 5. **Réglementaire:** Conformité actuelle étiquettes papier? Validation Chambre Agriculture nécessaire?
 6. **Backup:** Où sauvegarder? Clé USB disponible? Espace cloud envisageable (Dropbox, Google Drive)?
-7. **Historique migration:** Faut-il migrer commandes en cours du cahier vers app (période transition)?
+7. **Historique migration:** Faut-il migrer orders en cours du cahier vers app (période transition)?
 8. **Besoins cachés:** Y a-t-il d'autres workflows non mentionnés? (vente marché, échanges cire, locations ruches?)
 
 **Questions pour Phase 2 (post-MVP):**
@@ -831,7 +831,7 @@ private List<Tarif> tarifs;
 
 6. **Prototypage Rapide** (Priorité: P1 - post validations ci-dessus)
    - Développer prototype jetable (3-5 jours)
-   - Focus: Formulaire commande + liste commandes uniquement
+   - Focus: Formulaire order + liste orders uniquement
    - Tester avec parents (découvrir frictions UX)
 
 7. **Setup Projet Développement** (Priorité: P1)

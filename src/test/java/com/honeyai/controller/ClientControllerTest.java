@@ -40,7 +40,7 @@ class ClientControllerTest {
 
     @Test
     void createForm_shouldReturnFormViewWithEmptyClient() throws Exception {
-        mockMvc.perform(get("/clients/nouveau"))
+        mockMvc.perform(get("/clients/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("clients/form"))
                 .andExpect(model().attributeExists("client"))

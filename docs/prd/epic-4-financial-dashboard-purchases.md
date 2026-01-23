@@ -44,7 +44,7 @@
 ### Acceptance Criteria:
 
 1. DashboardService.java created with constructor injection of CommandeRepository, AchatRepository
-2. Method calculateChiffreAffaires(LocalDate start, LocalDate end) returns BigDecimal: sum of amounts from commandes with statut=PAYEE in date range
+2. Method calculateChiffreAffaires(LocalDate start, LocalDate end) returns BigDecimal: sum of amounts from orders with statut=PAYEE in date range
 3. Method calculateTotalDepenses(LocalDate start, LocalDate end) delegates to AchatService
 4. Method calculateBenefice(LocalDate start, LocalDate end) returns CA - dépenses
 5. Method getTopProduits(LocalDate start, LocalDate end, int limit) returns List<TopProduitDto>: aggregates from paid orders, groups by product, sorts by quantity

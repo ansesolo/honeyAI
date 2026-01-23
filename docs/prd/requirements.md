@@ -6,19 +6,19 @@
 
 **FR2:** Le système doit fournir une fonction de recherche de clients par nom ou numéro de téléphone avec résultats instantanés (<1 seconde).
 
-**FR3:** Le système doit afficher automatiquement l'historique complet des commandes pour chaque client sur sa fiche détaillée.
+**FR3:** Le système doit afficher automatiquement l'historique complet des orders pour chaque client sur sa fiche détaillée.
 
-**FR4:** Le système doit permettre de créer une commande en sélectionnant un client et en ajoutant des produits avec leurs quantités.
+**FR4:** Le système doit permettre de créer une order en sélectionnant un client et en ajoutant des produits avec leurs quantités.
 
-**FR5:** Le système doit gérer trois statuts de commande avec transitions simples via boutons: "Commandée" → "Récupérée" → "Payée".
+**FR5:** Le système doit gérer trois statuts de order avec transitions simples via boutons: "Commandée" → "Récupérée" → "Payée".
 
-**FR6:** Le système doit mettre à jour automatiquement le stock de produits finis lors du passage d'une commande au statut "Récupérée".
+**FR6:** Le système doit mettre à jour automatiquement le stock de produits finis lors du passage d'une order au statut "Récupérée".
 
-**FR7:** Le système doit permettre de filtrer et rechercher les commandes par client, statut, et date avec vue par année (année en cours par défaut).
+**FR7:** Le système doit permettre de filtrer et rechercher les orders par client, statut, et date avec vue par année (année en cours par défaut).
 
 **FR8:** Le système doit gérer un catalogue de produits prédéfinis: Miel (500g/1kg), Cire avec miel, Reines avec types de miel (Toutes fleurs, Forêt, Châtaignier).
 
-**FR9:** Le système doit permettre de définir des tarifs par produit et par année, avec application automatique des tarifs de l'année en cours lors de la création de commandes.
+**FR9:** Le système doit permettre de définir des tarifs par produit et par année, avec application automatique des tarifs de l'année en cours lors de la création de orders.
 
 **FR10:** Le système doit générer des étiquettes réglementaires pour pots de miel au format PDF téléchargeable via un formulaire simple (type miel, format pot, date récolte, quantité).
 
@@ -36,13 +36,13 @@
 
 **FR17:** Le système doit afficher des messages de confirmation clairs après chaque action importante (enregistrement, suppression, modification) pour rassurer l'utilisateur.
 
-**FR18:** Le système doit permettre d'ajouter des notes libres sur les commandes (ex: "livraison prévue 15/10") pour capturer des informations non structurées.
+**FR18:** Le système doit permettre d'ajouter des notes libres sur les orders (ex: "livraison prévue 15/10") pour capturer des informations non structurées.
 
 ## Non-Functional Requirements
 
 **NFR1:** L'application doit démarrer en moins de 5 secondes (démarrage Spring Boot + ouverture automatique du navigateur).
 
-**NFR2:** Toutes les recherches et requêtes doivent retourner des résultats en moins de 1 seconde pour des volumes allant jusqu'à 1000 clients et 2000 commandes.
+**NFR2:** Toutes les recherches et requêtes doivent retourner des résultats en moins de 1 seconde pour des volumes allant jusqu'à 1000 clients et 2000 orders.
 
 **NFR3:** La génération d'une planche de 10 étiquettes PDF doit prendre moins de 5 secondes.
 

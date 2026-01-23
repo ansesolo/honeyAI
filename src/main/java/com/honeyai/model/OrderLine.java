@@ -12,20 +12,20 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "ligne_commandes")
+@Table(name = "order_lines")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LigneCommande {
+public class OrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "commande_id", nullable = false)
-    private Commande commande;
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -35,20 +35,20 @@ public class LigneCommande {
     @NotNull(message = "La quantité est obligatoire")
     @Min(value = 1, message = "La quantité doit être au moins 1")
     @Column(nullable = false)
-    private Integer quantite;
+    private Integer quantity;
 
     @NotNull(message = "Le prix unitaire est obligatoire")
     @Positive(message = "Le prix unitaire doit être positif")
     @Column(name = "prix_unitaire", nullable = false, precision = 10, scale = 2)
-    private BigDecimal prixUnitaire;
+    private BigDecimal unitPrice;
 
     /**
      * Calculate line total: quantity * unit price
      */
     public BigDecimal getTotal() {
-        if (quantite == null || prixUnitaire == null) {
+        if (quantity == null || unitPrice == null) {
             return BigDecimal.ZERO;
         }
-        return prixUnitaire.multiply(BigDecimal.valueOf(quantite));
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 }

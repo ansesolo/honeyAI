@@ -17,13 +17,13 @@
 
 ## Acceptance Criteria
 
-1. GET /commandes/nouvelle returns "commandes/form" view with: empty Commande object, list of all active clients (for dropdown), list of all products with current year prices (for product selection)
-2. templates/commandes/form.html created with: title "Nouvelle Commande", client selection dropdown (searchable/autocomplete preferred, or simple select), date commande field (datepicker, default today), notes textarea, dynamic product lines section
+1. GET /orders/nouvelle returns "orders/form" view with: empty Commande object, list of all active clients (for dropdown), list of all products with current year prices (for product selection)
+2. templates/orders/form.html created with: title "Nouvelle Commande", client selection dropdown (searchable/autocomplete preferred, or simple select), date order field (datepicker, default today), notes textarea, dynamic product lines section
 3. Product lines: initial empty row with: Produit dropdown (showing "Miel 500g Toutes Fleurs - 12,50 EUR"), Quantite input (number, min=1), Prix unitaire (readonly, auto-filled from product selection), Sous-total (readonly, calculated quantite x prix), "Supprimer ligne" button (icon), "+ Ajouter un produit" button to add new line
-4. JavaScript (vanilla) handles: add/remove product lines dynamically, auto-fill prix unitaire when product selected, calculate and display sous-total per line, calculate and display total commande at bottom (sum of all sous-totals)
-5. POST /commandes endpoint accepts: clientId, dateCommande, notes, List<LigneCommandeDto> (produitId, quantite, prixUnitaire), calls CommandeService.create(), redirects to /commandes/{id} (detail view) with success message "Commande creee avec succes"
+4. JavaScript (vanilla) handles: add/remove product lines dynamically, auto-fill prix unitaire when product selected, calculate and display sous-total per line, calculate and display total order at bottom (sum of all sous-totals)
+5. POST /orders endpoint accepts: clientId, dateCommande, notes, List<LigneCommandeDto> (produitId, quantite, prixUnitaire), calls CommandeService.create(), redirects to /orders/{id} (detail view) with success message "Commande creee avec succes"
 6. Validation: at least one product line required, client selection required, quantite must be >=1, prix unitaire auto-populated but editable (for special discounts)
-7. Form buttons: "Enregistrer" (green), "Annuler" (grey, back to /commandes)
+7. Form buttons: "Enregistrer" (green), "Annuler" (grey, back to /orders)
 8. Price override: allow user to manually edit prix unitaire if needed (e.g., discount), with visual indicator it differs from catalog price
 9. Mobile responsive: form usable on tablet (future consideration), stacks vertically
 10. Minimum 1 product line pre-filled on load (empty dropdown) for UX clarity
@@ -58,14 +58,14 @@
 - `src/main/java/com/honeyai/dto/LigneCommandeDto.java` - DTO for order line form binding
 - `src/main/java/com/honeyai/dto/CommandeFormDto.java` - DTO for order creation form binding
 - `src/main/java/com/honeyai/dto/ProductPriceDto.java` - DTO for product with current year price (used in dropdown)
-- `src/main/resources/templates/commandes/form.html` - Order creation form with dynamic product lines
-- `src/main/resources/templates/commandes/detail.html` - Order detail view
-- `src/main/resources/static/js/commande-form.js` - Vanilla JavaScript for dynamic form manipulation
+- `src/main/resources/templates/orders/form.html` - Order creation form with dynamic product lines
+- `src/main/resources/templates/orders/detail.html` - Order detail view
+- `src/main/resources/static/js/order-form.js` - Vanilla JavaScript for dynamic form manipulation
 
 ### Files Modified
-- `src/main/java/com/honeyai/controller/CommandeController.java` - Added GET /commandes/nouvelle, POST /commandes, GET /commandes/{id} endpoints
+- `src/main/java/com/honeyai/controller/CommandeController.java` - Added GET /orders/nouvelle, POST /orders, GET /orders/{id} endpoints
 - `src/main/java/com/honeyai/service/ProductService.java` - Added findAllWithCurrentYearPrices() method
-- `src/main/resources/templates/commandes/list.html` - Fixed link to /commandes/nouvelle
+- `src/main/resources/templates/orders/list.html` - Fixed link to /orders/nouvelle
 - `src/test/java/com/honeyai/controller/CommandeControllerTest.java` - Added 6 new tests for form endpoints
 
 ### Implementation Details
@@ -82,11 +82,11 @@
 - Full regression: 113 tests passed
 
 ### Acceptance Criteria Verification
-- AC1: GET /commandes/nouvelle with clients and products - DONE
-- AC2: commandes/form.html with all form elements - DONE
+- AC1: GET /orders/nouvelle with clients and products - DONE
+- AC2: orders/form.html with all form elements - DONE
 - AC3: Product lines with dropdown, quantite, prix, sous-total, buttons - DONE
 - AC4: JavaScript dynamic form handling - DONE
-- AC5: POST /commandes with redirect and success message - DONE
+- AC5: POST /orders with redirect and success message - DONE
 - AC6: Validation (client, lignes, quantite) - DONE
 - AC7: Form buttons Enregistrer/Annuler - DONE
 - AC8: Price override with visual indicator - DONE

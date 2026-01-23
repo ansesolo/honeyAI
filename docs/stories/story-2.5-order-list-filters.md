@@ -17,13 +17,13 @@
 
 ## Acceptance Criteria
 
-1. CommandeController created with GET /commandes endpoint returning "commandes/list" view with all commandes, model includes: list of commandes, current year, list of years (distinct from commandes.dateCommande for filter dropdown), list of statuts (enum values)
-2. templates/commandes/list.html created displaying: page title "Commandes", filter bar with dropdowns: Annee (default: current year), Statut (default: Tous), "Filtrer" button, "Nouvelle Commande" button (green, prominent, top-right)
-3. Orders table with columns: No (id), Client (nom), Date commande (DD/MM/YYYY), Statut (badge colored: COMMANDEE=blue, RECUPEREE=orange, PAYEE=green), Montant total (calculated via CommandeService.calculateTotal()), Actions (Voir)
-4. Filtering: GET /commandes?annee=2024&statut=COMMANDEE filters results server-side using CommandeService methods, results update in same view
+1. CommandeController created with GET /orders endpoint returning "orders/list" view with all orders, model includes: list of orders, current year, list of years (distinct from orders.dateCommande for filter dropdown), list of statuts (enum values)
+2. templates/orders/list.html created displaying: page title "Commandes", filter bar with dropdowns: Annee (default: current year), Statut (default: Tous), "Filtrer" button, "Nouvelle Commande" button (green, prominent, top-right)
+3. Orders table with columns: No (id), Client (nom), Date order (DD/MM/YYYY), Statut (badge colored: COMMANDEE=blue, RECUPEREE=orange, PAYEE=green), Montant total (calculated via CommandeService.calculateTotal()), Actions (Voir)
+4. Filtering: GET /orders?annee=2024&statut=COMMANDEE filters results server-side using CommandeService methods, results update in same view
 5. Status badges styled with Bootstrap badge component and appropriate colors for quick visual scanning
 6. Orders sorted by date descending (most recent first) within filtered results
-7. Empty state if no orders match filters: "Aucune commande trouvee pour les filtres selectionnes"
+7. Empty state if no orders match filters: "Aucune order trouvee pour les filtres selectionnes"
 8. "Tous" option in statut filter shows all statuses
 9. Navigation link "Commandes" added to sidebar menu (update layout.html)
 10. Montant total formatted as French currency "123,45 EUR"
@@ -54,8 +54,8 @@
 **Agent Model:** Claude Opus 4.5
 
 ### Files Created
-- `src/main/java/com/honeyai/controller/CommandeController.java` - Controller with GET /commandes endpoint and filter support
-- `src/main/resources/templates/commandes/list.html` - Order list view with filter bar and status badges
+- `src/main/java/com/honeyai/controller/CommandeController.java` - Controller with GET /orders endpoint and filter support
+- `src/main/resources/templates/orders/list.html` - Order list view with filter bar and status badges
 - `src/test/java/com/honeyai/controller/CommandeControllerTest.java` - 5 unit tests for CommandeController
 
 ### Files Modified
@@ -64,11 +64,11 @@
 - `src/test/java/com/honeyai/repository/CommandeRepositoryTest.java` - Added 4 tests for new repository methods
 
 ### Implementation Details
-1. **CommandeController** - GET /commandes with optional `annee` and `statut` query params, passes commandeService to template for total calculation
+1. **CommandeController** - GET /orders with optional `annee` and `statut` query params, passes commandeService to template for total calculation
 2. **Filter Bar** - Bootstrap card with year dropdown (distinct years from orders + current year), status dropdown (all StatutCommande values), Filtrer button
 3. **Status Badges** - COMMANDEE=bg-primary (blue), RECUPEREE=bg-warning (orange), PAYEE=bg-success (green)
-4. **Order Table** - Columns: No, Client, Date commande (dd/MM/yyyy), Statut (badge), Montant total (French format), Actions (Voir)
-5. **Empty State** - "Aucune commande trouvee pour les filtres selectionnes" alert
+4. **Order Table** - Columns: No, Client, Date order (dd/MM/yyyy), Statut (badge), Montant total (French format), Actions (Voir)
+5. **Empty State** - "Aucune order trouvee pour les filtres selectionnes" alert
 6. **French Formatting** - Montant uses #numbers.formatDecimal with COMMA decimal separator
 7. **Navigation** - "Commandes" link already existed in layout.html
 
@@ -78,8 +78,8 @@
 - Full regression: 107 tests passed
 
 ### Acceptance Criteria Verification
-- AC1: CommandeController with GET /commandes - DONE
-- AC2: commandes/list.html with filters - DONE
+- AC1: CommandeController with GET /orders - DONE
+- AC2: orders/list.html with filters - DONE
 - AC3: Order table with proper columns - DONE
 - AC4: Server-side filtering via CommandeService - DONE
 - AC5: Status badges with Bootstrap colors - DONE

@@ -1,6 +1,6 @@
 # /document-project Task
 
-When this command is used, execute the following task:
+When this order is used, execute the following task:
 
 <!-- Powered by BMAD™ Core -->
 
@@ -50,7 +50,7 @@ Begin by conducting analysis of the existing project. Use available tools to:
 
 1. **Project Structure Discovery**: Examine the root directory structure, identify main folders, and understand the overall organization
 2. **Technology Stack Identification**: Look for package.json, requirements.txt, Cargo.toml, pom.xml, etc. to identify languages, frameworks, and dependencies
-3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development commands
+3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development orders
 4. **Existing Documentation Review**: Check for README files, docs folders, and any existing documentation
 5. **Code Pattern Analysis**: Sample key files to understand coding patterns, naming conventions, and architectural approaches
 

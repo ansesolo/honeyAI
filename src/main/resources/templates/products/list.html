@@ -195,7 +195,7 @@
     <div class="modal fade" id="editPriceModal" tabindex="-1" aria-labelledby="editPriceModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editPriceForm" method="post" th:action="@{/produits/__productId__/tarif}">
+                <form id="editPriceForm" method="post" th:action="@{/products/__productId__/price}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editPriceModalLabel">
                             <i class="fas fa-edit me-2"></i>Modifier le prix
@@ -206,8 +206,8 @@
                         <p class="mb-3">Produit: <strong id="modalProductName"></strong></p>
 
                         <div class="mb-3">
-                            <label for="annee" class="form-label">Annee</label>
-                            <select class="form-select" id="annee" name="annee" required>
+                            <label for="year" class="form-label">Annee</label>
+                            <select class="form-select" id="year" name="year" required>
                                 <option value="2024">2024</option>
                                 <option value="2025">2025</option>
                                 <option value="2026" selected>2026</option>
@@ -216,9 +216,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="prix" class="form-label">Prix (EUR)</label>
+                            <label for="price" class="form-label">Prix (EUR)</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="prix" name="prix"
+                                <input type="number" class="form-control" id="price" name="price"
                                        step="0.01" min="0" required placeholder="0,00">
                                 <span class="input-group-text">EUR</span>
                             </div>
@@ -250,11 +250,11 @@
 
         // Update form action with product ID
         var form = document.getElementById('editPriceForm');
-        form.action = '/produits/' + productId + '/tarif';
+        form.action = '/products/' + productId + '/price';
 
         // Reset form values
-        document.getElementById('prix').value = '';
-        document.getElementById('annee').value = new Date().getFullYear();
+        document.getElementById('price').value = '';
+        document.getElementById('year').value = new Date().getFullYear();
     });
 </script>
 </th:block>

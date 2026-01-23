@@ -78,7 +78,7 @@
 ### Acceptance Criteria:
 
 1. ClientController.java created with @Controller, @RequestMapping("/clients"), GET endpoint /clients returns "clients/list" view with model containing list of active clients
-2. templates/clients/list.html created using base layout with: page title "Mes Clients" with user icon, prominent search bar (large input, placeholder "Rechercher un client par nom ou téléphone..."), "Nouveau Client" button (green, large, top-right), table or card grid displaying clients with columns: Nom, Téléphone, Email, Nombre de commandes (placeholder 0 for now), Actions (Voir, Modifier buttons)
+2. templates/clients/list.html created using base layout with: page title "Mes Clients" with user icon, prominent search bar (large input, placeholder "Rechercher un client par nom ou téléphone..."), "Nouveau Client" button (green, large, top-right), table or card grid displaying clients with columns: Nom, Téléphone, Email, Nombre de orders (placeholder 0 for now), Actions (Voir, Modifier buttons)
 3. Search bar submits GET request to /clients?search={query}, controller filters clients using ClientService.searchClients(), results displayed in same view
 4. Empty state message displayed if no clients found: "Aucun client trouvé" with icon
 5. Success flash message displayed if redirected from save/delete (e.g., "Client enregistré avec succès") using Bootstrap alerts dismissible
@@ -100,8 +100,8 @@
 3. "Modifier" button links to /clients/{id}/edit (green, prominent)
 4. "Supprimer" button triggers soft delete with confirmation modal ("Êtes-vous sûr de vouloir supprimer ce client?"), POST to /clients/{id}/delete, red button positioned away from primary actions
 5. "Retour à la liste" link to /clients (secondary styling)
-6. Order history section with placeholder message: "Historique des commandes (à venir dans Epic 2)" or empty state "Aucune commande pour ce client"
-7. "Nouvelle commande pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
+6. Order history section with placeholder message: "Historique des orders (à venir dans Epic 2)" or empty state "Aucune order pour ce client"
+7. "Nouvelle order pour ce client" button disabled/greyed with tooltip "Disponible dans Epic 2"
 8. 404 error page displayed (friendly message) if client id doesn't exist or is soft-deleted
 9. Page layout clean, readable, no clutter, respects accessibility guidelines
 

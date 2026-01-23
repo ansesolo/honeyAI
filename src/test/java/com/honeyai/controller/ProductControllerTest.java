@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -53,26 +54,26 @@ class ProductControllerTest {
     }
 
     @Test
-    void list_shouldReturnProduitsListView() throws Exception {
+    void list_shouldReturnProductsListView() throws Exception {
         // Given
         when(productService.findAll()).thenReturn(Arrays.asList(product1, product2));
         when(productService.getPriceForYear(eq(1L), any())).thenReturn(new BigDecimal("8.00"));
         when(productService.getPriceForYear(eq(2L), any())).thenReturn(new BigDecimal("17.00"));
 
         // When/Then
-        mockMvc.perform(get("/produits"))
+        mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("produits/list"))
+                .andExpect(view().name("products/list"))
                 .andExpect(model().attributeExists("products"))
                 .andExpect(model().attributeExists("currentYear"))
                 .andExpect(model().attributeExists("productService"))
-                .andExpect(model().attribute("activeMenu", "produits"));
+                .andExpect(model().attribute("activeMenu", "products"));
 
         verify(productService).findAll();
     }
 
     @Test
-    void updateTarif_shouldUpdatePriceAndRedirect() throws Exception {
+    void updatePrice_shouldUpdatePriceAndRedirect() throws Exception {
         // Given
         when(productService.findById(1L)).thenReturn(Optional.of(product1));
         when(productService.updatePrice(eq(1L), eq(2026), any(BigDecimal.class)))
@@ -83,11 +84,11 @@ class ProductControllerTest {
                         .build());
 
         // When/Then
-        mockMvc.perform(post("/produits/1/tarif")
-                        .param("annee", "2026")
-                        .param("prix", "9.50"))
+        mockMvc.perform(post("/products/1/price")
+                        .param("year", "2026")
+                        .param("price", "9.50"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/produits"))
+                .andExpect(redirectedUrl("/products"))
                 .andExpect(flash().attributeExists("success"));
 
         verify(productService).updatePrice(eq(1L), eq(2026), eq(new BigDecimal("9.50")));
@@ -96,11 +97,11 @@ class ProductControllerTest {
     @Test
     void list_shouldDisplayCurrentYear() throws Exception {
         // Given
-        when(productService.findAll()).thenReturn(Arrays.asList(product1));
+        when(productService.findAll()).thenReturn(Collections.singletonList(product1));
         int expectedYear = LocalDate.now().getYear();
 
         // When/Then
-        mockMvc.perform(get("/produits"))
+        mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentYear", expectedYear));
     }

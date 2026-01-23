@@ -1,6 +1,6 @@
 # /create-next-story Task
 
-When this command is used, execute the following task:
+When this order is used, execute the following task:
 
 <!-- Powered by BMAD™ Core -->
 

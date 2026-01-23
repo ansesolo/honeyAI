@@ -25,13 +25,13 @@ Infrastructure technique et gestion des clients.
 
 ## Epic 2: Order Management & Product Catalog (8 stories)
 
-Gestion des commandes et catalogue produits.
+Gestion des orders et catalogue produits.
 
 | Story | Titre | Priorite | Statut |
 |-------|-------|----------|--------|
 | [2.1](./story-2.1-product-tarif-entities.md) | Product & Tarif Entities with Year-based Pricing | P0 | Pending |
-| [2.2](./story-2.2-commande-lignecommande-entities.md) | Commande & LigneCommande Entities with Status Workflow | P0 | Pending |
-| [2.3](./story-2.3-commande-produit-services.md) | CommandeService & ProduitService with Business Logic | P0 | Pending |
+| [2.2](./story-2.2-order-lignecommande-entities.md) | Commande & LigneCommande Entities with Status Workflow | P0 | Pending |
+| [2.3](./story-2.3-order-produit-services.md) | CommandeService & ProduitService with Business Logic | P0 | Pending |
 | [2.4](./story-2.4-product-catalog-ui.md) | Product Catalog & Tarif Management UI | P1 | Pending |
 | [2.5](./story-2.5-order-list-filters.md) | Order List with Filters and Status Badges | P0 | Pending |
 | [2.6](./story-2.6-create-order-form.md) | Create Order Form with Dynamic Product Lines | P0 | Pending |

@@ -18,11 +18,11 @@
 ## Acceptance Criteria
 
 1. ProduitService.java created with methods: findAll() returns all products ordered by name, findById(Long id) returns Optional<Produit>, getCurrentYearTarif(Long produitId) returns current year price or throws PriceNotFoundException, updateTarif(Long produitId, Integer annee, BigDecimal prix) saves/updates tarif for product/year
-2. CommandeService.java created with methods: findAll(), findById(Long id), findByClientId(Long clientId), findByStatut(StatutCommande statut), create(Commande commande) validates and saves, updateStatut(Long commandeId, StatutCommande newStatut) transitions status with validation, calculateTotal(Long commandeId) sums ligne.quantite * ligne.prixUnitaire for all lignes
+2. CommandeService.java created with methods: findAll(), findById(Long id), findByClientId(Long clientId), findByStatut(StatutCommande statut), create(Commande order) validates and saves, updateStatut(Long commandeId, StatutCommande newStatut) transitions status with validation, calculateTotal(Long commandeId) sums ligne.quantite * ligne.prixUnitaire for all lignes
 3. Business rules in CommandeService.create(): auto-populate dateCommande with today if null, set statut to COMMANDEE if null, for each LigneCommande auto-fetch prixUnitaire from ProduitService.getCurrentYearTarif() if not provided, validate at least one ligne exists
 4. Business rules in updateStatut(): only allow forward transitions (COMMANDEE->RECUPEREE->PAYEE), throw InvalidStatusTransitionException if invalid (e.g., PAYEE->COMMANDEE), log status change with timestamp
 5. Unit tests with mocked repositories: verify create() auto-fills prices from current year tarifs, verify calculateTotal() sums correctly, verify updateStatut() enforces transition rules and throws exception for invalid transitions, verify findByClientId() returns orders sorted by date descending
-6. Integration test: create real commande with 2 lignes, verify prices auto-populated, calculate total, transition through all statuses successfully
+6. Integration test: create real order with 2 lignes, verify prices auto-populated, calculate total, transition through all statuses successfully
 
 ---
 
@@ -91,7 +91,7 @@ Claude Opus 4.5
 | 3 | create() auto-populates dateCommande, statut, and prices | ✅ PASS |
 | 4 | updateStatut() enforces forward-only transitions with exception | ✅ PASS |
 | 5 | Unit tests with mocked repositories | ✅ PASS (20 tests) |
-| 6 | Integration test with real commande | ✅ PASS (3 tests) |
+| 6 | Integration test with real order | ✅ PASS (3 tests) |
 
 **Code Quality:**
 - Follows coding standards (@Transactional, @RequiredArgsConstructor, @Slf4j)
@@ -108,4 +108,4 @@ Claude Opus 4.5
 
 ### Gate Status
 
-Gate: PASS → docs/qa/gates/2.3-commande-produit-services.yml
+Gate: PASS → docs/qa/gates/2.3-order-produit-services.yml

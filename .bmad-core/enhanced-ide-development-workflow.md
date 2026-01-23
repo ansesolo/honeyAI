@@ -25,7 +25,7 @@ This is a simple step-by-step guide to help you efficiently manage your developm
 
 The Test Architect (Quinn) provides comprehensive quality assurance throughout the development lifecycle. Here's how to leverage each capability at the right time.
 
-**Command Aliases:** Documentation uses short forms (`*risk`, `*design`, `*nfr`, `*trace`) for the full commands (`*risk-profile`, `*test-design`, `*nfr-assess`, `*trace-requirements`).
+**Command Aliases:** Documentation uses short forms (`*risk`, `*design`, `*nfr`, `*trace`) for the full orders (`*risk-profile`, `*test-design`, `*nfr-assess`, `*trace-requirements`).
 
 ### Quick Command Reference
 
@@ -225,7 +225,7 @@ All Test Architect activities create permanent records:
 
 ### Quick Decision Guide
 
-**Should I run Test Architect commands?**
+**Should I run Test Architect orders?**
 
 | **Scenario**             | **Before Dev**                  | **During Dev**               | **After Dev**                |
 | ------------------------ | ------------------------------- | ---------------------------- | ---------------------------- |

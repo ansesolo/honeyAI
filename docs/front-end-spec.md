@@ -98,7 +98,7 @@ graph TD
 |------|-------|-------|-------------|
 | 🏠 | Tableau de bord | `/` | Financial overview, quick actions |
 | 👥 | Clients | `/clients` | Client list and management |
-| 📦 | Commandes | `/commandes` | Order list and management |
+| 📦 | Commandes | `/orders` | Order list and management |
 | 🏷️ | Étiquettes | `/etiquettes` | Label generation (killer feature) |
 | 📊 | Produits | `/produits` | Product catalog & pricing |
 | 🛒 | Achats | `/achats` | Supply purchases tracking |
@@ -147,7 +147,7 @@ graph TD
     F -->|Yes| H[Click 'Enregistrer']
     H --> I[✅ Toast: 'Client enregistré'<br/>Redirect to Client Detail]
 
-    I --> J[Click 'Nouvelle commande<br/>pour ce client']
+    I --> J[Click 'Nouvelle order<br/>pour ce client']
     D --> J
 
     J --> K[Order Form<br/>Client pre-selected]
@@ -274,7 +274,7 @@ graph TD
     E --> H[View Expense Breakdown<br/>by Category]
 
     H --> I{Take action?}
-    I -->|View orders| J[Click card → /commandes<br/>filtered by status]
+    I -->|View orders| J[Click card → /orders<br/>filtered by status]
     I -->|View expenses| K[Click breakdown →<br/>/achats filtered]
     I -->|No action| L[📍 End: Informed user]
 
@@ -370,7 +370,7 @@ graph TD
 - Page title with icon and "Nouveau" button (top-right, green, prominent)
 - Large search bar with placeholder text and search icon
 - Table with alternating row colors (zebra striping)
-- Columns: Nom, Téléphone, Nombre de commandes, Actions
+- Columns: Nom, Téléphone, Nombre de orders, Actions
 
 ### Screen 3: Fiche Client (Détail)
 
@@ -396,9 +396,9 @@ graph TD
 │            │                                                     │
 │            │   ─────────────────────────────────────────────────│
 │            │   📦 HISTORIQUE COMMANDES                          │
-│            │   Total: 8 commandes | 456,00 € dépensés           │
+│            │   Total: 8 orders | 456,00 € dépensés           │
 │            │                                                     │
-│            │   [+ Nouvelle commande pour ce client] 🟢          │
+│            │   [+ Nouvelle order pour ce client] 🟢          │
 │            │                                                     │
 │            │   │ DATE       │ STATUT      │ MONTANT │          │ │
 │            │   │ 15/10/2025 │ 🟢 Payée    │ 67,00 € │ [Voir]   │ │

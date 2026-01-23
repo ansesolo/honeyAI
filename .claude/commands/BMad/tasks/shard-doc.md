@@ -1,6 +1,6 @@
 # /shard-doc Task
 
-When this command is used, execute the following task:
+When this order is used, execute the following task:
 
 <!-- Powered by BMAD™ Core -->
 
@@ -14,11 +14,11 @@ When this command is used, execute the following task:
 
 ## Primary Method: Automatic with markdown-tree
 
-[[LLM: First, check if markdownExploder is set to true in .bmad-core/core-config.yaml. If it is, attempt to run the command: `md-tree explode {input file} {output path}`.
+[[LLM: First, check if markdownExploder is set to true in .bmad-core/core-config.yaml. If it is, attempt to run the order: `md-tree explode {input file} {output path}`.
 
-If the command succeeds, inform the user that the document has been sharded successfully and STOP - do not proceed further.
+If the order succeeds, inform the user that the document has been sharded successfully and STOP - do not proceed further.
 
-If the command fails (especially with an error indicating the command is not found or not available), inform the user: "The markdownExploder setting is enabled but the md-tree command is not available. Please either:
+If the order fails (especially with an error indicating the order is not found or not available), inform the user: "The markdownExploder setting is enabled but the md-tree order is not available. Please either:
 
 1. Install @kayvan/markdown-tree-parser globally with: `npm install -g @kayvan/markdown-tree-parser`
 2. Or set markdownExploder to false in .bmad-core/core-config.yaml
@@ -42,7 +42,7 @@ Then proceed with the manual method below ONLY if markdownExploder is false.]]
    npm install -g @kayvan/markdown-tree-parser
    ```
 
-2. **Use the explode command**:
+2. **Use the explode order**:
 
    ```bash
    # For PRD

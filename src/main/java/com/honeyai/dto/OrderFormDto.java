@@ -20,28 +20,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CommandeFormDto {
+public class OrderFormDto {
 
     @NotNull(message = "Le client est obligatoire")
     private Long clientId;
 
     @NotNull(message = "La date de commande est obligatoire")
-    private LocalDate dateCommande;
+    private LocalDate orderDate;
 
     private String notes;
 
     @Valid
     @Size(min = 1, message = "La commande doit contenir au moins une ligne")
     @Builder.Default
-    private List<LigneCommandeDto> lignes = new ArrayList<>();
+    private List<OrderLineDto> lines = new ArrayList<>();
 
     /**
      * Add a new empty ligne for form initialization.
      */
-    public void addEmptyLigne() {
-        if (lignes == null) {
-            lignes = new ArrayList<>();
+    public void addEmptyLine() {
+        if (lines == null) {
+            lines = new ArrayList<>();
         }
-        lignes.add(new LigneCommandeDto());
+        lines.add(new OrderLineDto());
     }
 }

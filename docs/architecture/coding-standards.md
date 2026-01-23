@@ -60,15 +60,15 @@ Always store `prixUnitaire` in `LigneCommande` at order creation time.
 
 **Example:**
 ```java
-public Commande create(Commande commande) {
-    for (LigneCommande ligne : commande.getLignes()) {
+public Commande create(Commande order) {
+    for (LigneCommande ligne : order.getLignes()) {
         if (ligne.getPrixUnitaire() == null) {
             // Fetch current price and store it
             BigDecimal prix = produitService.getCurrentYearTarif(ligne.getProduit().getId());
             ligne.setPrixUnitaire(prix);
         }
     }
-    return commandeRepository.save(commande);
+    return commandeRepository.save(order);
 }
 ```
 
@@ -86,17 +86,17 @@ Validate status transitions before changing `StatutCommande`.
 **Example:**
 ```java
 public void updateStatut(Long commandeId, StatutCommande newStatut) {
-    Commande commande = findById(commandeId);
+    Commande order = findById(commandeId);
 
-    if (!commande.canTransitionTo(newStatut)) {
+    if (!order.canTransitionTo(newStatut)) {
         throw new InvalidStatusTransitionException(
             String.format("Cannot transition from %s to %s",
-                commande.getStatut(), newStatut)
+                order.getStatut(), newStatut)
         );
     }
 
-    commande.setStatut(newStatut);
-    commandeRepository.save(commande);
+    order.setStatut(newStatut);
+    commandeRepository.save(order);
 }
 ```
 
@@ -339,14 +339,14 @@ public Commande createCommande(CommandeDto dto) {
 // ✅ BETTER - Extracted helpers
 public Commande createCommande(CommandeDto dto) {
     validateCommande(dto);
-    Commande commande = buildCommande(dto);
-    enrichWithPrices(commande);
-    return commandeRepository.save(commande);
+    Commande order = buildCommande(dto);
+    enrichWithPrices(order);
+    return commandeRepository.save(order);
 }
 
 private void validateCommande(CommandeDto dto) { /* ... */ }
 private Commande buildCommande(CommandeDto dto) { /* ... */ }
-private void enrichWithPrices(Commande commande) { /* ... */ }
+private void enrichWithPrices(Commande order) { /* ... */ }
 ```
 
 ### Class Length
@@ -583,8 +583,8 @@ public Client findById(Long id) {
 }
 
 public void updateStatut(Long id, StatutCommande newStatut) {
-    Commande commande = findById(id);
-    if (!commande.canTransitionTo(newStatut)) {
+    Commande order = findById(id);
+    if (!order.canTransitionTo(newStatut)) {
         throw new InvalidStatusTransitionException("Invalid transition");
     }
     // ...
@@ -665,7 +665,7 @@ List<Client> searchClients(@Param("search") String search);
 
 @Query("SELECT new com.honeyai.dto.TopProduitDto(p.nom, SUM(lc.quantite)) " +
        "FROM LigneCommande lc JOIN lc.produit p " +
-       "JOIN lc.commande cmd " +
+       "JOIN lc.order cmd " +
        "WHERE cmd.statut = 'PAYEE' " +
        "GROUP BY p.id ORDER BY SUM(lc.quantite) DESC")
 List<TopProduitDto> findTopProducts(@Param("limit") int limit);

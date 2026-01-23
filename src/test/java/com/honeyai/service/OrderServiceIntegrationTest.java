@@ -1,7 +1,7 @@
 package com.honeyai.service;
 
 import com.honeyai.enums.HoneyType;
-import com.honeyai.enums.StatutCommande;
+import com.honeyai.enums.OrderStatus;
 import com.honeyai.model.*;
 import com.honeyai.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-class CommandeServiceIntegrationTest {
+class OrderServiceIntegrationTest {
 
     @Autowired
-    private CommandeService commandeService;
+    private OrderService orderService;
 
     @Autowired
     private ProductService productService;
@@ -87,51 +87,51 @@ class CommandeServiceIntegrationTest {
 
     @Test
     void integrationTest_createCommandeWithAutoPopulatedPrices_andTransitionThroughStatuses() {
-        // AC: create real commande with 2 lignes
-        LigneCommande ligne1 = LigneCommande.builder()
+        // AC: create real order with 2 lignes
+        OrderLine ligne1 = OrderLine.builder()
                 .product(product1)
-                .quantite(2)
+                .quantity(2)
                 .build(); // No price - should be auto-populated
 
-        LigneCommande ligne2 = LigneCommande.builder()
+        OrderLine ligne2 = OrderLine.builder()
                 .product(product2)
-                .quantite(1)
+                .quantity(1)
                 .build(); // No price - should be auto-populated
 
-        Commande commande = Commande.builder()
+        Order order = Order.builder()
                 .client(client)
                 .build(); // No date - should be auto-populated
-        commande.addLigne(ligne1);
-        commande.addLigne(ligne2);
+        order.addLigne(ligne1);
+        order.addLigne(ligne2);
 
-        // Create commande
-        Commande created = commandeService.create(commande);
+        // Create order
+        Order created = orderService.create(order);
 
-        // Verify commande was created
+        // Verify order was created
         assertThat(created.getId()).isNotNull();
-        assertThat(created.getDateCommande()).isEqualTo(LocalDate.now());
-        assertThat(created.getStatut()).isEqualTo(StatutCommande.COMMANDEE);
-        assertThat(created.getLignes()).hasSize(2);
+        assertThat(created.getOrderDate()).isEqualTo(LocalDate.now());
+        assertThat(created.getStatus()).isEqualTo(OrderStatus.ORDERED);
+        assertThat(created.getLines()).hasSize(2);
 
         // AC: verify prices auto-populated
-        assertThat(created.getLignes().get(0).getPrixUnitaire())
+        assertThat(created.getLines().getFirst().getUnitPrice())
                 .isEqualByComparingTo(new BigDecimal("8.00"));
-        assertThat(created.getLignes().get(1).getPrixUnitaire())
+        assertThat(created.getLines().get(1).getUnitPrice())
                 .isEqualByComparingTo(new BigDecimal("17.00"));
 
         // AC: calculate total
-        BigDecimal total = commandeService.calculateTotal(created.getId());
+        BigDecimal total = orderService.calculateTotal(created.getId());
         // (2 * 8.00) + (1 * 17.00) = 33.00
         assertThat(total).isEqualByComparingTo(new BigDecimal("33.00"));
 
         // AC: transition through all statuses successfully
-        // COMMANDEE -> RECUPEREE
-        Commande recuperee = commandeService.updateStatut(created.getId(), StatutCommande.RECUPEREE);
-        assertThat(recuperee.getStatut()).isEqualTo(StatutCommande.RECUPEREE);
+        // ORDERED -> RECOVERED
+        Order ordered = orderService.updateStatus(created.getId(), OrderStatus.RECOVERED);
+        assertThat(ordered.getStatus()).isEqualTo(OrderStatus.RECOVERED);
 
-        // RECUPEREE -> PAYEE
-        Commande payee = commandeService.updateStatut(created.getId(), StatutCommande.PAYEE);
-        assertThat(payee.getStatut()).isEqualTo(StatutCommande.PAYEE);
+        // RECOVERED -> PAID
+        Order paid = orderService.updateStatus(created.getId(), OrderStatus.PAID);
+        assertThat(paid.getStatus()).isEqualTo(OrderStatus.PAID);
     }
 
     @Test

@@ -48,7 +48,7 @@
   - [Epic 2: Order Management & Product Catalog](./epic-2-order-management-product-catalog.md)
     - [Story 2.1: Product & Tarif Entities with Year-based Pricing](./epic-2-order-management-product-catalog.md#story-21-product-tarif-entities-with-year-based-pricing)
       - [Acceptance Criteria:](./epic-2-order-management-product-catalog.md#acceptance-criteria)
-    - [Story 2.2: Commande & LigneCommande Entities with Status Workflow](./epic-2-order-management-product-catalog.md#story-22-commande-lignecommande-entities-with-status-workflow)
+    - [Story 2.2: Commande & LigneCommande Entities with Status Workflow](./epic-2-order-management-product-catalog.md#story-22-order-lignecommande-entities-with-status-workflow)
       - [Acceptance Criteria:](./epic-2-order-management-product-catalog.md#acceptance-criteria)
     - [Story 2.3: CommandeService & ProduitService with Business Logic](./epic-2-order-management-product-catalog.md#story-23-commandeservice-produitservice-with-business-logic)
       - [Acceptance Criteria:](./epic-2-order-management-product-catalog.md#acceptance-criteria)

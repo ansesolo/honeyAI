@@ -91,7 +91,7 @@ honeyAI/
 │   │           │   ├── list.html
 │   │           │   ├── detail.html
 │   │           │   └── form.html
-│   │           ├── commandes/
+│   │           ├── orders/
 │   │           │   ├── list.html
 │   │           │   ├── detail.html
 │   │           │   └── form.html

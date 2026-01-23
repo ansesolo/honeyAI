@@ -28,7 +28,7 @@
                 </h1>
             </div>
             <div class="col-md-6 text-md-end">
-                <a th:href="@{/clients/nouveau}" class="btn btn-primary btn-lg">
+                <a th:href="@{/clients/new}" class="btn btn-primary btn-lg">
                     <i class="fas fa-plus me-2"></i>Nouveau Client
                 </a>
             </div>
@@ -154,7 +154,7 @@
                     </p>
                     <p class="card-text mb-3">
                         <i class="fas fa-shopping-cart me-2 text-muted"></i>
-                        <span class="badge bg-secondary">0 commandes</span>
+                        <span class="badge bg-secondary">0 orders</span>
                     </p>
                     <div class="d-flex gap-2">
                         <a th:href="@{/clients/{id}(id=${client.id})}"
