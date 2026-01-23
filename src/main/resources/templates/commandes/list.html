@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Commandes</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shopping-cart me-2"></i>Commandes</h1>
+            <a th:href="@{/commandes/nouveau}" class="btn btn-success">
+                <i class="fas fa-plus me-1"></i>Nouvelle Commande
+            </a>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/commandes}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="annee" class="form-label">Annee</label>
+                        <select class="form-select" id="annee" name="annee">
+                            <option value="">Toutes les annees</option>
+                            <option th:each="year : ${years}"
+                                    th:value="${year}"
+                                    th:text="${year}"
+                                    th:selected="${selectedYear != null and selectedYear == year}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statut" class="form-label">Statut</label>
+                        <select class="form-select" id="statut" name="statut">
+                            <option value="">Tous</option>
+                            <option th:each="s : ${statuts}"
+                                    th:value="${s.name()}"
+                                    th:text="${s.displayLabel}"
+                                    th:selected="${selectedStatut != null and selectedStatut == s}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i>Filtrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div th:if="${#lists.isEmpty(commandes)}" class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>Aucune commande trouvee pour les filtres selectionnes
+        </div>
+
+        <div th:unless="${#lists.isEmpty(commandes)}" class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>Client</th>
+                                <th>Date commande</th>
+                                <th>Statut</th>
+                                <th class="text-end">Montant total</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="commande : ${commandes}">
+                                <td th:text="${commande.id}">1</td>
+                                <td th:text="${commande.client?.name}">Client Name</td>
+                                <td th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td>
+                                    <span th:if="${commande.statut.name() == 'COMMANDEE'}"
+                                          class="badge bg-primary"
+                                          th:text="${commande.statut.displayLabel}">Commandee</span>
+                                    <span th:if="${commande.statut.name() == 'RECUPEREE'}"
+                                          class="badge bg-warning text-dark"
+                                          th:text="${commande.statut.displayLabel}">Recuperee</span>
+                                    <span th:if="${commande.statut.name() == 'PAYEE'}"
+                                          class="badge bg-success"
+                                          th:text="${commande.statut.displayLabel}">Payee</span>
+                                </td>
+                                <td class="text-end" th:with="total=${commandeService.calculateTotal(commande.id)}">
+                                    <span th:text="${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/commandes/{id}(id=${commande.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> Voir
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

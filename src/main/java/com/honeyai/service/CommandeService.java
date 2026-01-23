@@ -46,6 +46,44 @@ public class CommandeService {
         return commandeRepository.findByStatut(statut);
     }
 
+    @Transactional(readOnly = true)
+    public List<Commande> findAllSortedByDateDesc() {
+        return commandeRepository.findAllByOrderByDateCommandeDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Commande> findByYear(Integer year) {
+        return commandeRepository.findByYearOrderByDateCommandeDesc(year);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Commande> findByYearAndStatut(Integer year, StatutCommande statut) {
+        return commandeRepository.findByYearAndStatutOrderByDateCommandeDesc(year, statut);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Commande> findByStatutSortedByDateDesc(StatutCommande statut) {
+        return commandeRepository.findByStatutOrderByDateCommandeDesc(statut);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> getDistinctYears() {
+        return commandeRepository.findDistinctYears();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Commande> findWithFilters(Integer year, StatutCommande statut) {
+        if (year != null && statut != null) {
+            return findByYearAndStatut(year, statut);
+        } else if (year != null) {
+            return findByYear(year);
+        } else if (statut != null) {
+            return findByStatutSortedByDateDesc(statut);
+        } else {
+            return findAllSortedByDateDesc();
+        }
+    }
+
     public Commande create(Commande commande) {
         log.info("Creating new commande for client #{}",
                 commande.getClient() != null ? commande.getClient().getId() : "null");

@@ -300,4 +300,132 @@ class CommandeRepositoryTest {
         // When/Then
         assertThat(ligne.getTotal()).isEqualByComparingTo(new BigDecimal("25.50"));
     }
+
+    @Test
+    void findByYearOrderByDateCommandeDesc_shouldReturnOrdersForYear() {
+        // Given
+        Commande commande2025 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 6, 15))
+                .build();
+        commandeRepository.save(commande2025);
+
+        Commande commande2026a = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 1, 10))
+                .build();
+        commandeRepository.save(commande2026a);
+
+        Commande commande2026b = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 3, 20))
+                .build();
+        commandeRepository.save(commande2026b);
+
+        // When
+        List<Commande> commandes2026 = commandeRepository.findByYearOrderByDateCommandeDesc(2026);
+
+        // Then
+        assertThat(commandes2026).hasSize(2);
+        assertThat(commandes2026.get(0).getDateCommande()).isEqualTo(LocalDate.of(2026, 3, 20));
+        assertThat(commandes2026.get(1).getDateCommande()).isEqualTo(LocalDate.of(2026, 1, 10));
+    }
+
+    @Test
+    void findByYearAndStatutOrderByDateCommandeDesc_shouldFilterByYearAndStatut() {
+        // Given
+        Commande commande2026Commandee = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 1, 15))
+                .statut(StatutCommande.COMMANDEE)
+                .build();
+        commandeRepository.save(commande2026Commandee);
+
+        Commande commande2026Payee = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 2, 20))
+                .statut(StatutCommande.PAYEE)
+                .build();
+        commandeRepository.save(commande2026Payee);
+
+        Commande commande2025Commandee = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 6, 10))
+                .statut(StatutCommande.COMMANDEE)
+                .build();
+        commandeRepository.save(commande2025Commandee);
+
+        // When
+        List<Commande> result = commandeRepository.findByYearAndStatutOrderByDateCommandeDesc(2026, StatutCommande.COMMANDEE);
+
+        // Then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getDateCommande().getYear()).isEqualTo(2026);
+        assertThat(result.get(0).getStatut()).isEqualTo(StatutCommande.COMMANDEE);
+    }
+
+    @Test
+    void findDistinctYears_shouldReturnUniqueYearsDescending() {
+        // Given
+        Commande c2024 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2024, 5, 1))
+                .build();
+        commandeRepository.save(c2024);
+
+        Commande c2025a = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 1, 15))
+                .build();
+        commandeRepository.save(c2025a);
+
+        Commande c2025b = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 6, 20))
+                .build();
+        commandeRepository.save(c2025b);
+
+        Commande c2026 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 1, 5))
+                .build();
+        commandeRepository.save(c2026);
+
+        // When
+        List<Integer> years = commandeRepository.findDistinctYears();
+
+        // Then
+        assertThat(years).containsExactly(2026, 2025, 2024);
+    }
+
+    @Test
+    void findAllByOrderByDateCommandeDesc_shouldReturnAllOrdersSorted() {
+        // Given
+        Commande c1 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 1, 1))
+                .build();
+        commandeRepository.save(c1);
+
+        Commande c2 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2026, 6, 15))
+                .build();
+        commandeRepository.save(c2);
+
+        Commande c3 = Commande.builder()
+                .client(client)
+                .dateCommande(LocalDate.of(2025, 12, 31))
+                .build();
+        commandeRepository.save(c3);
+
+        // When
+        List<Commande> all = commandeRepository.findAllByOrderByDateCommandeDesc();
+
+        // Then
+        assertThat(all).hasSize(3);
+        assertThat(all.get(0).getDateCommande()).isEqualTo(LocalDate.of(2026, 6, 15));
+        assertThat(all.get(1).getDateCommande()).isEqualTo(LocalDate.of(2025, 12, 31));
+        assertThat(all.get(2).getDateCommande()).isEqualTo(LocalDate.of(2025, 1, 1));
+    }
 }
