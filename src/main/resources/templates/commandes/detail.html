@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title th:text="'Commande #' + ${commande.id}">Commande</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <!-- Success Alert -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i><span th:text="${success}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-shopping-cart me-2"></i>
+                Commande #<span th:text="${commande.id}">1</span>
+            </h1>
+            <div>
+                <a th:href="@{/commandes}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Retour
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Order Info -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-2"></i>Informations
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Client:</dt>
+                            <dd class="col-sm-7">
+                                <a th:href="@{/clients/{id}(id=${commande.client.id})}"
+                                   th:text="${commande.client.name}">Client Name</a>
+                            </dd>
+
+                            <dt class="col-sm-5">Date:</dt>
+                            <dd class="col-sm-7" th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">01/01/2026</dd>
+
+                            <dt class="col-sm-5">Statut:</dt>
+                            <dd class="col-sm-7">
+                                <span th:if="${commande.statut.name() == 'COMMANDEE'}"
+                                      class="badge bg-primary"
+                                      th:text="${commande.statut.displayLabel}">Commandee</span>
+                                <span th:if="${commande.statut.name() == 'RECUPEREE'}"
+                                      class="badge bg-warning text-dark"
+                                      th:text="${commande.statut.displayLabel}">Recuperee</span>
+                                <span th:if="${commande.statut.name() == 'PAYEE'}"
+                                      class="badge bg-success"
+                                      th:text="${commande.statut.displayLabel}">Payee</span>
+                            </dd>
+
+                            <dt class="col-sm-5">Creee le:</dt>
+                            <dd class="col-sm-7" th:text="${commande.createdAt != null ? #temporals.format(commande.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2026 10:00</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Notes Card -->
+                <div th:if="${commande.notes != null and !commande.notes.isEmpty()}" class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-sticky-note me-2"></i>Notes
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text mb-0" th:text="${commande.notes}">Notes content</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Lines -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list me-2"></i>Lignes de commande
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th class="text-center">Quantite</th>
+                                        <th class="text-end">Prix unitaire</th>
+                                        <th class="text-end">Sous-total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ligne : ${commande.lignes}">
+                                        <td th:text="${ligne.product.name}">Product Name</td>
+                                        <td class="text-center" th:text="${ligne.quantite}">1</td>
+                                        <td class="text-end">
+                                            <span th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
+                                        </td>
+                                        <td class="text-end">
+                                            <span th:text="${#numbers.formatDecimal(ligne.total, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-primary">
+                                        <td colspan="3" class="text-end fw-bold fs-5">Total:</td>
+                                        <td class="text-end fw-bold fs-5">
+                                            <span th:text="${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}">0,00</span> EUR
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

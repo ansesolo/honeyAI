@@ -1,5 +1,6 @@
 package com.honeyai.service;
 
+import com.honeyai.dto.ProductPriceDto;
 import com.honeyai.exception.PriceNotFoundException;
 import com.honeyai.model.Price;
 import com.honeyai.model.Product;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -63,5 +65,29 @@ public class ProductService {
 
         priceEntity.setPrice(price);
         return priceRepository.save(priceEntity);
+    }
+
+    /**
+     * Get all products with their current year prices.
+     * Products without a price for the current year will have null price.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductPriceDto> findAllWithCurrentYearPrices() {
+        int currentYear = LocalDate.now().getYear();
+        List<Product> products = productRepository.findAllByOrderByNameAsc();
+
+        return products.stream()
+                .map(product -> {
+                    BigDecimal price = priceRepository.findByProductIdAndYear(product.getId(), currentYear)
+                            .map(Price::getPrice)
+                            .orElse(null);
+                    return ProductPriceDto.builder()
+                            .id(product.getId())
+                            .name(product.getName())
+                            .unit(product.getUnit())
+                            .price(price)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }
