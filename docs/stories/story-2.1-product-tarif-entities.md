@@ -1,7 +1,7 @@
 # Story 2.1: Product & Price Entities with Year-based Pricing
 
 **Epic:** Epic 2 - Order Management & Product Catalog
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 1.1
 
@@ -39,7 +39,43 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Unit tests passing
-- [ ] Seed data loads correctly
+- [x] All acceptance criteria met
+- [x] Unit tests passing
+- [x] Seed data loads correctly
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### File List
+
+**New Files:**
+- `src/main/java/com/honeyai/enums/HoneyType.java` - Honey type enum with French labels
+- `src/main/java/com/honeyai/model/Product.java` - Product JPA entity
+- `src/main/java/com/honeyai/model/Price.java` - Price JPA entity with year-based pricing
+- `src/main/java/com/honeyai/repository/ProductRepository.java` - Product data access
+- `src/main/java/com/honeyai/repository/PriceRepository.java` - Price data access
+- `src/test/java/com/honeyai/enums/HoneyTypeTest.java` - Enum unit tests
+- `src/test/java/com/honeyai/repository/ProductRepositoryTest.java` - Product repo tests
+- `src/test/java/com/honeyai/repository/PriceRepositoryTest.java` - Price repo tests
+- `src/test/resources/application-test.yml` - H2 test configuration
+
+**Modified Files:**
+- `src/main/java/com/honeyai/config/DataInitializer.java` - Added product seed data
+- `pom.xml` - Added H2 test dependency
+
+### Change Log
+
+- Created HoneyType enum with TOUTES_FLEURS, FORET, CHATAIGNIER values and French display labels
+- Created Product entity with @OneToMany relationship to Price
+- Created Price entity with unique constraint on (product_id, price_year)
+- Created ProductRepository with findAllByOrderByNameAsc()
+- Created PriceRepository with findByProductIdAndYear() and findByYear()
+- Added DataInitializer seed data: 8 products (6 honey + Cire + Reine) with 2024 prices
+- Renamed 'year' column to 'price_year' to avoid H2 reserved keyword conflict
+- Added H2 test database for reliable constraint testing
+
+### Agent Model Used
+
+Claude Opus 4.5
