@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Catalogue Produits</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-jar me-2"></i>Catalogue Produits</h1>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Products Table -->
+        <div th:if="${#lists.isEmpty(products)}" class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>Aucun produit dans le catalogue
+        </div>
+
+        <div th:unless="${#lists.isEmpty(products)}" class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Produit</th>
+                                <th>Type</th>
+                                <th>Unite</th>
+                                <th class="text-end">Prix 2024</th>
+                                <th class="text-end">Prix 2025</th>
+                                <th class="text-end" th:classappend="${currentYear == 2026} ? 'table-warning' : ''">
+                                    <strong th:if="${currentYear == 2026}">Prix 2026</strong>
+                                    <span th:unless="${currentYear == 2026}">Prix 2026</span>
+                                </th>
+                                <th class="text-end">Prix 2027</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Group by honey type: Toutes Fleurs -->
+                            <tr class="table-primary">
+                                <td colspan="8"><strong><i class="fas fa-seedling me-2"></i>Miel Toutes Fleurs</strong></td>
+                            </tr>
+                            <tr th:each="product : ${products}" th:if="${product.type != null and product.type.name() == 'TOUTES_FLEURS'}">
+                                <td th:text="${product.name}">Nom</td>
+                                <td th:text="${product.type?.displayLabel}">Type</td>
+                                <td th:text="${product.unit}">Unite</td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2024)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2025)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:classappend="${currentYear == 2026} ? 'table-warning' : ''" th:with="price=${productService.getPriceForYear(product.id, 2026)}">
+                                    <strong th:if="${price != null and currentYear == 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</strong>
+                                    <span th:if="${price != null and currentYear != 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2027)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" data-bs-target="#editPriceModal"
+                                            th:data-product-id="${product.id}"
+                                            th:data-product-name="${product.name}">
+                                        <i class="fas fa-edit"></i> Modifier prix
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Group by honey type: Foret -->
+                            <tr class="table-success">
+                                <td colspan="8"><strong><i class="fas fa-tree me-2"></i>Miel Foret</strong></td>
+                            </tr>
+                            <tr th:each="product : ${products}" th:if="${product.type != null and product.type.name() == 'FORET'}">
+                                <td th:text="${product.name}">Nom</td>
+                                <td th:text="${product.type?.displayLabel}">Type</td>
+                                <td th:text="${product.unit}">Unite</td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2024)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2025)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:classappend="${currentYear == 2026} ? 'table-warning' : ''" th:with="price=${productService.getPriceForYear(product.id, 2026)}">
+                                    <strong th:if="${price != null and currentYear == 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</strong>
+                                    <span th:if="${price != null and currentYear != 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2027)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" data-bs-target="#editPriceModal"
+                                            th:data-product-id="${product.id}"
+                                            th:data-product-name="${product.name}">
+                                        <i class="fas fa-edit"></i> Modifier prix
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Group by honey type: Chataignier -->
+                            <tr class="table-warning">
+                                <td colspan="8"><strong><i class="fas fa-leaf me-2"></i>Miel Chataignier</strong></td>
+                            </tr>
+                            <tr th:each="product : ${products}" th:if="${product.type != null and product.type.name() == 'CHATAIGNIER'}">
+                                <td th:text="${product.name}">Nom</td>
+                                <td th:text="${product.type?.displayLabel}">Type</td>
+                                <td th:text="${product.unit}">Unite</td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2024)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2025)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:classappend="${currentYear == 2026} ? 'table-warning' : ''" th:with="price=${productService.getPriceForYear(product.id, 2026)}">
+                                    <strong th:if="${price != null and currentYear == 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</strong>
+                                    <span th:if="${price != null and currentYear != 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2027)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" data-bs-target="#editPriceModal"
+                                            th:data-product-id="${product.id}"
+                                            th:data-product-name="${product.name}">
+                                        <i class="fas fa-edit"></i> Modifier prix
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Other products (no honey type) -->
+                            <tr class="table-secondary">
+                                <td colspan="8"><strong><i class="fas fa-box me-2"></i>Autres Produits</strong></td>
+                            </tr>
+                            <tr th:each="product : ${products}" th:if="${product.type == null}">
+                                <td th:text="${product.name}">Nom</td>
+                                <td class="text-muted">-</td>
+                                <td th:text="${product.unit}">Unite</td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2024)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2025)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:classappend="${currentYear == 2026} ? 'table-warning' : ''" th:with="price=${productService.getPriceForYear(product.id, 2026)}">
+                                    <strong th:if="${price != null and currentYear == 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</strong>
+                                    <span th:if="${price != null and currentYear != 2026}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end" th:with="price=${productService.getPriceForYear(product.id, 2027)}">
+                                    <span th:if="${price != null}" th:text="${#numbers.formatDecimal(price, 1, 'COMMA', 2, 'POINT')} + ' EUR'">0,00 EUR</span>
+                                    <span th:unless="${price != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" data-bs-target="#editPriceModal"
+                                            th:data-product-id="${product.id}"
+                                            th:data-product-name="${product.name}">
+                                        <i class="fas fa-edit"></i> Modifier prix
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Price Modal -->
+    <div class="modal fade" id="editPriceModal" tabindex="-1" aria-labelledby="editPriceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editPriceForm" method="post" th:action="@{/produits/__productId__/tarif}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPriceModalLabel">
+                            <i class="fas fa-edit me-2"></i>Modifier le prix
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3">Produit: <strong id="modalProductName"></strong></p>
+
+                        <div class="mb-3">
+                            <label for="annee" class="form-label">Annee</label>
+                            <select class="form-select" id="annee" name="annee" required>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prix" class="form-label">Prix (EUR)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="prix" name="prix"
+                                       step="0.01" min="0" required placeholder="0,00">
+                                <span class="input-group-text">EUR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Annuler
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+<script>
+    // Handle modal data population
+    document.getElementById('editPriceModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var productId = button.getAttribute('data-product-id');
+        var productName = button.getAttribute('data-product-name');
+
+        document.getElementById('modalProductName').textContent = productName;
+
+        // Update form action with product ID
+        var form = document.getElementById('editPriceForm');
+        form.action = '/produits/' + productId + '/tarif';
+
+        // Reset form values
+        document.getElementById('prix').value = '';
+        document.getElementById('annee').value = new Date().getFullYear();
+    });
+</script>
+</th:block>
+</body>
+</html>

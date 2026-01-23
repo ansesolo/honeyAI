@@ -42,6 +42,13 @@ public class ProductService {
                 .orElseThrow(() -> new PriceNotFoundException(productId, currentYear));
     }
 
+    @Transactional(readOnly = true)
+    public BigDecimal getPriceForYear(Long productId, Integer year) {
+        return priceRepository.findByProductIdAndYear(productId, year)
+                .map(Price::getPrice)
+                .orElse(null);
+    }
+
     public Price updatePrice(Long productId, Integer year, BigDecimal price) {
         log.info("Updating price for product #{} year {} to {}", productId, year, price);
 
