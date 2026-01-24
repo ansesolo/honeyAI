@@ -40,24 +40,30 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     /**
      * Find orders by year (extracted from dateCommand), sorted by date descending.
+     * Uses JOIN FETCH to eagerly load client for display.
      */
-    @Query("SELECT o FROM Order o WHERE YEAR(o.orderDate) = :year ORDER BY o.orderDate DESC")
+    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE YEAR(o.orderDate) = :year ORDER BY o.orderDate DESC")
     List<Order> findByYearOrderByOrderDateDesc(@Param("year") Integer year);
 
     /**
      * Find orders by year and status, sorted by date descending.
+     * Uses JOIN FETCH to eagerly load client for display.
      */
-    @Query("SELECT o FROM Order o WHERE YEAR(o.orderDate) = :year AND o.status = :status ORDER BY o.orderDate DESC")
+    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE YEAR(o.orderDate) = :year AND o.status = :status ORDER BY o.orderDate DESC")
     List<Order> findByYearAndStatusOrderByOrderDateDesc(@Param("year") Integer year, @Param("status") OrderStatus status);
 
     /**
      * Find orders by status, sorted by date descending.
+     * Uses JOIN FETCH to eagerly load client for display.
      */
-    List<Order> findByStatusOrderByOrderDateDesc(OrderStatus status);
+    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE o.status = :status ORDER BY o.orderDate DESC")
+    List<Order> findByStatusOrderByOrderDateDesc(@Param("status") OrderStatus status);
 
     /**
      * Find all orders sorted by date descending.
+     * Uses JOIN FETCH to eagerly load client for display.
      */
+    @Query("SELECT o FROM Order o JOIN FETCH o.client ORDER BY o.orderDate DESC")
     List<Order> findAllByOrderByOrderDateDesc();
 
     /**
