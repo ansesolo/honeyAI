@@ -1,7 +1,7 @@
 # Story 3.2: Etiquette Configuration & Data Model
 
 **Epic:** Epic 3 - Label Generation (Killer Feature)
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 3.1
 
@@ -38,7 +38,40 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Configuration loads correctly
-- [ ] Validation works at startup
+- [x] All acceptance criteria met
+- [x] Configuration loads correctly
+- [x] Validation works at startup
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+
+**New Files:**
+- `src/main/java/com/honeyai/config/EtiquetteConfig.java` - @ConfigurationProperties for label settings
+- `src/main/java/com/honeyai/enums/FormatPot.java` - Enum for jar formats (POT_500G, POT_1KG)
+- `src/main/java/com/honeyai/dto/EtiquetteRequest.java` - Request DTO for label generation
+- `src/main/java/com/honeyai/dto/EtiquetteData.java` - Data model for rendered label
+- `src/test/java/com/honeyai/config/EtiquetteConfigTest.java` - 11 tests for config loading
+- `src/test/java/com/honeyai/enums/FormatPotTest.java` - 5 tests for FormatPot enum
+
+**Modified Files:**
+- `src/main/resources/application.yml` - Added honeyai.etiquettes configuration section
+- `src/main/java/com/honeyai/HoneyAiApplication.java` - Added @ConfigurationPropertiesScan
+- `src/main/java/com/honeyai/service/PdfService.java` - Injected EtiquetteConfig via constructor
+- `src/test/java/com/honeyai/service/PdfServiceTest.java` - Updated to provide EtiquetteConfig mock
+
+### Completion Notes
+- All 8 acceptance criteria implemented
+- EtiquetteConfig with @Validated ensures startup fails if required fields missing
+- FormatPot enum: POT_500G("500g", 0.5), POT_1KG("1kg", 1.0)
+- EtiquetteRequest with @NotNull, @Min(1) validation
+- EtiquetteData with computed fields for label rendering
+- PdfService now has access to exploitation details via getEtiquetteConfig()
+- Default values: 730 days DLUO, 60x40mm labels, 3x7 grid (21 per page)
+- 144 total tests pass (16 new tests added)

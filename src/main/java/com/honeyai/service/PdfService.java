@@ -1,6 +1,8 @@
 package com.honeyai.service;
 
+import com.honeyai.config.EtiquetteConfig;
 import com.honeyai.exception.PdfGenerationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -18,8 +20,11 @@ import java.nio.file.Path;
  * Foundation service for label generation feature.
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class PdfService {
+
+    private final EtiquetteConfig etiquetteConfig;
 
     /**
      * Creates a new empty PDF document.
@@ -159,5 +164,14 @@ public class PdfService {
      */
     public float pointsToMm(float points) {
         return points / 2.83465f;
+    }
+
+    /**
+     * Gets the etiquette configuration.
+     *
+     * @return the EtiquetteConfig with exploitation details and label settings
+     */
+    public EtiquetteConfig getEtiquetteConfig() {
+        return etiquetteConfig;
     }
 }

@@ -1,0 +1,8 @@
+schema: 1
+story: '2.8'
+gate: PASS
+status_reason: 'All 10 acceptance criteria implemented. Order history displays correctly with stats, badges, and pagination. 117 tests pass.'
+reviewer: 'Quinn'
+updated: '2026-01-24T13:00:00Z'
+top_issues: []
+waiver: { active: false }

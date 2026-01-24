@@ -74,3 +74,15 @@ Claude Opus 4.5
 - Limited to 50 orders with "Voir toutes les commandes" link
 - Responsive table with horizontal scroll
 - All 117 tests pass
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-24
+
+### Reviewed By: Quinn (QA Agent)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/2.8-client-order-history.yml

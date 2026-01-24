@@ -1,5 +1,6 @@
 package com.honeyai.service;
 
+import com.honeyai.config.EtiquetteConfig;
 import com.honeyai.exception.PdfGenerationException;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -19,13 +20,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PdfServiceTest {
 
     private PdfService pdfService;
+    private EtiquetteConfig etiquetteConfig;
 
     @TempDir
     Path tempDir;
 
     @BeforeEach
     void setUp() {
-        pdfService = new PdfService();
+        etiquetteConfig = new EtiquetteConfig();
+        etiquetteConfig.setSiret("12345678901234");
+        etiquetteConfig.setNomApiculteur("Test Apiculteur");
+        etiquetteConfig.setAdresse("123 Test Street");
+        etiquetteConfig.setTelephone("0612345678");
+        etiquetteConfig.setDluoDureeJours(730);
+        etiquetteConfig.setLabelWidthMm(60.0f);
+        etiquetteConfig.setLabelHeightMm(40.0f);
+        etiquetteConfig.setLabelsPerRow(3);
+        etiquetteConfig.setLabelsPerColumn(7);
+
+        pdfService = new PdfService(etiquetteConfig);
     }
 
     @Test

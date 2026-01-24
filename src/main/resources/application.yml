@@ -23,6 +23,18 @@ spring:
   thymeleaf:
     cache: false
 
+honeyai:
+  etiquettes:
+    siret: "XXXXXXXXXXX"
+    nom-apiculteur: "Exploitation Familiale"
+    adresse: "123 Rue de la Ruche, 12345 Village"
+    telephone: "06 XX XX XX XX"
+    dluo-duree-jours: 730
+    label-width-mm: 60.0
+    label-height-mm: 40.0
+    labels-per-row: 3
+    labels-per-column: 7
+
 logging:
   level:
     root: INFO
