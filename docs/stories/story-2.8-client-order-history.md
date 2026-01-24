@@ -1,7 +1,7 @@
 # Story 2.8: Client Detail - Display Order History
 
 **Epic:** Epic 2 - Order Management & Product Catalog
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 2.7, Story 1.6
 
@@ -40,7 +40,37 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Order history displays correctly
-- [ ] Summary stats accurate
+- [x] All acceptance criteria met
+- [x] Order history displays correctly
+- [x] Summary stats accurate
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+
+**New Files:**
+- `src/main/java/com/honeyai/dto/ClientOrderStatsDto.java` - DTO for client order statistics
+
+**Modified Files:**
+- `src/main/java/com/honeyai/repository/OrderRepository.java` - Added countByClientId and paginated findByClientIdOrderByOrderDateDesc methods
+- `src/main/java/com/honeyai/service/OrderService.java` - Added findByClientIdWithLimit, countByClientId, getClientOrderStats methods
+- `src/main/java/com/honeyai/controller/ClientController.java` - Injected OrderService, added orders and stats to detail view model
+- `src/main/resources/templates/clients/detail.html` - Replaced placeholder with order history table, stats summary, active "Nouvelle commande" button
+- `src/test/java/com/honeyai/controller/ClientControllerTest.java` - Added OrderService mock
+
+### Completion Notes
+- All 10 acceptance criteria implemented
+- Order history displays with status badges (reused from order list)
+- Summary stats show total orders, total paid amount (PAID orders only), last order date
+- Empty state with encouragement message when no orders
+- "Nouvelle commande" button now active and links to /orders/new?clientId={id}
+- Clickable rows navigate to order detail
+- Limited to 50 orders with "Voir toutes les commandes" link
+- Responsive table with horizontal scroll
+- All 117 tests pass

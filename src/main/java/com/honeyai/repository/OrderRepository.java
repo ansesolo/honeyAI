@@ -9,7 +9,19 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    /**
+     * Count orders for a client.
+     */
+    long countByClientId(Long clientId);
+
+    /**
+     * Find orders for a client with pagination (for limiting results).
+     */
+    List<Order> findByClientIdOrderByOrderDateDesc(Long clientId, Pageable pageable);
 
     /**
      * Find all orders for a client, most recent first.

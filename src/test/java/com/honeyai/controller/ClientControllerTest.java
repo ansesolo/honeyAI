@@ -1,8 +1,13 @@
 package com.honeyai.controller;
 
+import com.honeyai.dto.ClientOrderStatsDto;
 import com.honeyai.exception.ClientNotFoundException;
 import com.honeyai.model.Client;
 import com.honeyai.service.ClientService;
+import com.honeyai.service.OrderService;
+
+import java.math.BigDecimal;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,6 +32,9 @@ class ClientControllerTest {
     @MockBean
     private ClientService clientService;
 
+    @MockBean
+    private OrderService orderService;
+
     private Client existingClient;
 
     @BeforeEach
@@ -36,6 +45,16 @@ class ClientControllerTest {
                 .phone("0612345678")
                 .email("jean@example.com")
                 .build();
+
+        // Default mocks for OrderService (used by detail endpoint)
+        when(orderService.findByClientIdWithLimit(anyLong(), anyInt())).thenReturn(Collections.emptyList());
+        when(orderService.countByClientId(anyLong())).thenReturn(0L);
+        when(orderService.getClientOrderStats(anyLong())).thenReturn(
+                ClientOrderStatsDto.builder()
+                        .totalOrders(0)
+                        .totalPaidAmount(BigDecimal.ZERO)
+                        .build()
+        );
     }
 
     @Test

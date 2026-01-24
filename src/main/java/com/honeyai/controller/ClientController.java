@@ -1,7 +1,10 @@
 package com.honeyai.controller;
 
+import com.honeyai.dto.ClientOrderStatsDto;
 import com.honeyai.model.Client;
+import com.honeyai.model.Order;
 import com.honeyai.service.ClientService;
+import com.honeyai.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,7 +25,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientController {
 
+    private static final int MAX_ORDERS_DISPLAYED = 50;
+
     private final ClientService clientService;
+    private final OrderService orderService;
 
     @GetMapping
     public String list(@RequestParam(required = false) String search, Model model) {
@@ -41,7 +47,17 @@ public class ClientController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Client client = clientService.findByIdOrThrow(id);
+
+        // Get orders with limit and stats
+        List<Order> orders = orderService.findByClientIdWithLimit(id, MAX_ORDERS_DISPLAYED);
+        long totalOrderCount = orderService.countByClientId(id);
+        ClientOrderStatsDto orderStats = orderService.getClientOrderStats(id);
+
         model.addAttribute("client", client);
+        model.addAttribute("orders", orders);
+        model.addAttribute("orderStats", orderStats);
+        model.addAttribute("hasMoreOrders", totalOrderCount > MAX_ORDERS_DISPLAYED);
+        model.addAttribute("orderService", orderService);
         model.addAttribute("activeMenu", "clients");
         return "clients/detail";
     }

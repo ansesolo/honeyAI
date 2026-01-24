@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.honeyai.dto.ClientOrderStatsDto;
+import org.springframework.data.domain.PageRequest;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -155,5 +158,46 @@ public class OrderService {
     public Order save(Order order) {
         log.info("Saving order #{}", order.getId());
         return orderRepository.save(order);
+    }
+
+    /**
+     * Find orders for a client with a limit on results.
+     */
+    @Transactional(readOnly = true)
+    public List<Order> findByClientIdWithLimit(Long clientId, int limit) {
+        return orderRepository.findByClientIdOrderByOrderDateDesc(clientId, PageRequest.of(0, limit));
+    }
+
+    /**
+     * Count total orders for a client.
+     */
+    @Transactional(readOnly = true)
+    public long countByClientId(Long clientId) {
+        return orderRepository.countByClientId(clientId);
+    }
+
+    /**
+     * Get order statistics for a client (for detail page).
+     */
+    @Transactional(readOnly = true)
+    public ClientOrderStatsDto getClientOrderStats(Long clientId) {
+        List<Order> allOrders = orderRepository.findByClientIdOrderByOrderDateDesc(clientId);
+
+        long totalOrders = allOrders.size();
+        LocalDate lastOrderDate = allOrders.isEmpty() ? null : allOrders.get(0).getOrderDate();
+
+        BigDecimal totalPaid = allOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.PAID)
+                .map(order -> order.getLines().stream()
+                        .map(line -> line.getUnitPrice().multiply(BigDecimal.valueOf(line.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return ClientOrderStatsDto.builder()
+                .totalOrders(totalOrders)
+                .totalPaidAmount(totalPaid)
+                .lastOrderDate(lastOrderDate)
+                .build();
     }
 }
