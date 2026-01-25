@@ -88,7 +88,7 @@ class OrderServiceTest {
     @Test
     void findById_shouldReturnOrder_whenExists() {
         // Given
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
 
         // When
         Optional<Order> result = orderService.findById(1L);
@@ -230,7 +230,7 @@ class OrderServiceTest {
         order.addLigne(ligne1);
         order.addLigne(ligne2);
 
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
 
         // When
         BigDecimal total = orderService.calculateTotal(1L);
@@ -242,7 +242,7 @@ class OrderServiceTest {
     @Test
     void updateStatus_shouldTransition_fromOrderedToRecovered() {
         // Given
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
         // When
@@ -256,7 +256,7 @@ class OrderServiceTest {
     void updateStatus_shouldTransition_fromRecoveredToPaid() {
         // Given
         order.setStatus(OrderStatus.RECOVERED);
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArgument(0));
 
         // When
@@ -270,7 +270,7 @@ class OrderServiceTest {
     void updateStatus_shouldThrowException_whenBackwardTransition() {
         // Given
         order.setStatus(OrderStatus.PAID);
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
 
         // When/Then
         assertThatThrownBy(() -> orderService.updateStatus(1L, OrderStatus.ORDERED))
@@ -282,7 +282,7 @@ class OrderServiceTest {
     @Test
     void updateStatus_shouldThrowException_whenSkippingStatus() {
         // Given - trying to go from COMMANDEE directly to PAYEE
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.findByIdWithClient(1L)).thenReturn(Optional.of(order));
 
         // When/Then
         assertThatThrownBy(() -> orderService.updateStatus(1L, OrderStatus.PAID))
@@ -294,7 +294,7 @@ class OrderServiceTest {
     @Test
     void updateStatus_shouldThrowException_whenOrderNotFound() {
         // Given
-        when(orderRepository.findById(999L)).thenReturn(Optional.empty());
+        when(orderRepository.findByIdWithClient(999L)).thenReturn(Optional.empty());
 
         // When/Then
         assertThatThrownBy(() -> orderService.updateStatus(999L, OrderStatus.RECOVERED))

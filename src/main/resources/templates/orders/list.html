@@ -54,7 +54,7 @@
 
         <!-- Orders Table -->
         <div th:if="${#lists.isEmpty(orders)}" class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>Aucune order trouvee pour les filtres selectionnes
+            <i class="fas fa-info-circle me-2"></i>Aucune commande trouvee pour les filtres selectionnes
         </div>
 
         <div th:unless="${#lists.isEmpty(orders)}" class="card">

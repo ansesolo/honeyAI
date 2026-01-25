@@ -43,7 +43,7 @@
                 <!-- Status Card with Transition Buttons -->
                 <div class="card mb-4 border-primary">
                     <div class="card-header bg-primary text-white">
-                        <i class="fas fa-flag me-2"></i>Statut de la order
+                        <i class="fas fa-flag me-2"></i>Statut de la commande
                     </div>
                     <div class="card-body text-center">
                         <!-- Current Status Badge (large) -->
@@ -164,7 +164,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="ligne : ${order.lines}">
+                                    <tr th:each="line : ${order.lines}">
                                         <td th:text="${line.product.name}">Product Name</td>
                                         <td class="text-center" th:text="${line.quantity}">1</td>
                                         <td class="text-end">

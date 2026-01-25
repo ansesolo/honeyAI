@@ -105,11 +105,7 @@ function getProductOptionsHtml() {
     }
 
     return productsData.map(function(product) {
-        var priceStr = product.price ? product.price.toFixed(2).replace('.', ',') : '';
-        var label = product.price
-            ? product.name + ' - ' + priceStr + ' EUR'
-            : product.name + ' - Prix non defini';
-        return `<option value="${product.id}" data-price="${product.price || ''}">${label}</option>`;
+        return `<option value="${product.id}" data-price="${product.price || ''}">${product.displayLabel}</option>`;
     }).join('');
 }
 
@@ -209,7 +205,7 @@ function calculateTotal() {
         total += quantity * price;
     });
 
-    document.getElementById('totalOrdered').textContent = formatNumber(total);
+    document.getElementById('totalOrder').textContent = formatNumber(total);
 }
 
 /**

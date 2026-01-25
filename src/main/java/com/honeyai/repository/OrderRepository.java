@@ -8,10 +8,17 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    /**
+     * Find order by ID with client, lines, and products eagerly loaded.
+     */
+    @Query("SELECT o FROM Order o JOIN FETCH o.client LEFT JOIN FETCH o.lines l LEFT JOIN FETCH l.product WHERE o.id = :id")
+    Optional<Order> findByIdWithClient(@Param("id") Long id);
 
     /**
      * Count orders for a client.
@@ -39,18 +46,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByOrderDateBetween(LocalDate start, LocalDate end);
 
     /**
-     * Find orders by year (extracted from dateCommand), sorted by date descending.
+     * Find orders by date range, sorted by date descending.
      * Uses JOIN FETCH to eagerly load client for display.
      */
-    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE YEAR(o.orderDate) = :year ORDER BY o.orderDate DESC")
-    List<Order> findByYearOrderByOrderDateDesc(@Param("year") Integer year);
+    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE o.orderDate >= :startDate AND o.orderDate < :endDate ORDER BY o.orderDate DESC")
+    List<Order> findByDateRangeOrderByOrderDateDesc(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     /**
-     * Find orders by year and status, sorted by date descending.
+     * Find orders by date range and status, sorted by date descending.
      * Uses JOIN FETCH to eagerly load client for display.
      */
-    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE YEAR(o.orderDate) = :year AND o.status = :status ORDER BY o.orderDate DESC")
-    List<Order> findByYearAndStatusOrderByOrderDateDesc(@Param("year") Integer year, @Param("status") OrderStatus status);
+    @Query("SELECT o FROM Order o JOIN FETCH o.client WHERE o.orderDate >= :startDate AND o.orderDate < :endDate AND o.status = :status ORDER BY o.orderDate DESC")
+    List<Order> findByDateRangeAndStatusOrderByOrderDateDesc(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("status") OrderStatus status);
 
     /**
      * Find orders by status, sorted by date descending.
@@ -67,8 +74,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderByOrderDateDesc();
 
     /**
-     * Get distinct years from all orders for filter dropdown.
+     * Get all order dates to extract years (SQLite compatible).
      */
-    @Query("SELECT DISTINCT YEAR(o.orderDate) FROM Order o ORDER BY YEAR(o.orderDate) DESC")
-    List<Integer> findDistinctYears();
+    @Query("SELECT DISTINCT o.orderDate FROM Order o ORDER BY o.orderDate DESC")
+    List<LocalDate> findAllOrderDates();
 }
