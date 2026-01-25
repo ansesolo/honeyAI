@@ -1,0 +1,12 @@
+schema: 1
+story: '2.6'
+gate: PASS
+status_reason: 'Dynamic order form with product lines working. All DTOs, JS, and endpoints implemented correctly.'
+reviewer: 'Quinn'
+updated: '2026-01-25T21:40:00Z'
+top_issues:
+  - id: 'DOC-001'
+    severity: low
+    finding: 'Story references French names (CommandeFormDto, /nouvelle) but code uses English (OrderFormDto, /new)'
+    suggested_action: 'Update story documentation to match actual code naming conventions'
+waiver: { active: false }

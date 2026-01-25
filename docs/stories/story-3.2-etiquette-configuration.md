@@ -75,3 +75,31 @@ Claude Opus 4.5
 - PdfService now has access to exploitation details via getEtiquetteConfig()
 - Default values: 730 days DLUO, 60x40mm labels, 3x7 grid (21 per page)
 - 144 total tests pass (16 new tests added)
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-25
+
+### Reviewed By: Quinn (Test Architect)
+
+### Findings
+
+**Status: PASS**
+
+- Build: OK
+- Tests: 144/144 passed
+- All acceptance criteria verified:
+  - AC1: EtiquetteConfig with @ConfigurationProperties OK
+  - AC2: application.yml honeyai.etiquettes section OK
+  - AC3: EtiquetteRequest DTO with validation OK
+  - AC4: FormatPot enum (POT_500G, POT_1KG) OK
+  - AC5: EtiquetteData model OK
+  - AC6: @Validated startup validation OK
+  - AC7: 17 unit tests (EtiquetteConfigTest + FormatPotTest)
+  - AC8: PdfService injected with EtiquetteConfig OK
+
+### Gate Status
+
+Gate: PASS -> docs/qa/gates/3.2-etiquette-configuration.yml
