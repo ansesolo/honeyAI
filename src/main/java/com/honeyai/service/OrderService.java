@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,7 +37,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public Optional<Order> findById(Long id) {
-        return orderRepository.findById(id);
+        return orderRepository.findByIdWithClient(id);
     }
 
     @Transactional(readOnly = true)
@@ -54,14 +55,26 @@ public class OrderService {
         return orderRepository.findAllByOrderByOrderDateDesc();
     }
 
+    /**
+     * Find orders for a specific year, sorted by date descending.
+     * Converts year to date range (Jan 1 to Jan 1 of next year).
+     */
     @Transactional(readOnly = true)
     public List<Order> findByYear(Integer year) {
-        return orderRepository.findByYearOrderByOrderDateDesc(year);
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year + 1, 1, 1);
+        return orderRepository.findByDateRangeOrderByOrderDateDesc(startDate, endDate);
     }
 
+    /**
+     * Find orders for a specific year and status, sorted by date descending.
+     * Converts year to date range (Jan 1 to Jan 1 of next year).
+     */
     @Transactional(readOnly = true)
     public List<Order> findByYearAndStatus(Integer year, OrderStatus status) {
-        return orderRepository.findByYearAndStatusOrderByOrderDateDesc(year, status);
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year + 1, 1, 1);
+        return orderRepository.findByDateRangeAndStatusOrderByOrderDateDesc(startDate, endDate, status);
     }
 
     @Transactional(readOnly = true)
@@ -69,9 +82,17 @@ public class OrderService {
         return orderRepository.findByStatusOrderByOrderDateDesc(status);
     }
 
+    /**
+     * Get distinct years from all order dates.
+     * Extracts years from findAllOrderDates and returns sorted descending.
+     */
     @Transactional(readOnly = true)
     public List<Integer> getDistinctYears() {
-        return orderRepository.findDistinctYears();
+        return orderRepository.findAllOrderDates().stream()
+                .map(LocalDate::getYear)
+                .distinct()
+                .sorted((a, b) -> b.compareTo(a))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -121,7 +142,7 @@ public class OrderService {
     }
 
     public Order updateStatus(Long orderId, OrderStatus newStatus) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdWithClient(orderId)
                                      .orElseThrow(() -> new IllegalArgumentException("order not found: " + orderId));
 
         OrderStatus oldStatus = order.getStatus();
@@ -143,7 +164,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public BigDecimal calculateTotal(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdWithClient(orderId)
                                      .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
 
         return order.getLines().stream()

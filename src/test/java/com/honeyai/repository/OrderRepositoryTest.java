@@ -302,7 +302,7 @@ class OrderRepositoryTest {
     }
 
     @Test
-    void findByYearOrderByOrderDateDesc_shouldReturnOrdersForYear() {
+    void findByDateRangeOrderByOrderDateDesc_shouldReturnOrdersForDateRange() {
         // Given
         Order order2025 = Order.builder()
                                .client(client)
@@ -322,8 +322,10 @@ class OrderRepositoryTest {
                                 .build();
         orderRepository.save(order2026B);
 
-        // When
-        List<Order> orders2026 = orderRepository.findByYearOrderByOrderDateDesc(2026);
+        // When - Filter for year 2026 using date range
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2027, 1, 1);
+        List<Order> orders2026 = orderRepository.findByDateRangeOrderByOrderDateDesc(startDate, endDate);
 
         // Then
         assertThat(orders2026).hasSize(2);
@@ -332,7 +334,7 @@ class OrderRepositoryTest {
     }
 
     @Test
-    void findByYearAndStatusOrderByOrderDateDesc_shouldFilterByYearAndStatusOrder() {
+    void findByDateRangeAndStatusOrderByOrderDateDesc_shouldFilterByDateRangeAndStatus() {
         // Given
         Order order2026Commandee = Order.builder()
                                         .client(client)
@@ -355,8 +357,10 @@ class OrderRepositoryTest {
                                         .build();
         orderRepository.save(order2025Commandee);
 
-        // When
-        List<Order> result = orderRepository.findByYearAndStatusOrderByOrderDateDesc(2026, OrderStatus.ORDERED);
+        // When - Filter for year 2026 and ORDERED status using date range
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2027, 1, 1);
+        List<Order> result = orderRepository.findByDateRangeAndStatusOrderByOrderDateDesc(startDate, endDate, OrderStatus.ORDERED);
 
         // Then
         assertThat(result).hasSize(1);
@@ -365,7 +369,7 @@ class OrderRepositoryTest {
     }
 
     @Test
-    void findDistinctYears_shouldReturnUniqueYearsDescending() {
+    void findAllOrderDates_shouldReturnAllDatesDescending() {
         // Given
         Order c2024 = Order.builder()
                            .client(client)
@@ -392,9 +396,18 @@ class OrderRepositoryTest {
         orderRepository.save(c2026);
 
         // When
-        List<Integer> years = orderRepository.findDistinctYears();
+        List<LocalDate> dates = orderRepository.findAllOrderDates();
 
-        // Then
+        // Then - Should have all distinct dates, sorted descending
+        assertThat(dates).hasSize(4);
+        assertThat(dates.getFirst()).isEqualTo(LocalDate.of(2026, 1, 5));
+
+        // Extract distinct years for verification
+        List<Integer> years = dates.stream()
+                .map(LocalDate::getYear)
+                .distinct()
+                .sorted((a, b) -> b.compareTo(a))
+                .toList();
         assertThat(years).containsExactly(2026, 2025, 2024);
     }
 

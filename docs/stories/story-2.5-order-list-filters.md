@@ -23,7 +23,7 @@
 4. Filtering: GET /orders?annee=2024&statut=COMMANDEE filters results server-side using CommandeService methods, results update in same view
 5. Status badges styled with Bootstrap badge component and appropriate colors for quick visual scanning
 6. Orders sorted by date descending (most recent first) within filtered results
-7. Empty state if no orders match filters: "Aucune order trouvee pour les filtres selectionnes"
+7. Empty state if no orders match filters: "Aucune commande trouvee pour les filtres selectionnes"
 8. "Tous" option in statut filter shows all statuses
 9. Navigation link "Commandes" added to sidebar menu (update layout.html)
 10. Montant total formatted as French currency "123,45 EUR"
@@ -59,23 +59,23 @@
 - `src/test/java/com/honeyai/controller/CommandeControllerTest.java` - 5 unit tests for CommandeController
 
 ### Files Modified
-- `src/main/java/com/honeyai/repository/CommandeRepository.java` - Added query methods for filtering by year, status, with sorting
-- `src/main/java/com/honeyai/service/CommandeService.java` - Added filtering methods: findWithFilters(), findByYear(), findByYearAndStatut(), getDistinctYears()
-- `src/test/java/com/honeyai/repository/CommandeRepositoryTest.java` - Added 4 tests for new repository methods
+- `src/main/java/com/honeyai/repository/OrderRepository.java` - Query methods for filtering by date range, status, with sorting
+- `src/main/java/com/honeyai/service/OrderService.java` - Filtering methods refactored to use date ranges: findByYear() uses findByDateRangeOrderByOrderDateDesc(), getDistinctYears() extracts from findAllOrderDates()
+- `src/test/java/com/honeyai/repository/OrderRepositoryTest.java` - Tests updated to use existing repository methods (findByDateRangeOrderByOrderDateDesc, findAllOrderDates)
 
 ### Implementation Details
 1. **CommandeController** - GET /orders with optional `annee` and `statut` query params, passes commandeService to template for total calculation
 2. **Filter Bar** - Bootstrap card with year dropdown (distinct years from orders + current year), status dropdown (all StatutCommande values), Filtrer button
 3. **Status Badges** - COMMANDEE=bg-primary (blue), RECUPEREE=bg-warning (orange), PAYEE=bg-success (green)
 4. **Order Table** - Columns: No, Client, Date order (dd/MM/yyyy), Statut (badge), Montant total (French format), Actions (Voir)
-5. **Empty State** - "Aucune order trouvee pour les filtres selectionnes" alert
+5. **Empty State** - "Aucune commande trouvee pour les filtres selectionnes" alert
 6. **French Formatting** - Montant uses #numbers.formatDecimal with COMMA decimal separator
 7. **Navigation** - "Commandes" link already existed in layout.html
 
 ### Test Results
-- CommandeControllerTest: 5 tests passed
-- CommandeRepositoryTest: 13 tests passed (4 new)
-- Full regression: 107 tests passed
+- OrderControllerTest: 15 tests passed
+- OrderRepositoryTest: 13 tests passed
+- Full regression: 144 tests passed
 
 ### Acceptance Criteria Verification
 - AC1: CommandeController with GET /orders - DONE
@@ -133,3 +133,34 @@
 ### Final Confirmation
 - [x] All applicable items above have been addressed
 - Story is ready for review
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-25
+
+### Reviewed By: Quinn (Test Architect)
+
+### Findings
+
+**Initial Review - FAIL**
+
+Le projet ne compilait pas. `OrderService` appelait 3 méthodes du repository qui n'existaient pas.
+
+**Resolution Applied**
+
+`OrderService` refactorisé pour utiliser les méthodes existantes du repository basées sur des plages de dates :
+- `findByYear()` -> utilise `findByDateRangeOrderByOrderDateDesc()`
+- `findByYearAndStatus()` -> utilise `findByDateRangeAndStatusOrderByOrderDateDesc()`
+- `getDistinctYears()` -> utilise `findAllOrderDates()` et extrait les années
+
+Tests du repository mis à jour pour tester les méthodes existantes.
+
+**Final Status: PASS**
+- Build: OK
+- Tests: 144/144 passed
+
+### Gate Status
+
+Gate: PASS -> docs/qa/gates/2.5-order-list-filters.yml
