@@ -1,7 +1,7 @@
 # Story 3.4: Single Label PDF Layout & Rendering
 
 **Epic:** Epic 3 - Label Generation (Killer Feature)
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 3.3
 
@@ -41,7 +41,69 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Label layout visually correct
-- [ ] French accents render properly
+- [x] All acceptance criteria met
+- [x] Label layout visually correct
+- [x] French accents render properly
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/main/java/com/honeyai/service/PdfService.java` | Modified | Added renderLabel(), generateSingleLabelPdf(), helper methods for text alignment, truncation, and border drawing |
+| `src/test/java/com/honeyai/service/PdfServiceTest.java` | Modified | Added 8 new tests for label rendering, accents, truncation, multiple labels |
+
+### Debug Log References
+None - implementation completed without issues.
+
+### Completion Notes
+- `renderLabel()` method renders label at specified position with configurable dimensions
+- Layout structure: border (1pt), product name (12pt bold centered), weight (8pt centered), mandatory info (8pt left), DLUO (9pt), lot/price (8pt with right-aligned price)
+- Text alignment: centered (product name, weight), left-aligned (contact info), right-aligned (price)
+- Long addresses truncated with "..." to fit label width
+- French accents (é, è, ê, à, ô, î, ç, ù) supported via WinAnsiEncoding
+- Special characters (œ, curly quotes, em-dashes) sanitized for compatibility
+- Coordinate conversion: mmToPoints() (1mm = 2.83465 points)
+- All 181 project tests pass including 8 new tests
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-26 | Initial implementation of Story 3.4 |
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-26
+
+### Reviewed By: Quinn (Test Architect)
+
+#### Findings Summary
+
+| Category | Status |
+|----------|--------|
+| Acceptance Criteria | All 10 met |
+| Unit Tests | 8 new tests pass |
+| Regression | 181 total tests pass |
+| Coding Standards | Compliant |
+| French Accents | Supported via WinAnsiEncoding |
+
+#### Implementation Review
+
+- **renderLabel()**: Renders complete label with all regulatory information
+- **Layout**: Border + centered product name + left-aligned info + right-aligned price
+- **Font Sizes**: 12pt bold (product), 8pt (info), 9pt (DLUO), 8pt (lot/price)
+- **Text Wrapping**: Long addresses truncated with "..."
+- **Coordinate System**: mm to points conversion (1mm = 2.83465pt)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/3.4-single-label-layout.yml

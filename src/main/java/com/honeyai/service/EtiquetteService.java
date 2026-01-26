@@ -1,6 +1,8 @@
 package com.honeyai.service;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.dto.EtiquetteData;
+import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.HoneyType;
 import com.honeyai.model.LotsEtiquettes;
 import com.honeyai.repository.LotsEtiquettesRepository;
@@ -139,5 +141,47 @@ public class EtiquetteService {
             .findByAnneeAndTypeMiel(annee, typeAbbreviation)
             .map(LotsEtiquettes::getDernierNumero)
             .orElse(0);
+    }
+
+    /**
+     * Build a complete EtiquetteData from request parameters and configuration.
+     * Calculates DLUO and generates lot number automatically.
+     *
+     * @param request the label generation request
+     * @return fully populated EtiquetteData ready for PDF rendering
+     */
+    public EtiquetteData buildEtiquetteData(EtiquetteRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("La requête d'étiquette est obligatoire");
+        }
+
+        LocalDate dluo = calculateDluo(request.getDateRecolte());
+        String numeroLot = generateNumeroLot(request.getTypeMiel(), request.getDateRecolte());
+
+        return EtiquetteData.builder()
+                .typeMiel(request.getTypeMiel().getDisplayLabel())
+                .formatPot(request.getFormatPot().getDisplayLabel())
+                .poids("Poids net: " + request.getFormatPot().getDisplayLabel())
+                .dateRecolte(formatHarvestDate(request.getDateRecolte()))
+                .dluo(dluo)
+                .numeroLot(numeroLot)
+                .nomApiculteur(etiquetteConfig.getNomApiculteur())
+                .adresse(etiquetteConfig.getAdresse())
+                .siret(etiquetteConfig.getSiret())
+                .telephone(etiquetteConfig.getTelephone())
+                .build();
+    }
+
+    /**
+     * Format harvest date for display on labels.
+     *
+     * @param dateRecolte the harvest date
+     * @return formatted string "Récolte: MM/YYYY"
+     */
+    private String formatHarvestDate(LocalDate dateRecolte) {
+        if (dateRecolte == null) {
+            return "";
+        }
+        return String.format("Récolte: %02d/%d", dateRecolte.getMonthValue(), dateRecolte.getYear());
     }
 }

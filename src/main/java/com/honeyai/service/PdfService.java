@@ -1,6 +1,7 @@
 package com.honeyai.service;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.dto.EtiquetteData;
 import com.honeyai.exception.PdfGenerationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,11 +9,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 
 /**
@@ -173,5 +177,437 @@ public class PdfService {
      */
     public EtiquetteConfig getEtiquetteConfig() {
         return etiquetteConfig;
+    }
+
+    // ==================== Label Rendering ====================
+
+    /** Padding inside label border in mm */
+    private static final float PADDING_MM = 2.0f;
+
+    /** Line spacing in mm */
+    private static final float LINE_SPACING_MM = 1.0f;
+
+    /** Border line width in points */
+    private static final float BORDER_WIDTH_PT = 1.0f;
+
+    /** Font size for product name (bold) */
+    private static final float FONT_SIZE_PRODUCT = 12.0f;
+
+    /** Font size for mandatory info */
+    private static final float FONT_SIZE_INFO = 8.0f;
+
+    /** Font size for DLUO */
+    private static final float FONT_SIZE_DLUO = 9.0f;
+
+    /** Font size for lot/price */
+    private static final float FONT_SIZE_LOT_PRICE = 8.0f;
+
+    /**
+     * Renders a single honey label at the specified position on the page.
+     * The label includes all regulatory information: product name, weight,
+     * exploitation info, DLUO, lot number, and price.
+     *
+     * @param document  the PDF document
+     * @param page      the page to render on
+     * @param data      the label data containing all fields
+     * @param x         x coordinate in points (from left, bottom-left of label)
+     * @param y         y coordinate in points (from bottom, bottom-left of label)
+     * @param widthMm   label width in millimeters
+     * @param heightMm  label height in millimeters
+     */
+    public void renderLabel(PDDocument document, PDPage page, EtiquetteData data,
+                            float x, float y, float widthMm, float heightMm) {
+        float widthPt = mmToPoints(widthMm);
+        float heightPt = mmToPoints(heightMm);
+        float paddingPt = mmToPoints(PADDING_MM);
+        float lineSpacingPt = mmToPoints(LINE_SPACING_MM);
+
+        try (PDPageContentStream cs = new PDPageContentStream(
+                document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
+
+            // 1. Draw border rectangle
+            drawBorder(cs, x, y, widthPt, heightPt);
+
+            // Calculate content area
+            float contentX = x + paddingPt;
+            float contentWidth = widthPt - (2 * paddingPt);
+            float currentY = y + heightPt - paddingPt;
+
+            PDFont fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+            PDFont fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+            // 2. Product name section (centered, bold) - "Miel {type}"
+            String productName = buildProductName(data.getTypeMiel());
+            currentY = drawCenteredText(cs, productName, fontBold, FONT_SIZE_PRODUCT,
+                    contentX, currentY, contentWidth);
+            currentY -= lineSpacingPt;
+
+            // 3. Weight line (centered) - "Poids net: {format}"
+            String weightLine = data.getPoids() != null ? data.getPoids() : "Poids net: " + data.getFormatPot();
+            currentY = drawCenteredText(cs, weightLine, fontRegular, FONT_SIZE_INFO,
+                    contentX, currentY, contentWidth);
+            currentY -= lineSpacingPt * 2;
+
+            // 4. Mandatory info section (left-aligned)
+            // Nom apiculteur
+            if (data.getNomApiculteur() != null && !data.getNomApiculteur().isBlank()) {
+                currentY = drawLeftText(cs, data.getNomApiculteur(), fontRegular, FONT_SIZE_INFO,
+                        contentX, currentY);
+                currentY -= lineSpacingPt;
+            }
+
+            // Adresse (may need truncation)
+            if (data.getAdresse() != null && !data.getAdresse().isBlank()) {
+                String adresse = truncateToFit(data.getAdresse(), fontRegular, FONT_SIZE_INFO, contentWidth);
+                currentY = drawLeftText(cs, adresse, fontRegular, FONT_SIZE_INFO, contentX, currentY);
+                currentY -= lineSpacingPt;
+            }
+
+            // SIRET
+            if (data.getSiret() != null && !data.getSiret().isBlank()) {
+                currentY = drawLeftText(cs, "SIRET: " + data.getSiret(), fontRegular, FONT_SIZE_INFO,
+                        contentX, currentY);
+                currentY -= lineSpacingPt;
+            }
+
+            // Telephone
+            if (data.getTelephone() != null && !data.getTelephone().isBlank()) {
+                currentY = drawLeftText(cs, "Tél: " + data.getTelephone(), fontRegular, FONT_SIZE_INFO,
+                        contentX, currentY);
+                currentY -= lineSpacingPt;
+            }
+
+            currentY -= lineSpacingPt;
+
+            // 5. DLUO line (left-aligned)
+            String dluoLine = "A consommer avant fin: " + data.getDluoFormatted();
+            currentY = drawLeftText(cs, dluoLine, fontRegular, FONT_SIZE_DLUO, contentX, currentY);
+            currentY -= lineSpacingPt * 2;
+
+            // 6. Bottom section: Lot number (left) and Price (right)
+            String lotLine = "Lot: " + (data.getNumeroLot() != null ? data.getNumeroLot() : "");
+            drawLeftText(cs, lotLine, fontRegular, FONT_SIZE_LOT_PRICE, contentX, currentY);
+
+            if (data.getPrixUnitaire() != null) {
+                String priceLine = formatPrice(data.getPrixUnitaire());
+                drawRightText(cs, priceLine, fontRegular, FONT_SIZE_LOT_PRICE,
+                        contentX, currentY, contentWidth);
+            }
+
+            log.debug("Label rendered at ({}, {}) size {}x{}mm", x, y, widthMm, heightMm);
+
+        } catch (IOException e) {
+            throw new PdfGenerationException("Failed to render label: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Renders a label using default dimensions from configuration.
+     */
+    public void renderLabel(PDDocument document, PDPage page, EtiquetteData data, float x, float y) {
+        renderLabel(document, page, data, x, y,
+                etiquetteConfig.getLabelWidthMm(),
+                etiquetteConfig.getLabelHeightMm());
+    }
+
+    /**
+     * Draws a border rectangle at the specified position.
+     */
+    private void drawBorder(PDPageContentStream cs, float x, float y, float width, float height)
+            throws IOException {
+        cs.setLineWidth(BORDER_WIDTH_PT);
+        cs.addRect(x, y, width, height);
+        cs.stroke();
+    }
+
+    /**
+     * Draws text centered within the specified width.
+     *
+     * @return the Y position after drawing (accounting for font descent)
+     */
+    private float drawCenteredText(PDPageContentStream cs, String text, PDFont font,
+                                   float fontSize, float x, float y, float width) throws IOException {
+        float textWidth = calculateTextWidth(text, font, fontSize);
+        float centeredX = x + (width - textWidth) / 2;
+
+        cs.beginText();
+        cs.setFont(font, fontSize);
+        cs.newLineAtOffset(centeredX, y - fontSize);
+        cs.showText(sanitizeText(text));
+        cs.endText();
+
+        return y - fontSize;
+    }
+
+    /**
+     * Draws text left-aligned.
+     *
+     * @return the Y position after drawing
+     */
+    private float drawLeftText(PDPageContentStream cs, String text, PDFont font,
+                               float fontSize, float x, float y) throws IOException {
+        cs.beginText();
+        cs.setFont(font, fontSize);
+        cs.newLineAtOffset(x, y - fontSize);
+        cs.showText(sanitizeText(text));
+        cs.endText();
+
+        return y - fontSize;
+    }
+
+    /**
+     * Draws text right-aligned within the specified width.
+     */
+    private void drawRightText(PDPageContentStream cs, String text, PDFont font,
+                               float fontSize, float x, float y, float width) throws IOException {
+        float textWidth = calculateTextWidth(text, font, fontSize);
+        float rightX = x + width - textWidth;
+
+        cs.beginText();
+        cs.setFont(font, fontSize);
+        cs.newLineAtOffset(rightX, y - fontSize);
+        cs.showText(sanitizeText(text));
+        cs.endText();
+    }
+
+    /**
+     * Calculates the width of text in points.
+     */
+    private float calculateTextWidth(String text, PDFont font, float fontSize) throws IOException {
+        return font.getStringWidth(sanitizeText(text)) / 1000 * fontSize;
+    }
+
+    /**
+     * Truncates text to fit within the specified width, adding "..." if truncated.
+     */
+    private String truncateToFit(String text, PDFont font, float fontSize, float maxWidth) {
+        try {
+            if (calculateTextWidth(text, font, fontSize) <= maxWidth) {
+                return text;
+            }
+
+            String ellipsis = "...";
+            float ellipsisWidth = calculateTextWidth(ellipsis, font, fontSize);
+            float availableWidth = maxWidth - ellipsisWidth;
+
+            StringBuilder truncated = new StringBuilder();
+            for (char c : text.toCharArray()) {
+                String candidate = truncated.toString() + c;
+                if (calculateTextWidth(candidate, font, fontSize) > availableWidth) {
+                    break;
+                }
+                truncated.append(c);
+            }
+
+            return truncated.toString().trim() + ellipsis;
+        } catch (IOException e) {
+            // If calculation fails, return truncated by character count
+            return text.length() > 40 ? text.substring(0, 37) + "..." : text;
+        }
+    }
+
+    /**
+     * Builds the product name line from honey type.
+     */
+    private String buildProductName(String typeMiel) {
+        if (typeMiel == null || typeMiel.isBlank()) {
+            return "Miel";
+        }
+        // If already contains "Miel", return as-is
+        if (typeMiel.toLowerCase().contains("miel")) {
+            return typeMiel;
+        }
+        return "Miel " + typeMiel;
+    }
+
+    /**
+     * Formats the price for display.
+     */
+    private String formatPrice(BigDecimal price) {
+        if (price == null) {
+            return "";
+        }
+        return String.format("%.2f EUR", price);
+    }
+
+    /**
+     * Sanitizes text for PDF rendering, replacing unsupported characters.
+     * Standard14 fonts support WinAnsiEncoding which includes most French accents.
+     */
+    private String sanitizeText(String text) {
+        if (text == null) {
+            return "";
+        }
+        // Replace characters not in WinAnsiEncoding
+        return text
+                .replace("\u0152", "OE")  // Œ
+                .replace("\u0153", "oe")  // œ
+                .replace("\u2019", "'")   // '
+                .replace("\u2018", "'")   // '
+                .replace("\u201C", "\"")  // "
+                .replace("\u201D", "\"")  // "
+                .replace("\u2013", "-")   // –
+                .replace("\u2014", "-");  // —
+    }
+
+    /**
+     * Generates a single label PDF for testing/preview purposes.
+     *
+     * @param data       the label data
+     * @param outputPath path where the PDF will be saved
+     */
+    public void generateSingleLabelPdf(EtiquetteData data, Path outputPath) {
+        log.info("Generating single label PDF to: {}", outputPath);
+
+        try (PDDocument document = createDocument()) {
+            PDPage page = createA4Page();
+            document.addPage(page);
+
+            // Render label at center of page
+            float labelWidthPt = mmToPoints(etiquetteConfig.getLabelWidthMm());
+            float labelHeightPt = mmToPoints(etiquetteConfig.getLabelHeightMm());
+            float pageWidth = page.getMediaBox().getWidth();
+            float pageHeight = page.getMediaBox().getHeight();
+
+            float x = (pageWidth - labelWidthPt) / 2;
+            float y = (pageHeight - labelHeightPt) / 2;
+
+            renderLabel(document, page, data, x, y);
+
+            document.save(outputPath.toFile());
+            log.info("Single label PDF generated successfully: {}", outputPath);
+
+        } catch (IOException e) {
+            throw new PdfGenerationException("Failed to generate single label PDF: " + e.getMessage(), e);
+        }
+    }
+
+    // ==================== Multi-Label Sheet Generation ====================
+
+    /** Page margins in mm */
+    private static final float MARGIN_TOP_MM = 10.0f;
+    private static final float MARGIN_LEFT_MM = 10.0f;
+    private static final float MARGIN_RIGHT_MM = 10.0f;
+    private static final float MARGIN_BOTTOM_MM = 15.0f;
+
+    /** Gap between labels in mm */
+    private static final float HORIZONTAL_GAP_MM = 2.0f;
+    private static final float VERTICAL_GAP_MM = 2.0f;
+
+    /**
+     * Generates a multi-label sheet PDF with labels arranged in a grid.
+     * Supports multi-page output for large quantities.
+     *
+     * @param data     the label data to repeat on all labels
+     * @param quantity the number of labels to generate
+     * @return byte array containing the PDF document
+     */
+    public byte[] generateEtiquetteSheet(EtiquetteData data, int quantity) {
+        if (data == null) {
+            throw new IllegalArgumentException("Les données d'étiquette sont obligatoires");
+        }
+        if (quantity < 1) {
+            throw new IllegalArgumentException("La quantité doit être au moins 1");
+        }
+
+        log.info("Generating label sheet: {} labels", quantity);
+        long startTime = System.currentTimeMillis();
+
+        int labelsPerPage = etiquetteConfig.getLabelsPerPage();
+        int totalPages = (int) Math.ceil((double) quantity / labelsPerPage);
+
+        try (PDDocument document = createDocument();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            int labelsRemaining = quantity;
+
+            for (int pageNum = 0; pageNum < totalPages; pageNum++) {
+                PDPage page = createA4Page();
+                document.addPage(page);
+
+                int labelsOnThisPage = Math.min(labelsRemaining, labelsPerPage);
+                renderLabelsOnPage(document, page, data, labelsOnThisPage);
+
+                labelsRemaining -= labelsOnThisPage;
+                log.debug("Page {} rendered with {} labels", pageNum + 1, labelsOnThisPage);
+            }
+
+            document.save(baos);
+
+            long duration = System.currentTimeMillis() - startTime;
+            log.info("Label sheet generated: {} labels on {} pages in {}ms",
+                    quantity, totalPages, duration);
+
+            return baos.toByteArray();
+
+        } catch (IOException e) {
+            throw new PdfGenerationException("Failed to generate label sheet: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Renders multiple labels on a single page in a grid layout.
+     *
+     * @param document    the PDF document
+     * @param page        the page to render on
+     * @param data        the label data
+     * @param labelCount  number of labels to render on this page
+     */
+    private void renderLabelsOnPage(PDDocument document, PDPage page, EtiquetteData data, int labelCount) {
+        float pageWidth = page.getMediaBox().getWidth();
+        float pageHeight = page.getMediaBox().getHeight();
+
+        float marginTopPt = mmToPoints(MARGIN_TOP_MM);
+        float marginLeftPt = mmToPoints(MARGIN_LEFT_MM);
+        float marginBottomPt = mmToPoints(MARGIN_BOTTOM_MM);
+
+        float labelWidthMm = etiquetteConfig.getLabelWidthMm();
+        float labelHeightMm = etiquetteConfig.getLabelHeightMm();
+        float labelWidthPt = mmToPoints(labelWidthMm);
+        float labelHeightPt = mmToPoints(labelHeightMm);
+
+        float hGapPt = mmToPoints(HORIZONTAL_GAP_MM);
+        float vGapPt = mmToPoints(VERTICAL_GAP_MM);
+
+        int cols = etiquetteConfig.getLabelsPerRow();
+        int rows = etiquetteConfig.getLabelsPerColumn();
+
+        // Starting position (top-left of first label)
+        float startX = marginLeftPt;
+        float startY = pageHeight - marginTopPt - labelHeightPt;
+
+        int labelIndex = 0;
+
+        for (int row = 0; row < rows && labelIndex < labelCount; row++) {
+            for (int col = 0; col < cols && labelIndex < labelCount; col++) {
+                float x = startX + col * (labelWidthPt + hGapPt);
+                float y = startY - row * (labelHeightPt + vGapPt);
+
+                renderLabel(document, page, data, x, y, labelWidthMm, labelHeightMm);
+                labelIndex++;
+            }
+        }
+    }
+
+    /**
+     * Gets the number of labels per page from configuration.
+     *
+     * @return labels per page (rows x columns)
+     */
+    public int getLabelsPerPage() {
+        return etiquetteConfig.getLabelsPerPage();
+    }
+
+    /**
+     * Calculates the number of pages needed for a given quantity.
+     *
+     * @param quantity total number of labels
+     * @return number of pages required
+     */
+    public int calculatePageCount(int quantity) {
+        if (quantity < 1) {
+            return 0;
+        }
+        return (int) Math.ceil((double) quantity / getLabelsPerPage());
     }
 }

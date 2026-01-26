@@ -1,6 +1,9 @@
 package com.honeyai.service;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.dto.EtiquetteData;
+import com.honeyai.dto.EtiquetteRequest;
+import com.honeyai.enums.FormatPot;
 import com.honeyai.enums.HoneyType;
 import com.honeyai.model.LotsEtiquettes;
 import com.honeyai.repository.LotsEtiquettesRepository;
@@ -361,5 +364,82 @@ class EtiquetteServiceTest {
 
         // Then
         assertThat(sequence).isEqualTo(15);
+    }
+
+    // ==================== buildEtiquetteData Tests ====================
+
+    @Test
+    void buildEtiquetteData_shouldBuildCompleteData() {
+        // Given
+        EtiquetteRequest request = EtiquetteRequest.builder()
+                .typeMiel(HoneyType.TOUTES_FLEURS)
+                .formatPot(FormatPot.POT_500G)
+                .dateRecolte(LocalDate.of(2024, 8, 15))
+                .quantite(10)
+                .build();
+
+        when(etiquetteConfig.getDluoDureeJours()).thenReturn(730);
+        when(etiquetteConfig.getNomApiculteur()).thenReturn("Test Apiculteur");
+        when(etiquetteConfig.getAdresse()).thenReturn("123 Test Street");
+        when(etiquetteConfig.getSiret()).thenReturn("12345678901234");
+        when(etiquetteConfig.getTelephone()).thenReturn("0612345678");
+        when(lotsEtiquettesRepository.findByAnneeAndTypeMiel(2024, "TF"))
+                .thenReturn(Optional.empty());
+        when(lotsEtiquettesRepository.save(any(LotsEtiquettes.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        EtiquetteData data = etiquetteService.buildEtiquetteData(request);
+
+        // Then
+        assertThat(data).isNotNull();
+        assertThat(data.getTypeMiel()).isEqualTo("Toutes Fleurs");
+        assertThat(data.getFormatPot()).isEqualTo("500g");
+        assertThat(data.getPoids()).isEqualTo("Poids net: 500g");
+        assertThat(data.getDateRecolte()).isEqualTo("Récolte: 08/2024");
+        assertThat(data.getDluo()).isEqualTo(LocalDate.of(2026, 8, 15));
+        assertThat(data.getNumeroLot()).isEqualTo("2024-TF-001");
+        assertThat(data.getNomApiculteur()).isEqualTo("Test Apiculteur");
+        assertThat(data.getAdresse()).isEqualTo("123 Test Street");
+        assertThat(data.getSiret()).isEqualTo("12345678901234");
+        assertThat(data.getTelephone()).isEqualTo("0612345678");
+    }
+
+    @Test
+    void buildEtiquetteData_shouldThrowException_forNullRequest() {
+        // When/Then
+        assertThatThrownBy(() -> etiquetteService.buildEtiquetteData(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("requête d'étiquette");
+    }
+
+    @Test
+    void buildEtiquetteData_shouldBuildForForetType() {
+        // Given
+        EtiquetteRequest request = EtiquetteRequest.builder()
+                .typeMiel(HoneyType.FORET)
+                .formatPot(FormatPot.POT_1KG)
+                .dateRecolte(LocalDate.of(2024, 9, 1))
+                .quantite(5)
+                .build();
+
+        when(etiquetteConfig.getDluoDureeJours()).thenReturn(730);
+        when(etiquetteConfig.getNomApiculteur()).thenReturn("Apiculteur");
+        when(etiquetteConfig.getAdresse()).thenReturn("Adresse");
+        when(etiquetteConfig.getSiret()).thenReturn("SIRET");
+        when(etiquetteConfig.getTelephone()).thenReturn("Tel");
+        when(lotsEtiquettesRepository.findByAnneeAndTypeMiel(2024, "FOR"))
+                .thenReturn(Optional.empty());
+        when(lotsEtiquettesRepository.save(any(LotsEtiquettes.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        EtiquetteData data = etiquetteService.buildEtiquetteData(request);
+
+        // Then
+        assertThat(data.getTypeMiel()).isEqualTo("Forêt");
+        assertThat(data.getFormatPot()).isEqualTo("1kg");
+        assertThat(data.getPoids()).isEqualTo("Poids net: 1kg");
+        assertThat(data.getNumeroLot()).isEqualTo("2024-FOR-001");
     }
 }
