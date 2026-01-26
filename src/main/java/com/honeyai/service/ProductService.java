@@ -1,6 +1,8 @@
 package com.honeyai.service;
 
 import com.honeyai.dto.ProductPriceDto;
+import com.honeyai.enums.FormatPot;
+import com.honeyai.enums.HoneyType;
 import com.honeyai.exception.PriceNotFoundException;
 import com.honeyai.model.Price;
 import com.honeyai.model.Product;
@@ -89,5 +91,30 @@ public class ProductService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Find the current year price for a product by honey type and format.
+     *
+     * @param honeyType the type of honey
+     * @param formatPot the jar format
+     * @return the price if found, null otherwise
+     */
+    @Transactional(readOnly = true)
+    public BigDecimal findPriceByTypeAndFormat(HoneyType honeyType, FormatPot formatPot) {
+        int currentYear = LocalDate.now().getYear();
+
+        return productRepository.findByTypeAndUnit(honeyType, formatPot.getDisplayLabel())
+                .flatMap(product -> priceRepository.findByProductIdAndYear(product.getId(), currentYear))
+                .map(Price::getPrice)
+                .orElse(null);
+    }
+
+    /**
+     * Find product by honey type and format.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Product> findByTypeAndFormat(HoneyType honeyType, FormatPot formatPot) {
+        return productRepository.findByTypeAndUnit(honeyType, formatPot.getDisplayLabel());
     }
 }

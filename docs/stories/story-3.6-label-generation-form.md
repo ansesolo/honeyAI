@@ -1,7 +1,7 @@
 # Story 3.6: Label Generation Form UI
 
 **Epic:** Epic 3 - Label Generation (Killer Feature)
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 3.5, Story 1.4
 
@@ -40,7 +40,70 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Form displays correctly
-- [ ] Validation works
+- [x] All acceptance criteria met
+- [x] Form displays correctly
+- [x] Validation works
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+
+| File | Action | Description |
+|------|--------|-------------|
+| `src/main/java/com/honeyai/controller/EtiquetteController.java` | Created | Controller with GET /etiquettes endpoint |
+| `src/main/resources/templates/etiquettes/form.html` | Created | Label generation form with preview |
+| `src/test/java/com/honeyai/controller/EtiquetteControllerTest.java` | Created | 9 tests for controller |
+
+### Debug Log References
+None - implementation completed without issues.
+
+### Completion Notes
+- EtiquetteController with GET /etiquettes returning form view
+- Form fields: Type miel (dropdown), Format pot (radio buttons), Date recolte (datepicker), Quantite (number)
+- Default values: Toutes Fleurs, 500g, today, 10 labels
+- Visual preview section with sample label mockup
+- Help text: "21 par feuille A4"
+- Navigation: "Etiquettes" link already in layout sidebar
+- Bootstrap styling with large labels and generous spacing
+- HTML5 validation (required, min/max)
+- All 205 project tests pass including 9 new tests
+
+### Change Log
+| Date | Change |
+|------|--------|
+| 2026-01-26 | Initial implementation of Story 3.6 |
+
+---
+
+## QA Results
+
+### Review Date: 2026-01-26
+
+### Reviewed By: Quinn (Test Architect)
+
+#### Findings Summary
+
+| Category | Status |
+|----------|--------|
+| Acceptance Criteria | All 10 met |
+| Unit Tests | 9 new tests pass |
+| Regression | 205 total tests pass |
+| Form UI | Displays correctly |
+| Validation | HTML5 required/min/max |
+
+#### Implementation Review
+
+- **EtiquetteController**: GET /etiquettes with default request
+- **form.html**: Bootstrap form with preview panel
+- **Radio buttons**: btn-group for format pot (500g, 1kg)
+- **Navigation**: Link in sidebar (already existed)
+
+### Gate Status
+
+Gate: PASS → docs/qa/gates/3.6-label-generation-form.yml
