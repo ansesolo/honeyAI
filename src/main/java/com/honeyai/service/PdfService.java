@@ -185,27 +185,41 @@ public class PdfService {
     private static final float PADDING_MM = 2.0f;
 
     /** Line spacing in mm */
-    private static final float LINE_SPACING_MM = 1.0f;
+    private static final float LINE_SPACING_MM = 1.2f;
+
+    /** Extra margin for sections in mm */
+    private static final float SECTION_MARGIN_MM = 2.5f;
 
     /** Border line width in points */
     private static final float BORDER_WIDTH_PT = 1.0f;
 
-    /** Font size for product name (bold) */
-    private static final float FONT_SIZE_PRODUCT = 12.0f;
+    /** Font size for header line */
+    private static final float FONT_SIZE_HEADER = 7.0f;
 
-    /** Font size for mandatory info */
-    private static final float FONT_SIZE_INFO = 8.0f;
+    /** Font size for exploitation name (bold) */
+    private static final float FONT_SIZE_NAME = 9.0f;
 
-    /** Font size for DLUO */
-    private static final float FONT_SIZE_DLUO = 9.0f;
+    /** Font size for address/contact info */
+    private static final float FONT_SIZE_INFO = 7.0f;
 
-    /** Font size for lot/price */
-    private static final float FONT_SIZE_LOT_PRICE = 8.0f;
+    /** Font size for weight (bold) */
+    private static final float FONT_SIZE_WEIGHT = 10.0f;
+
+    /** Font size for price (bold, larger) */
+    private static final float FONT_SIZE_PRICE = 12.0f;
 
     /**
      * Renders a single honey label at the specified position on the page.
-     * The label includes all regulatory information: product name, weight,
-     * exploitation info, DLUO, lot number, and price.
+     * Layout:
+     * 1. "Récolté en FRANCE et mis en pot par l'apiculteur" (FRANCE in bold)
+     * 2. Exploitation name (bold, with margins)
+     * 3-4. Address (2 lines)
+     * 5. Phone
+     * 6. SIRET
+     * 7. DLUO
+     * 8. Weight in grams (bold, with space above)
+     * 9. Price (bold, larger font)
+     * All text centered.
      *
      * @param document  the PDF document
      * @param page      the page to render on
@@ -221,6 +235,7 @@ public class PdfService {
         float heightPt = mmToPoints(heightMm);
         float paddingPt = mmToPoints(PADDING_MM);
         float lineSpacingPt = mmToPoints(LINE_SPACING_MM);
+        float sectionMarginPt = mmToPoints(SECTION_MARGIN_MM);
 
         try (PDPageContentStream cs = new PDPageContentStream(
                 document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
@@ -236,61 +251,60 @@ public class PdfService {
             PDFont fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
             PDFont fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
-            // 2. Product name section (centered, bold) - "Miel {type}"
-            String productName = buildProductName(data.getTypeMiel());
-            currentY = drawCenteredText(cs, productName, fontBold, FONT_SIZE_PRODUCT,
-                    contentX, currentY, contentWidth);
-            currentY -= lineSpacingPt;
+            // Line 1: "Récolté en FRANCE et mis en pot par l'apiculteur" (FRANCE in bold)
+            currentY = drawMixedTextCentered(cs, "Recolte en ", "FRANCE", " et mis en pot par l'apiculteur",
+                    fontRegular, fontBold, FONT_SIZE_HEADER, contentX, currentY, contentWidth);
+            currentY -= sectionMarginPt;
 
-            // 3. Weight line (centered) - "Poids net: {format}"
-            String weightLine = data.getPoids() != null ? data.getPoids() : "Poids net: " + data.getFormatPot();
-            currentY = drawCenteredText(cs, weightLine, fontRegular, FONT_SIZE_INFO,
-                    contentX, currentY, contentWidth);
-            currentY -= lineSpacingPt * 2;
-
-            // 4. Mandatory info section (left-aligned)
-            // Nom apiculteur
+            // Line 2: Exploitation name (bold, with margins)
             if (data.getNomApiculteur() != null && !data.getNomApiculteur().isBlank()) {
-                currentY = drawLeftText(cs, data.getNomApiculteur(), fontRegular, FONT_SIZE_INFO,
-                        contentX, currentY);
-                currentY -= lineSpacingPt;
+                currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, FONT_SIZE_NAME,
+                        contentX, currentY, contentWidth);
             }
+            currentY -= sectionMarginPt;
 
-            // Adresse (may need truncation)
+            // Lines 3-4: Address (split into 2 lines if needed)
             if (data.getAdresse() != null && !data.getAdresse().isBlank()) {
-                String adresse = truncateToFit(data.getAdresse(), fontRegular, FONT_SIZE_INFO, contentWidth);
-                currentY = drawLeftText(cs, adresse, fontRegular, FONT_SIZE_INFO, contentX, currentY);
-                currentY -= lineSpacingPt;
+                String[] addressLines = splitAddress(data.getAdresse());
+                for (String line : addressLines) {
+                    if (!line.isBlank()) {
+                        currentY = drawCenteredText(cs, line, fontRegular, FONT_SIZE_INFO,
+                                contentX, currentY, contentWidth);
+                        currentY -= lineSpacingPt;
+                    }
+                }
             }
 
-            // SIRET
-            if (data.getSiret() != null && !data.getSiret().isBlank()) {
-                currentY = drawLeftText(cs, "SIRET: " + data.getSiret(), fontRegular, FONT_SIZE_INFO,
-                        contentX, currentY);
-                currentY -= lineSpacingPt;
-            }
-
-            // Telephone
+            // Line 5: Phone
             if (data.getTelephone() != null && !data.getTelephone().isBlank()) {
-                currentY = drawLeftText(cs, "Tél: " + data.getTelephone(), fontRegular, FONT_SIZE_INFO,
-                        contentX, currentY);
+                currentY = drawCenteredText(cs, data.getTelephone(), fontRegular, FONT_SIZE_INFO,
+                        contentX, currentY, contentWidth);
                 currentY -= lineSpacingPt;
             }
 
+            // Line 6: SIRET
+            if (data.getSiret() != null && !data.getSiret().isBlank()) {
+                currentY = drawCenteredText(cs, "SIRET: " + data.getSiret(), fontRegular, FONT_SIZE_INFO,
+                        contentX, currentY, contentWidth);
+                currentY -= lineSpacingPt;
+            }
+
+            // Line 7: DLUO
+            String dluoLine = "A consommer de preference avant fin: " + data.getDluoFormatted();
+            currentY = drawCenteredText(cs, dluoLine, fontRegular, FONT_SIZE_INFO,
+                    contentX, currentY, contentWidth);
+            currentY -= sectionMarginPt;
+
+            // Line 8: Weight in grams (bold, with space above)
+            String weightLine = getWeightInGrams(data.getFormatPot());
+            currentY = drawCenteredText(cs, weightLine, fontBold, FONT_SIZE_WEIGHT,
+                    contentX, currentY, contentWidth);
             currentY -= lineSpacingPt;
 
-            // 5. DLUO line (left-aligned)
-            String dluoLine = "A consommer avant fin: " + data.getDluoFormatted();
-            currentY = drawLeftText(cs, dluoLine, fontRegular, FONT_SIZE_DLUO, contentX, currentY);
-            currentY -= lineSpacingPt * 2;
-
-            // 6. Bottom section: Lot number (left) and Price (right)
-            String lotLine = "Lot: " + (data.getNumeroLot() != null ? data.getNumeroLot() : "");
-            drawLeftText(cs, lotLine, fontRegular, FONT_SIZE_LOT_PRICE, contentX, currentY);
-
+            // Line 9: Price (bold, larger font)
             if (data.getPrixUnitaire() != null) {
                 String priceLine = formatPrice(data.getPrixUnitaire());
-                drawRightText(cs, priceLine, fontRegular, FONT_SIZE_LOT_PRICE,
+                drawCenteredText(cs, priceLine, fontBold, FONT_SIZE_PRICE,
                         contentX, currentY, contentWidth);
             }
 
@@ -299,6 +313,91 @@ public class PdfService {
         } catch (IOException e) {
             throw new PdfGenerationException("Failed to render label: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Draws text with a bold word in the middle (for "FRANCE").
+     */
+    private float drawMixedTextCentered(PDPageContentStream cs, String before, String boldPart, String after,
+                                        PDFont fontRegular, PDFont fontBold, float fontSize,
+                                        float x, float y, float width) throws IOException {
+        // Calculate total width
+        float beforeWidth = fontRegular.getStringWidth(sanitizeText(before)) / 1000 * fontSize;
+        float boldWidth = fontBold.getStringWidth(sanitizeText(boldPart)) / 1000 * fontSize;
+        float afterWidth = fontRegular.getStringWidth(sanitizeText(after)) / 1000 * fontSize;
+        float totalWidth = beforeWidth + boldWidth + afterWidth;
+
+        float startX = x + (width - totalWidth) / 2;
+        float textY = y - fontSize;
+
+        // Draw "before" text
+        cs.beginText();
+        cs.setFont(fontRegular, fontSize);
+        cs.newLineAtOffset(startX, textY);
+        cs.showText(sanitizeText(before));
+        cs.endText();
+
+        // Draw bold part
+        cs.beginText();
+        cs.setFont(fontBold, fontSize);
+        cs.newLineAtOffset(startX + beforeWidth, textY);
+        cs.showText(sanitizeText(boldPart));
+        cs.endText();
+
+        // Draw "after" text
+        cs.beginText();
+        cs.setFont(fontRegular, fontSize);
+        cs.newLineAtOffset(startX + beforeWidth + boldWidth, textY);
+        cs.showText(sanitizeText(after));
+        cs.endText();
+
+        return y - fontSize;
+    }
+
+    /**
+     * Splits address into 2 lines if it contains a comma or is too long.
+     */
+    private String[] splitAddress(String address) {
+        if (address == null || address.isBlank()) {
+            return new String[]{""};
+        }
+        // Split on comma if present
+        if (address.contains(",")) {
+            String[] parts = address.split(",", 2);
+            return new String[]{parts[0].trim(), parts.length > 1 ? parts[1].trim() : ""};
+        }
+        // If too long, split at middle space
+        if (address.length() > 35) {
+            int mid = address.length() / 2;
+            int spaceIndex = address.indexOf(' ', mid);
+            if (spaceIndex == -1) {
+                spaceIndex = address.lastIndexOf(' ', mid);
+            }
+            if (spaceIndex > 0) {
+                return new String[]{address.substring(0, spaceIndex).trim(), address.substring(spaceIndex).trim()};
+            }
+        }
+        return new String[]{address, ""};
+    }
+
+    /**
+     * Gets weight display string in grams.
+     */
+    private String getWeightInGrams(String formatPot) {
+        if (formatPot == null) {
+            return "Poids net: 500g";
+        }
+        // Convert kg to grams if needed
+        if (formatPot.toLowerCase().contains("1kg") || formatPot.equals("1kg")) {
+            return "Poids net: 1000g";
+        }
+        if (formatPot.toLowerCase().contains("250")) {
+            return "Poids net: 250g";
+        }
+        if (formatPot.toLowerCase().contains("500")) {
+            return "Poids net: 500g";
+        }
+        return "Poids net: " + formatPot;
     }
 
     /**
@@ -407,17 +506,11 @@ public class PdfService {
     }
 
     /**
-     * Builds the product name line from honey type.
+     * Builds the product name line.
+     * Returns just "Miel" without the type as per regulatory requirements.
      */
     private String buildProductName(String typeMiel) {
-        if (typeMiel == null || typeMiel.isBlank()) {
-            return "Miel";
-        }
-        // If already contains "Miel", return as-is
-        if (typeMiel.toLowerCase().contains("miel")) {
-            return typeMiel;
-        }
-        return "Miel " + typeMiel;
+        return "Miel";
     }
 
     /**

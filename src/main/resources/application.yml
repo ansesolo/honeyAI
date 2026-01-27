@@ -25,10 +25,10 @@ spring:
 
 honeyai:
   etiquettes:
-    siret: "XXXXXXXXXXX"
-    nom-apiculteur: "Exploitation Familiale"
-    adresse: "123 Rue de la Ruche, 12345 Village"
-    telephone: "06 XX XX XX XX"
+    siret: "511036780015"
+    nom-apiculteur: "ALLEMAND Jean Pierre"
+    adresse: "12 chemin des crouzettes Tarreyres 43370 Cussac-sur-Loire"
+    telephone: "04.71.03.12.43"
     dluo-duree-jours: 730
     label-width-mm: 60.0
     label-height-mm: 40.0

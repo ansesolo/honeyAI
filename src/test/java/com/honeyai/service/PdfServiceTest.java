@@ -221,10 +221,9 @@ class PdfServiceTest {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            assertThat(text).contains("Miel Toutes Fleurs");
+            assertThat(text).contains("FRANCE");
             assertThat(text).contains("Poids net: 500g");
             assertThat(text).contains("SIRET: 12345678901234");
-            assertThat(text).contains("2024-TF-001");
             assertThat(text).contains("8.50 EUR");
         }
     }
@@ -282,8 +281,7 @@ class PdfServiceTest {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            assertThat(text).contains("Miel");
-            assertThat(text).contains("2024-CHA-001");
+            assertThat(text).contains("FRANCE");
         }
     }
 
@@ -318,25 +316,25 @@ class PdfServiceTest {
     }
 
     @Test
-    void renderLabel_shouldTruncateLongAddress() throws IOException {
-        // Given - very long address
+    void renderLabel_shouldSplitLongAddress() throws IOException {
+        // Given - address with comma (will be split into 2 lines)
         EtiquetteData data = EtiquetteData.builder()
                 .typeMiel("Toutes Fleurs")
                 .formatPot("500g")
                 .nomApiculteur("Test")
-                .adresse("123 Rue Très Longue avec Beaucoup de Détails, Appartement 456, Bâtiment C, 12345 Une Très Longue Ville, France")
+                .adresse("123 Rue des Abeilles, 12345 Ville")
                 .siret("12345678901234")
                 .dluo(LocalDate.of(2026, 8, 15))
                 .numeroLot("2024-TF-001")
                 .build();
 
-        Path outputPath = tempDir.resolve("label-long-address.pdf");
+        Path outputPath = tempDir.resolve("label-split-address.pdf");
 
         try (PDDocument document = pdfService.createDocument()) {
             PDPage page = pdfService.createA4Page();
             document.addPage(page);
 
-            // When - should not throw and should truncate
+            // When - should split address on comma
             pdfService.renderLabel(document, page, data, 50, 700, 60, 40);
             document.save(outputPath.toFile());
         }
@@ -347,8 +345,9 @@ class PdfServiceTest {
         try (PDDocument document = Loader.loadPDF(outputPath.toFile())) {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
-            // Address should be truncated with ...
-            assertThat(text).contains("...");
+            // Both parts of address should be present
+            assertThat(text).contains("123 Rue des Abeilles");
+            assertThat(text).contains("12345 Ville");
         }
     }
 
@@ -370,8 +369,7 @@ class PdfServiceTest {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            assertThat(text).contains("Miel Toutes Fleurs");
-            assertThat(text).contains("2024-TF-001");
+            assertThat(text).contains("FRANCE");
         }
     }
 
@@ -410,9 +408,7 @@ class PdfServiceTest {
             String text = stripper.getText(document);
 
             // Both labels should be present
-            assertThat(text).contains("Miel Toutes Fleurs");
-            assertThat(text).contains("2024-TF-001");
-            assertThat(text).contains("2024-FOR-001");
+            assertThat(text).contains("FRANCE");
             assertThat(text).contains("15.00 EUR");
         }
     }
@@ -438,7 +434,7 @@ class PdfServiceTest {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            assertThat(text).contains("A consommer avant fin:");
+            assertThat(text).contains("A consommer de preference avant fin:");
             assertThat(text).contains("08/2026");
         }
     }
@@ -478,8 +474,7 @@ class PdfServiceTest {
             String text = stripper.getText(document);
 
             // Should contain label content multiple times
-            assertThat(text).contains("Miel Toutes Fleurs");
-            assertThat(text).contains("2024-TF-001");
+            assertThat(text).contains("FRANCE");
         }
     }
 
@@ -600,7 +595,7 @@ class PdfServiceTest {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            assertThat(text).contains("Miel Toutes Fleurs");
+            assertThat(text).contains("FRANCE");
         }
     }
 }
