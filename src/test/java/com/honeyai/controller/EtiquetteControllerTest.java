@@ -116,7 +116,7 @@ class EtiquetteControllerTest {
                         hasProperty("dateRecolte", notNullValue())));
     }
 
-    // ==================== POST /etiquettes/generate Tests ====================
+    // ==================== POST /etiquettes/generer Tests ====================
 
     @Test
     void generatePdf_shouldReturnPdf_whenValid() throws Exception {
@@ -135,7 +135,7 @@ class EtiquetteControllerTest {
         when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
 
         // When/Then
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
                         .param("dateRecolte", "2024-08-15")
@@ -153,7 +153,7 @@ class EtiquetteControllerTest {
 
     @Test
     void generatePdf_shouldReturnFormWithErrors_whenValidationFails() throws Exception {
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
                         .param("dateRecolte", "2024-08-15")
@@ -172,7 +172,7 @@ class EtiquetteControllerTest {
                 .thenThrow(new RuntimeException("Service error"));
 
         // When/Then
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
                         .param("dateRecolte", "2024-08-15")
@@ -199,7 +199,7 @@ class EtiquetteControllerTest {
         when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
 
         // When/Then
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
                         .param("dateRecolte", "2024-08-15")
@@ -210,7 +210,7 @@ class EtiquetteControllerTest {
 
     @Test
     void generatePdf_shouldRequireTypeMiel() throws Exception {
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("formatPot", "POT_500G")
                         .param("dateRecolte", "2024-08-15")
                         .param("quantite", "10"))
@@ -221,7 +221,7 @@ class EtiquetteControllerTest {
 
     @Test
     void generatePdf_shouldRequireDateRecolte() throws Exception {
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
                         .param("quantite", "10"))
@@ -247,7 +247,7 @@ class EtiquetteControllerTest {
         when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
 
         // When/Then
-        mockMvc.perform(post("/etiquettes/generate")
+        mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "FORET")
                         .param("formatPot", "POT_1KG")
                         .param("dateRecolte", "2024-09-01")

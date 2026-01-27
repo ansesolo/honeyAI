@@ -60,7 +60,13 @@
                             <span th:text="${error}">Erreur</span>
                         </div>
 
-                        <form th:action="@{/etiquettes/generate}" th:object="${etiquetteRequest}" method="post">
+                        <!-- Success Alert (shown by JavaScript after PDF download) -->
+                        <div id="successAlert" class="alert alert-success mb-4 d-none" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span id="successMessage">PDF genere avec succes</span>
+                        </div>
+
+                        <form id="etiquetteForm" th:action="@{/etiquettes/generer}" th:object="${etiquetteRequest}" method="post">
 
                             <!-- Type de Miel -->
                             <div class="mb-4">
@@ -137,8 +143,12 @@
 
                             <!-- Submit Button -->
                             <div class="d-grid gap-2 mt-5">
-                                <button type="submit" class="btn btn-success btn-lg py-3">
-                                    <i class="fas fa-download me-2"></i>Generer PDF
+                                <button type="submit" id="submitBtn" class="btn btn-success btn-lg py-3">
+                                    <span id="btnText"><i class="fas fa-download me-2"></i>Generer PDF</span>
+                                    <span id="btnSpinner" class="d-none">
+                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        Generation en cours...
+                                    </span>
                                 </button>
                             </div>
                         </form>
@@ -194,5 +204,96 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript for form handling -->
+<th:block layout:fragment="scripts">
+<script th:inline="javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('etiquetteForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const successAlert = document.getElementById('successAlert');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Hide any previous success message
+        successAlert.classList.add('d-none');
+
+        // Show loading spinner
+        btnText.classList.add('d-none');
+        btnSpinner.classList.remove('d-none');
+        submitBtn.disabled = true;
+
+        // Get form data
+        const formData = new FormData(form);
+        const quantite = formData.get('quantite');
+
+        // Submit form via fetch to get PDF
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Check if it's a validation error (returns HTML)
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/html')) {
+                    return response.text().then(html => {
+                        // Replace page content with error response
+                        document.open();
+                        document.write(html);
+                        document.close();
+                        throw new Error('validation');
+                    });
+                }
+                throw new Error('Generation du PDF echouee');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+
+            // Extract filename from content-disposition or use default
+            a.download = 'etiquettes.pdf';
+
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Show success message
+            successMessage.textContent = 'PDF genere avec succes (' + quantite + ' etiquettes)';
+            successAlert.classList.remove('d-none');
+
+            // Reset button state
+            btnText.classList.remove('d-none');
+            btnSpinner.classList.add('d-none');
+            submitBtn.disabled = false;
+
+            // Scroll to top to show success message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(error => {
+            if (error.message !== 'validation') {
+                console.error('Error:', error);
+                alert('Erreur lors de la generation du PDF. Veuillez reessayer.');
+            }
+
+            // Reset button state
+            btnText.classList.remove('d-none');
+            btnSpinner.classList.add('d-none');
+            submitBtn.disabled = false;
+        });
+    });
+});
+</script>
+</th:block>
 </body>
 </html>

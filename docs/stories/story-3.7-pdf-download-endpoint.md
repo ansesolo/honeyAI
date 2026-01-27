@@ -1,7 +1,7 @@
 # Story 3.7: PDF Download Endpoint & File Response
 
 **Epic:** Epic 3 - Label Generation (Killer Feature)
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 3.6
 
@@ -40,7 +40,34 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] PDF downloads correctly
-- [ ] Error handling works
-- [ ] Code committed to repository
+- [x] All acceptance criteria met
+- [x] PDF downloads correctly
+- [x] Error handling works
+- [x] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5 (claude-opus-4-5-20251101)
+
+### File List
+| File | Action | Description |
+|------|--------|-------------|
+| src/main/java/com/honeyai/controller/EtiquetteController.java | Modified | Changed endpoint URL from /generate to /generer |
+| src/main/resources/templates/etiquettes/form.html | Modified | Added success message alert, loading spinner, JavaScript for async form submission |
+| src/test/java/com/honeyai/controller/EtiquetteControllerTest.java | Modified | Updated test URLs from /generate to /generer |
+
+### Change Log
+- Changed POST endpoint URL from `/etiquettes/generate` to `/etiquettes/generer` per acceptance criteria
+- Added success message alert div that displays after PDF download
+- Added loading spinner during PDF generation
+- Added JavaScript to handle form submission via fetch, trigger PDF download, and show success message
+- Updated all controller tests to use new endpoint URL
+
+### Completion Notes
+- All 16 EtiquetteControllerTest tests pass
+- All 212 project tests pass with no regressions
+- Endpoint now correctly uses French URL `/etiquettes/generer`
+- Success flow implemented: spinner shows during generation, PDF downloads, success message appears

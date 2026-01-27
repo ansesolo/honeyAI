@@ -61,7 +61,7 @@ public class EtiquetteController {
     /**
      * Generate PDF labels and return as downloadable file.
      */
-    @PostMapping("/generate")
+    @PostMapping("/generer")
     public Object generatePdf(@Valid @ModelAttribute("etiquetteRequest") EtiquetteRequest request,
                               BindingResult bindingResult,
                               Model model) {
