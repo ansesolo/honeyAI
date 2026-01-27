@@ -252,7 +252,7 @@ public class PdfService {
             PDFont fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
             // Line 1: "Récolté en FRANCE et mis en pot par l'apiculteur" (FRANCE in bold)
-            currentY = drawMixedTextCentered(cs, "Recolte en ", "FRANCE", " et mis en pot par l'apiculteur",
+            currentY = drawMixedTextCentered(cs, "Recolté en ", "FRANCE", " et mis en pot par l'apiculteur",
                     fontRegular, fontBold, FONT_SIZE_HEADER, contentX, currentY, contentWidth);
             currentY -= sectionMarginPt;
 
