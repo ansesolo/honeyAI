@@ -5,6 +5,7 @@ import com.honeyai.dto.EtiquetteData;
 import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.FormatPot;
 import com.honeyai.enums.HoneyType;
+import com.honeyai.model.HistoriqueEtiquettes;
 import com.honeyai.service.EtiquetteService;
 import com.honeyai.service.PdfService;
 import com.honeyai.service.ProductService;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -258,5 +261,79 @@ class EtiquetteControllerTest {
                         containsString("etiquettes-foret-2024-09-01-2024-FOR-001.pdf")));
 
         verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), eq(25));
+    }
+
+    // ==================== GET /etiquettes/historique Tests ====================
+
+    @Test
+    void showHistorique_shouldReturnHistoriqueView() throws Exception {
+        // Given
+        when(etiquetteService.getRecentHistorique()).thenReturn(List.of());
+
+        // When/Then
+        mockMvc.perform(get("/etiquettes/historique"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("etiquettes/historique"))
+                .andExpect(model().attributeExists("historique"))
+                .andExpect(model().attribute("activeMenu", "etiquettes"));
+    }
+
+    @Test
+    void showHistorique_shouldDisplayHistoryList() throws Exception {
+        // Given
+        HistoriqueEtiquettes h1 = HistoriqueEtiquettes.builder()
+                .id(1L)
+                .typeMiel("TOUTES_FLEURS")
+                .formatPot("POT_500G")
+                .dateRecolte(LocalDate.of(2024, 8, 15))
+                .dluo(LocalDate.of(2026, 8, 15))
+                .numeroLot("2024-TF-001")
+                .quantite(10)
+                .dateGeneration(LocalDateTime.now())
+                .prixUnitaire(new BigDecimal("8.50"))
+                .build();
+
+        when(etiquetteService.getRecentHistorique()).thenReturn(List.of(h1));
+
+        // When/Then
+        mockMvc.perform(get("/etiquettes/historique"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("historique", hasSize(1)));
+    }
+
+    // ==================== GET /etiquettes/regenerer Tests ====================
+
+    @Test
+    void regenerer_shouldPrefillForm() throws Exception {
+        mockMvc.perform(get("/etiquettes/regenerer")
+                        .param("type", "TOUTES_FLEURS")
+                        .param("format", "POT_500G")
+                        .param("date", "2024-08-15")
+                        .param("quantite", "10"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("etiquettes/form"))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("typeMiel", equalTo(HoneyType.TOUTES_FLEURS))))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("formatPot", equalTo(FormatPot.POT_500G))))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("dateRecolte", equalTo(LocalDate.of(2024, 8, 15)))))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("quantite", equalTo(10))));
+    }
+
+    @Test
+    void regenerer_shouldPrefillFormWithForetType() throws Exception {
+        mockMvc.perform(get("/etiquettes/regenerer")
+                        .param("type", "FORET")
+                        .param("format", "POT_1KG")
+                        .param("date", "2024-09-01")
+                        .param("quantite", "25"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("etiquettes/form"))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("typeMiel", equalTo(HoneyType.FORET))))
+                .andExpect(model().attribute("etiquetteRequest",
+                        hasProperty("formatPot", equalTo(FormatPot.POT_1KG))));
     }
 }

@@ -4,14 +4,19 @@ import com.honeyai.config.EtiquetteConfig;
 import com.honeyai.dto.EtiquetteData;
 import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.HoneyType;
+import com.honeyai.model.HistoriqueEtiquettes;
 import com.honeyai.model.LotsEtiquettes;
+import com.honeyai.repository.HistoriqueEtiquettesRepository;
 import com.honeyai.repository.LotsEtiquettesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Service for label generation business logic.
@@ -25,6 +30,7 @@ public class EtiquetteService {
 
     private final EtiquetteConfig etiquetteConfig;
     private final LotsEtiquettesRepository lotsEtiquettesRepository;
+    private final HistoriqueEtiquettesRepository historiqueEtiquettesRepository;
 
     /**
      * Calculate DLUO (Best Before Date) by adding duration days to harvest date.
@@ -183,5 +189,42 @@ public class EtiquetteService {
             return "";
         }
         return String.format("Récolte: %02d/%d", dateRecolte.getMonthValue(), dateRecolte.getYear());
+    }
+
+    /**
+     * Save a history record after successful PDF generation.
+     *
+     * @param request       the original label request
+     * @param data          the computed label data
+     * @param prixUnitaire  the price used (may be null)
+     * @return the saved history record
+     */
+    public HistoriqueEtiquettes saveHistorique(EtiquetteRequest request, EtiquetteData data, BigDecimal prixUnitaire) {
+        HistoriqueEtiquettes historique = HistoriqueEtiquettes.builder()
+                .typeMiel(request.getTypeMiel().name())
+                .formatPot(request.getFormatPot().name())
+                .dateRecolte(request.getDateRecolte())
+                .dluo(data.getDluo())
+                .numeroLot(data.getNumeroLot())
+                .quantite(request.getQuantite())
+                .dateGeneration(LocalDateTime.now())
+                .prixUnitaire(prixUnitaire)
+                .build();
+
+        HistoriqueEtiquettes saved = historiqueEtiquettesRepository.save(historique);
+        log.info("Saved label history: lot={}, type={}, quantity={}",
+                saved.getNumeroLot(), saved.getTypeMiel(), saved.getQuantite());
+
+        return saved;
+    }
+
+    /**
+     * Get the most recent label generations (up to 20).
+     *
+     * @return list of recent history entries
+     */
+    @Transactional(readOnly = true)
+    public List<HistoriqueEtiquettes> getRecentHistorique() {
+        return historiqueEtiquettesRepository.findTop20ByOrderByDateGenerationDesc();
     }
 }

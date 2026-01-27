@@ -47,10 +47,14 @@
                             <i class="fas fa-shopping-cart me-1"></i>Commandes
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/etiquettes}" th:classappend="${activeMenu == 'etiquettes'} ? 'active' : ''">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" th:classappend="${activeMenu == 'etiquettes'} ? 'active' : ''" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-tag me-1"></i>Etiquettes
                         </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/etiquettes}"><i class="fas fa-plus me-2"></i>Generer</a></li>
+                            <li><a class="dropdown-item" th:href="@{/etiquettes/historique}"><i class="fas fa-history me-2"></i>Historique</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/achats}" th:classappend="${activeMenu == 'achats'} ? 'active' : ''">

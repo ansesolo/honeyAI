@@ -5,7 +5,9 @@ import com.honeyai.dto.EtiquetteData;
 import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.FormatPot;
 import com.honeyai.enums.HoneyType;
+import com.honeyai.model.HistoriqueEtiquettes;
 import com.honeyai.model.LotsEtiquettes;
+import com.honeyai.repository.HistoriqueEtiquettesRepository;
 import com.honeyai.repository.LotsEtiquettesRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +36,9 @@ class EtiquetteServiceTest {
 
     @Mock
     private LotsEtiquettesRepository lotsEtiquettesRepository;
+
+    @Mock
+    private HistoriqueEtiquettesRepository historiqueEtiquettesRepository;
 
     @InjectMocks
     private EtiquetteService etiquetteService;
@@ -441,5 +449,123 @@ class EtiquetteServiceTest {
         assertThat(data.getFormatPot()).isEqualTo("1kg");
         assertThat(data.getPoids()).isEqualTo("Poids net: 1kg");
         assertThat(data.getNumeroLot()).isEqualTo("2024-FOR-001");
+    }
+
+    // ==================== saveHistorique Tests ====================
+
+    @Test
+    void saveHistorique_shouldSaveAllFields() {
+        // Given
+        EtiquetteRequest request = EtiquetteRequest.builder()
+                .typeMiel(HoneyType.TOUTES_FLEURS)
+                .formatPot(FormatPot.POT_500G)
+                .dateRecolte(LocalDate.of(2024, 8, 15))
+                .quantite(10)
+                .build();
+
+        EtiquetteData data = EtiquetteData.builder()
+                .dluo(LocalDate.of(2026, 8, 15))
+                .numeroLot("2024-TF-001")
+                .build();
+
+        BigDecimal price = new BigDecimal("8.50");
+
+        when(historiqueEtiquettesRepository.save(any(HistoriqueEtiquettes.class)))
+                .thenAnswer(inv -> {
+                    HistoriqueEtiquettes h = inv.getArgument(0);
+                    h.setId(1L);
+                    return h;
+                });
+
+        // When
+        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, price);
+
+        // Then
+        assertThat(saved).isNotNull();
+        assertThat(saved.getId()).isEqualTo(1L);
+
+        ArgumentCaptor<HistoriqueEtiquettes> captor = ArgumentCaptor.forClass(HistoriqueEtiquettes.class);
+        verify(historiqueEtiquettesRepository).save(captor.capture());
+
+        HistoriqueEtiquettes captured = captor.getValue();
+        assertThat(captured.getTypeMiel()).isEqualTo("TOUTES_FLEURS");
+        assertThat(captured.getFormatPot()).isEqualTo("POT_500G");
+        assertThat(captured.getDateRecolte()).isEqualTo(LocalDate.of(2024, 8, 15));
+        assertThat(captured.getDluo()).isEqualTo(LocalDate.of(2026, 8, 15));
+        assertThat(captured.getNumeroLot()).isEqualTo("2024-TF-001");
+        assertThat(captured.getQuantite()).isEqualTo(10);
+        assertThat(captured.getDateGeneration()).isNotNull();
+        assertThat(captured.getPrixUnitaire()).isEqualByComparingTo("8.50");
+    }
+
+    @Test
+    void saveHistorique_shouldAllowNullPrice() {
+        // Given
+        EtiquetteRequest request = EtiquetteRequest.builder()
+                .typeMiel(HoneyType.FORET)
+                .formatPot(FormatPot.POT_1KG)
+                .dateRecolte(LocalDate.of(2024, 9, 1))
+                .quantite(5)
+                .build();
+
+        EtiquetteData data = EtiquetteData.builder()
+                .dluo(LocalDate.of(2026, 9, 1))
+                .numeroLot("2024-FOR-001")
+                .build();
+
+        when(historiqueEtiquettesRepository.save(any(HistoriqueEtiquettes.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, null);
+
+        // Then
+        ArgumentCaptor<HistoriqueEtiquettes> captor = ArgumentCaptor.forClass(HistoriqueEtiquettes.class);
+        verify(historiqueEtiquettesRepository).save(captor.capture());
+        assertThat(captor.getValue().getPrixUnitaire()).isNull();
+    }
+
+    // ==================== getRecentHistorique Tests ====================
+
+    @Test
+    void getRecentHistorique_shouldReturnEmptyList_whenNoHistory() {
+        // Given
+        when(historiqueEtiquettesRepository.findTop20ByOrderByDateGenerationDesc())
+                .thenReturn(List.of());
+
+        // When
+        List<HistoriqueEtiquettes> result = etiquetteService.getRecentHistorique();
+
+        // Then
+        assertThat(result).isEmpty();
+        verify(historiqueEtiquettesRepository).findTop20ByOrderByDateGenerationDesc();
+    }
+
+    @Test
+    void getRecentHistorique_shouldReturnHistoryList() {
+        // Given
+        HistoriqueEtiquettes h1 = HistoriqueEtiquettes.builder()
+                .id(1L)
+                .typeMiel("TOUTES_FLEURS")
+                .numeroLot("2024-TF-001")
+                .dateGeneration(LocalDateTime.now())
+                .build();
+        HistoriqueEtiquettes h2 = HistoriqueEtiquettes.builder()
+                .id(2L)
+                .typeMiel("FORET")
+                .numeroLot("2024-FOR-001")
+                .dateGeneration(LocalDateTime.now().minusHours(1))
+                .build();
+
+        when(historiqueEtiquettesRepository.findTop20ByOrderByDateGenerationDesc())
+                .thenReturn(List.of(h1, h2));
+
+        // When
+        List<HistoriqueEtiquettes> result = etiquetteService.getRecentHistorique();
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getNumeroLot()).isEqualTo("2024-TF-001");
+        assertThat(result.get(1).getNumeroLot()).isEqualTo("2024-FOR-001");
     }
 }

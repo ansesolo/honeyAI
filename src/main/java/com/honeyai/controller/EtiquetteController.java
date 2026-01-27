@@ -96,6 +96,9 @@ public class EtiquetteController {
             // Generate PDF
             byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, request.getQuantite());
 
+            // Save history record
+            etiquetteService.saveHistorique(request, data, price);
+
             // Build filename
             String filename = buildFilename(request, data.getNumeroLot());
 
@@ -129,5 +132,41 @@ public class EtiquetteController {
         String dateStr = request.getDateRecolte().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
         return String.format("etiquettes-%s-%s-%s.pdf", typeName, dateStr, lotNumber);
+    }
+
+    /**
+     * Display label generation history.
+     */
+    @GetMapping("/historique")
+    public String showHistorique(Model model) {
+        model.addAttribute("historique", etiquetteService.getRecentHistorique());
+        model.addAttribute("activeMenu", "etiquettes");
+        return "etiquettes/historique";
+    }
+
+    /**
+     * Pre-fill form for re-generation from history.
+     */
+    @GetMapping("/regenerer")
+    public String regenerer(
+            @org.springframework.web.bind.annotation.RequestParam("type") String typeMiel,
+            @org.springframework.web.bind.annotation.RequestParam("format") String formatPot,
+            @org.springframework.web.bind.annotation.RequestParam("date") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate dateRecolte,
+            @org.springframework.web.bind.annotation.RequestParam("quantite") Integer quantite,
+            Model model) {
+
+        EtiquetteRequest request = EtiquetteRequest.builder()
+                .typeMiel(HoneyType.valueOf(typeMiel))
+                .formatPot(FormatPot.valueOf(formatPot))
+                .dateRecolte(dateRecolte)
+                .quantite(quantite)
+                .build();
+
+        model.addAttribute("etiquetteRequest", request);
+        model.addAttribute("honeyTypes", HoneyType.values());
+        model.addAttribute("formatPots", FormatPot.values());
+        model.addAttribute("activeMenu", "etiquettes");
+
+        return "etiquettes/form";
     }
 }
