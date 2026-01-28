@@ -122,6 +122,26 @@
                                        required>
                             </div>
 
+                            <!-- Preset Etiquettes -->
+                            <div class="mb-4">
+                                <label for="presetName" class="form-label form-label-lg">
+                                    <i class="fas fa-ruler-combined me-1 text-secondary"></i>
+                                    Format d'etiquette
+                                </label>
+                                <select class="form-select form-select-lg"
+                                        id="presetName"
+                                        th:field="*{presetName}">
+                                    <option th:each="preset : ${labelPresets}"
+                                            th:value="${preset.name}"
+                                            th:text="${preset.name}"
+                                            th:data-width="${preset.labelWidthMm}"
+                                            th:data-height="${preset.labelHeightMm}"
+                                            th:data-cols="${preset.labelsPerRow}"
+                                            th:data-rows="${preset.labelsPerColumn}">
+                                    </option>
+                                </select>
+                            </div>
+
                             <!-- Submit Button -->
                             <div class="d-grid gap-2 mt-5">
                                 <button type="submit" id="submitBtn" class="btn btn-success btn-lg py-3">
@@ -144,26 +164,22 @@
                         <i class="fas fa-eye me-2"></i>Apercu d'une etiquette
                     </div>
                     <div class="card-body d-flex justify-content-center align-items-center p-4">
-                        <div class="preview-label text-center" style="width: 200px;">
-                            <div class="fw-bold mb-2" style="font-size: 1rem;">Miel Toutes Fleurs</div>
-                            <div class="small mb-2">Poids net: 500g</div>
-                            <hr class="my-2">
-                            <div class="small text-start">
-                                <div>Exploitation Apicole</div>
-                                <div>123 Rue de la Ruche</div>
-                                <div>SIRET: 12345678901234</div>
-                                <div>Tel: 06 12 34 56 78</div>
-                            </div>
-                            <hr class="my-2">
-                            <div class="small">A consommer avant fin: 08/2026</div>
-                            <div class="d-flex justify-content-between small mt-1">
-                                <span>Lot: 2024-TF-001</span>
-                                <span class="fw-bold">8,50 EUR</span>
-                            </div>
+                        <div class="preview-label text-center" style="width: 220px;">
+                            <div class="small mb-1">Recolte en <strong>FRANCE</strong> et mis en pot par l'apiculteur</div>
+                            <div class="fw-bold mb-1" style="font-size: 0.85rem;" th:text="${etiquetteConfig.nomApiculteur}">Nom Apiculteur</div>
+                            <div class="small" th:text="${etiquetteConfig.adresse}">Adresse</div>
+                            <div class="small" th:if="${etiquetteConfig.telephone != null}" th:text="${etiquetteConfig.telephone}">Telephone</div>
+                            <div class="small mb-1" th:text="'SIRET: ' + ${etiquetteConfig.siret}">SIRET</div>
+                            <hr class="my-1">
+                            <div class="small">A consommer de preference avant fin: MM/AAAA</div>
+                            <div class="fw-bold mt-1">Poids net: XXXg</div>
+                            <div class="fw-bold mt-1" style="font-size: 1.1rem;">X.XX EUR</div>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent text-center small text-muted">
-                        Dimension: 60mm x 40mm
+                    <div class="card-footer bg-transparent text-center small text-muted" id="presetDimensions">
+                        Dimension: <span id="dimWidth">60</span>mm x <span id="dimHeight">40</span>mm
+                        — Grille: <span id="dimCols">3</span>x<span id="dimRows">7</span>
+                        (<span id="dimTotal">21</span> etiquettes/page)
                     </div>
                 </div>
 
@@ -174,10 +190,9 @@
                     </div>
                     <div class="card-body">
                         <ul class="mb-0 small">
-                            <li class="mb-2">Le <strong>numero de lot</strong> est genere automatiquement (format: AAAA-TYPE-NNN)</li>
                             <li class="mb-2">La <strong>DLUO</strong> (Date Limite d'Utilisation Optimale) est calculee automatiquement (2 ans apres la recolte)</li>
                             <li class="mb-2">Les informations de l'exploitation sont extraites de la configuration</li>
-                            <li>Format d'impression: <strong>A4</strong> - grille et dimensions configurables dans <code>application.yml</code></li>
+                            <li>Format d'impression: <strong>A4</strong> - selectionnez un preset pour changer les dimensions</li>
                         </ul>
                     </div>
                 </div>
@@ -196,6 +211,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnSpinner = document.getElementById('btnSpinner');
     const successAlert = document.getElementById('successAlert');
     const successMessage = document.getElementById('successMessage');
+    const presetSelect = document.getElementById('presetName');
+
+    // Update dimensions display when preset changes
+    function updatePresetDimensions() {
+        const selected = presetSelect.options[presetSelect.selectedIndex];
+        if (selected) {
+            const w = selected.getAttribute('data-width');
+            const h = selected.getAttribute('data-height');
+            const cols = selected.getAttribute('data-cols');
+            const rows = selected.getAttribute('data-rows');
+            if (w && h) {
+                document.getElementById('dimWidth').textContent = parseFloat(w);
+                document.getElementById('dimHeight').textContent = parseFloat(h);
+                document.getElementById('dimCols').textContent = cols;
+                document.getElementById('dimRows').textContent = rows;
+                document.getElementById('dimTotal').textContent = parseInt(cols) * parseInt(rows);
+            }
+        }
+    }
+
+    presetSelect.addEventListener('change', updatePresetDimensions);
+    updatePresetDimensions();
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();

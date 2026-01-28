@@ -1,6 +1,8 @@
 package com.honeyai.controller;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.config.LabelPreset;
+import com.honeyai.config.LabelPresetsConfig;
 import com.honeyai.dto.EtiquetteData;
 import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.FormatPot;
@@ -9,6 +11,7 @@ import com.honeyai.model.HistoriqueEtiquettes;
 import com.honeyai.service.EtiquetteService;
 import com.honeyai.service.PdfService;
 import com.honeyai.service.ProductService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +49,27 @@ class EtiquetteControllerTest {
 
     @MockBean
     private EtiquetteConfig etiquetteConfig;
+
+    @MockBean
+    private LabelPresetsConfig labelPresetsConfig;
+
+    private static final LabelPreset DEFAULT_PRESET = LabelPreset.builder()
+            .name("Standard (60x40mm - 3x7)")
+            .labelWidthMm(60.0f)
+            .labelHeightMm(40.0f)
+            .labelsPerRow(3)
+            .labelsPerColumn(7)
+            .marginTopMm(10.0f)
+            .marginLeftMm(10.0f)
+            .build();
+
+    @BeforeEach
+    void setUp() {
+        when(labelPresetsConfig.getDefault()).thenReturn(DEFAULT_PRESET);
+        when(labelPresetsConfig.getPresets()).thenReturn(List.of(DEFAULT_PRESET));
+        when(labelPresetsConfig.findByName(any())).thenReturn(Optional.of(DEFAULT_PRESET));
+        when(pdfService.getEtiquetteConfig()).thenReturn(etiquetteConfig);
+    }
 
     // ==================== GET /etiquettes Tests ====================
 
@@ -103,6 +128,13 @@ class EtiquetteControllerTest {
     }
 
     @Test
+    void showForm_shouldIncludeLabelPresets() throws Exception {
+        mockMvc.perform(get("/etiquettes"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("labelPresets"));
+    }
+
+    @Test
     void showForm_shouldHaveTodayAsDefaultDate() throws Exception {
         mockMvc.perform(get("/etiquettes"))
                 .andExpect(status().isOk())
@@ -126,8 +158,7 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(new BigDecimal("8.50"));
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
-        when(pdfService.getLabelsPerPage()).thenReturn(21);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class))).thenReturn(mockPdfBytes);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
@@ -142,7 +173,7 @@ class EtiquetteControllerTest {
                         containsString("etiquettes-toutes-fleurs-2024-08-15-2024-TF-001.pdf")));
 
         verify(etiquetteService).buildEtiquetteData(any(EtiquetteRequest.class));
-        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class));
+        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class));
     }
 
     @Test
@@ -188,8 +219,7 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(null); // No price
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
-        when(pdfService.getLabelsPerPage()).thenReturn(21);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class))).thenReturn(mockPdfBytes);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
@@ -234,8 +264,7 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(new BigDecimal("15.00"));
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
-        when(pdfService.getLabelsPerPage()).thenReturn(21);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class))).thenReturn(mockPdfBytes);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
@@ -247,7 +276,7 @@ class EtiquetteControllerTest {
                 .andExpect(header().string("Content-Disposition",
                         containsString("etiquettes-foret-2024-09-01-2024-FOR-001.pdf")));
 
-        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class));
+        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class));
     }
 
     // ==================== GET /etiquettes/historique Tests ====================

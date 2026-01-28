@@ -1,5 +1,7 @@
 package com.honeyai.controller;
 
+import com.honeyai.config.LabelPreset;
+import com.honeyai.config.LabelPresetsConfig;
 import com.honeyai.dto.EtiquetteData;
 import com.honeyai.dto.EtiquetteRequest;
 import com.honeyai.enums.FormatPot;
@@ -37,6 +39,7 @@ public class EtiquetteController {
     private final EtiquetteService etiquetteService;
     private final PdfService pdfService;
     private final ProductService productService;
+    private final LabelPresetsConfig labelPresetsConfig;
 
     /**
      * Display the label generation form.
@@ -47,11 +50,14 @@ public class EtiquetteController {
                 .typeMiel(HoneyType.TOUTES_FLEURS)
                 .formatPot(FormatPot.POT_500G)
                 .dateRecolte(LocalDate.now())
+                .presetName(labelPresetsConfig.getDefault().getName())
                 .build();
 
         model.addAttribute("etiquetteRequest", request);
         model.addAttribute("honeyTypes", HoneyType.values());
         model.addAttribute("formatPots", FormatPot.values());
+        model.addAttribute("labelPresets", labelPresetsConfig.getPresets());
+        model.addAttribute("etiquetteConfig", pdfService.getEtiquetteConfig());
         model.addAttribute("activeMenu", "etiquettes");
 
         return "etiquettes/form";
@@ -70,14 +76,20 @@ public class EtiquetteController {
             log.warn("Validation errors for label generation: {}", bindingResult.getAllErrors());
             model.addAttribute("honeyTypes", HoneyType.values());
             model.addAttribute("formatPots", FormatPot.values());
+            model.addAttribute("labelPresets", labelPresetsConfig.getPresets());
+            model.addAttribute("etiquetteConfig", pdfService.getEtiquetteConfig());
             model.addAttribute("activeMenu", "etiquettes");
             return "etiquettes/form";
         }
 
         try {
-            log.info("Generating labels: type={}, format={}, date={}",
+            log.info("Generating labels: type={}, format={}, date={}, preset={}",
                     request.getTypeMiel(), request.getFormatPot(),
-                    request.getDateRecolte());
+                    request.getDateRecolte(), request.getPresetName());
+
+            // Resolve preset
+            LabelPreset preset = labelPresetsConfig.findByName(request.getPresetName())
+                    .orElse(labelPresetsConfig.getDefault());
 
             // Build label data
             EtiquetteData data = etiquetteService.buildEtiquetteData(request);
@@ -92,11 +104,11 @@ public class EtiquetteController {
                         request.getTypeMiel(), request.getFormatPot());
             }
 
-            // Generate PDF (one full page)
-            byte[] pdfBytes = pdfService.generateEtiquetteSheet(data);
+            // Generate PDF (one full page) with preset
+            byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, preset);
 
             // Save history record
-            int labelsPerPage = pdfService.getLabelsPerPage();
+            int labelsPerPage = preset.getLabelsPerPage();
             etiquetteService.saveHistorique(request, data, price, labelsPerPage);
 
             // Build filename
@@ -118,6 +130,8 @@ public class EtiquetteController {
             model.addAttribute("error", "Erreur lors de la generation du PDF. Veuillez reessayer.");
             model.addAttribute("honeyTypes", HoneyType.values());
             model.addAttribute("formatPots", FormatPot.values());
+            model.addAttribute("labelPresets", labelPresetsConfig.getPresets());
+            model.addAttribute("etiquetteConfig", pdfService.getEtiquetteConfig());
             model.addAttribute("activeMenu", "etiquettes");
             return "etiquettes/form";
         }
@@ -158,11 +172,14 @@ public class EtiquetteController {
                 .typeMiel(HoneyType.valueOf(typeMiel))
                 .formatPot(FormatPot.valueOf(formatPot))
                 .dateRecolte(dateRecolte)
+                .presetName(labelPresetsConfig.getDefault().getName())
                 .build();
 
         model.addAttribute("etiquetteRequest", request);
         model.addAttribute("honeyTypes", HoneyType.values());
         model.addAttribute("formatPots", FormatPot.values());
+        model.addAttribute("labelPresets", labelPresetsConfig.getPresets());
+        model.addAttribute("etiquetteConfig", pdfService.getEtiquetteConfig());
         model.addAttribute("activeMenu", "etiquettes");
 
         return "etiquettes/form";

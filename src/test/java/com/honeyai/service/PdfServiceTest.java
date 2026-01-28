@@ -1,6 +1,7 @@
 package com.honeyai.service;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.config.LabelPreset;
 import com.honeyai.dto.EtiquetteData;
 import com.honeyai.exception.PdfGenerationException;
 import org.apache.pdfbox.Loader;
@@ -493,5 +494,71 @@ class PdfServiceTest {
     void getLabelsPerPage_shouldReturnConfigValue() {
         // The config is set to 3x7 = 21
         assertThat(pdfService.getLabelsPerPage()).isEqualTo(21);
+    }
+
+    // ==================== Preset-based Sheet Tests ====================
+
+    @Test
+    void generateEtiquetteSheet_withPreset_shouldGenerateOneFullPage() throws IOException {
+        // Given
+        EtiquetteData data = createTestLabelData();
+        LabelPreset preset = LabelPreset.builder()
+                .name("Grand (70x50mm - 2x5)")
+                .labelWidthMm(70.0f)
+                .labelHeightMm(50.0f)
+                .labelsPerRow(2)
+                .labelsPerColumn(5)
+                .marginTopMm(15.0f)
+                .marginLeftMm(25.0f)
+                .build();
+
+        // When
+        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, preset);
+
+        // Then
+        assertThat(pdfBytes).isNotNull();
+        assertThat(pdfBytes.length).isGreaterThan(0);
+
+        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
+            assertThat(document.getNumberOfPages()).isEqualTo(1);
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(document);
+
+            assertThat(text).contains("FRANCE");
+            assertThat(text).contains("8.50 EUR");
+        }
+    }
+
+    @Test
+    void generateEtiquetteSheet_withNullPreset_shouldFallbackToConfig() throws IOException {
+        // Given
+        EtiquetteData data = createTestLabelData();
+
+        // When
+        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, null);
+
+        // Then
+        assertThat(pdfBytes).isNotNull();
+        assertThat(pdfBytes.length).isGreaterThan(0);
+    }
+
+    @Test
+    void generateEtiquetteSheet_withPreset_shouldThrowException_forNullData() {
+        // Given
+        LabelPreset preset = LabelPreset.builder()
+                .name("Test")
+                .labelWidthMm(60.0f)
+                .labelHeightMm(40.0f)
+                .labelsPerRow(3)
+                .labelsPerColumn(7)
+                .marginTopMm(10.0f)
+                .marginLeftMm(10.0f)
+                .build();
+
+        // When/Then
+        assertThatThrownBy(() -> pdfService.generateEtiquetteSheet(null, preset))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("données d'étiquette");
     }
 }

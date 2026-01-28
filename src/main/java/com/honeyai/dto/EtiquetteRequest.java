@@ -41,4 +41,9 @@ public class EtiquetteRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateRecolte;
 
+    /**
+     * Optional label preset name. If null or empty, default preset is used.
+     */
+    private String presetName;
+
 }

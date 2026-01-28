@@ -1,6 +1,7 @@
 package com.honeyai.service;
 
 import com.honeyai.config.EtiquetteConfig;
+import com.honeyai.config.LabelPreset;
 import com.honeyai.dto.EtiquetteData;
 import com.honeyai.exception.PdfGenerationException;
 import lombok.RequiredArgsConstructor;
@@ -611,6 +612,81 @@ public class PdfService {
 
         } catch (IOException e) {
             throw new PdfGenerationException("Failed to generate label sheet: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Generates a single-page label sheet PDF using a specific preset.
+     *
+     * @param data   the label data to repeat on all labels
+     * @param preset the label preset defining dimensions and grid
+     * @return byte array containing the PDF document
+     */
+    public byte[] generateEtiquetteSheet(EtiquetteData data, LabelPreset preset) {
+        if (data == null) {
+            throw new IllegalArgumentException("Les données d'étiquette sont obligatoires");
+        }
+        if (preset == null) {
+            return generateEtiquetteSheet(data);
+        }
+
+        int labelsPerPage = preset.getLabelsPerPage();
+        log.info("Generating label sheet with preset '{}': {} labels ({}x{})",
+                preset.getName(), labelsPerPage, preset.getLabelsPerRow(), preset.getLabelsPerColumn());
+        long startTime = System.currentTimeMillis();
+
+        try (PDDocument document = createDocument();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+            PDPage page = createA4Page();
+            document.addPage(page);
+            renderLabelsOnPage(document, page, data, preset);
+
+            document.save(baos);
+
+            long duration = System.currentTimeMillis() - startTime;
+            log.info("Label sheet generated: {} labels on 1 page in {}ms", labelsPerPage, duration);
+
+            return baos.toByteArray();
+
+        } catch (IOException e) {
+            throw new PdfGenerationException("Failed to generate label sheet: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Renders all labels on a single page using a specific preset.
+     */
+    private void renderLabelsOnPage(PDDocument document, PDPage page, EtiquetteData data, LabelPreset preset) {
+        float pageHeight = page.getMediaBox().getHeight();
+
+        float marginTopPt = mmToPoints(preset.getMarginTopMm());
+        float marginLeftPt = mmToPoints(preset.getMarginLeftMm());
+
+        float labelWidthMm = preset.getLabelWidthMm();
+        float labelHeightMm = preset.getLabelHeightMm();
+        float labelWidthPt = mmToPoints(labelWidthMm);
+        float labelHeightPt = mmToPoints(labelHeightMm);
+
+        int cols = preset.getLabelsPerRow();
+        int rows = preset.getLabelsPerColumn();
+
+        float pageWidthPt = page.getMediaBox().getWidth();
+        float usedWidth = marginLeftPt + (cols * labelWidthPt);
+        float usedHeight = marginTopPt + (rows * labelHeightPt);
+        float hGapPt = cols > 1 ? (pageWidthPt - usedWidth - marginLeftPt) / (cols - 1) : 0;
+        float vGapPt = rows > 1 ? (pageHeight - usedHeight - marginTopPt) / (rows - 1) : 0;
+
+        float startX = marginLeftPt;
+        float startY = pageHeight - marginTopPt - labelHeightPt;
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                float x = startX + col * (labelWidthPt + hGapPt);
+                float y = startY - row * (labelHeightPt + vGapPt);
+
+                renderLabel(document, page, data, x, y, labelWidthMm, labelHeightMm);
+            }
         }
     }
 
