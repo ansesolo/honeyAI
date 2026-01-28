@@ -182,31 +182,34 @@ public class PdfService {
 
     // ==================== Label Rendering ====================
 
-    /** Padding inside label border in mm */
+    /** Padding inside label border in mm (at reference scale) */
     private static final float PADDING_MM = 1.5f;
 
-    /** Line spacing in mm */
+    /** Line spacing in mm (at reference scale) */
     private static final float LINE_SPACING_MM = 0.8f;
 
-    /** Extra margin for sections in mm */
+    /** Extra margin for sections in mm (at reference scale) */
     private static final float SECTION_MARGIN_MM = 1.2f;
 
     /** Border line width in points */
     private static final float BORDER_WIDTH_PT = 0.5f;
 
-    /** Font size for header line */
+    /** Reference label height in mm (font sizes are calibrated for this) */
+    private static final float REFERENCE_HEIGHT_MM = 40.0f;
+
+    /** Font size for header line (at reference scale) */
     private static final float FONT_SIZE_HEADER = 5.5f;
 
-    /** Font size for exploitation name (bold) */
+    /** Font size for exploitation name (bold, at reference scale) */
     private static final float FONT_SIZE_NAME = 6.5f;
 
-    /** Font size for address/contact info */
+    /** Font size for address/contact info (at reference scale) */
     private static final float FONT_SIZE_INFO = 5.5f;
 
-    /** Font size for weight (bold) */
+    /** Font size for weight (bold, at reference scale) */
     private static final float FONT_SIZE_WEIGHT = 7.0f;
 
-    /** Font size for price (bold, larger) */
+    /** Font size for price (bold, larger, at reference scale) */
     private static final float FONT_SIZE_PRICE = 8.0f;
 
     /**
@@ -234,9 +237,18 @@ public class PdfService {
                             float x, float y, float widthMm, float heightMm) {
         float widthPt = mmToPoints(widthMm);
         float heightPt = mmToPoints(heightMm);
-        float paddingPt = mmToPoints(PADDING_MM);
-        float lineSpacingPt = mmToPoints(LINE_SPACING_MM);
-        float sectionMarginPt = mmToPoints(SECTION_MARGIN_MM);
+
+        // Scale factor: fonts/spacings are calibrated for REFERENCE_HEIGHT_MM
+        float scale = heightMm / REFERENCE_HEIGHT_MM;
+
+        float paddingPt = mmToPoints(PADDING_MM * scale);
+        float lineSpacingPt = mmToPoints(LINE_SPACING_MM * scale);
+        float sectionMarginPt = mmToPoints(SECTION_MARGIN_MM * scale);
+
+        float fontHeader = FONT_SIZE_HEADER * scale;
+        float fontInfo = FONT_SIZE_INFO * scale;
+        float fontWeight = FONT_SIZE_WEIGHT * scale;
+        float fontPrice = FONT_SIZE_PRICE * scale;
 
         try (PDPageContentStream cs = new PDPageContentStream(
                 document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
@@ -254,12 +266,12 @@ public class PdfService {
 
             // Line 1: "Récolté en FRANCE et mis en pot par l'apiculteur" (FRANCE in bold)
             currentY = drawMixedTextCentered(cs, "Recolté en ", "FRANCE", " et mis en pot par l'apiculteur",
-                    fontRegular, fontBold, FONT_SIZE_HEADER, contentX, currentY, contentWidth);
+                    fontRegular, fontBold, fontHeader, contentX, currentY, contentWidth);
             currentY -= sectionMarginPt;
 
             // Line 2: Exploitation name (bold, with margins)
             if (data.getNomApiculteur() != null && !data.getNomApiculteur().isBlank()) {
-                currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, FONT_SIZE_HEADER,
+                currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, fontHeader,
                         contentX, currentY, contentWidth);
             }
             currentY -= sectionMarginPt;
@@ -269,7 +281,7 @@ public class PdfService {
                 String[] addressLines = splitAddress(data.getAdresse());
                 for (String line : addressLines) {
                     if (!line.isBlank()) {
-                        currentY = drawCenteredText(cs, line, fontRegular, FONT_SIZE_INFO,
+                        currentY = drawCenteredText(cs, line, fontRegular, fontInfo,
                                 contentX, currentY, contentWidth);
                         currentY -= lineSpacingPt;
                     }
@@ -278,38 +290,38 @@ public class PdfService {
 
             // Line 5: Phone
             if (data.getTelephone() != null && !data.getTelephone().isBlank()) {
-                currentY = drawCenteredText(cs, data.getTelephone(), fontRegular, FONT_SIZE_INFO,
+                currentY = drawCenteredText(cs, data.getTelephone(), fontRegular, fontInfo,
                         contentX, currentY, contentWidth);
                 currentY -= lineSpacingPt;
             }
 
             // Line 6: SIRET
             if (data.getSiret() != null && !data.getSiret().isBlank()) {
-                currentY = drawCenteredText(cs, "SIRET: " + data.getSiret(), fontRegular, FONT_SIZE_INFO,
+                currentY = drawCenteredText(cs, "SIRET: " + data.getSiret(), fontRegular, fontInfo,
                         contentX, currentY, contentWidth);
                 currentY -= lineSpacingPt;
             }
 
             // Line 7: DLUO
             String dluoLine = "A consommer de preference avant fin: " + data.getDluoFormatted();
-            currentY = drawCenteredText(cs, dluoLine, fontRegular, FONT_SIZE_INFO,
+            currentY = drawCenteredText(cs, dluoLine, fontRegular, fontInfo,
                     contentX, currentY, contentWidth);
             currentY -= sectionMarginPt;
 
             // Line 8: Weight in grams (bold, with space above)
             String weightLine = getWeightInGrams(data.getFormatPot());
-            currentY = drawCenteredText(cs, weightLine, fontBold, FONT_SIZE_WEIGHT,
+            currentY = drawCenteredText(cs, weightLine, fontBold, fontWeight,
                     contentX, currentY, contentWidth);
             currentY -= lineSpacingPt;
 
             // Line 9: Price (bold, larger font)
             if (data.getPrixUnitaire() != null) {
                 String priceLine = formatPrice(data.getPrixUnitaire());
-                drawCenteredText(cs, priceLine, fontBold, FONT_SIZE_PRICE,
+                drawCenteredText(cs, priceLine, fontBold, fontPrice,
                         contentX, currentY, contentWidth);
             }
 
-            log.debug("Label rendered at ({}, {}) size {}x{}mm", x, y, widthMm, heightMm);
+            log.debug("Label rendered at ({}, {}) size {}x{}mm scale={}", x, y, widthMm, heightMm, scale);
 
         } catch (IOException e) {
             throw new PdfGenerationException("Failed to render label: " + e.getMessage(), e);
