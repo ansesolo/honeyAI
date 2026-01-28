@@ -47,7 +47,6 @@ public class EtiquetteController {
                 .typeMiel(HoneyType.TOUTES_FLEURS)
                 .formatPot(FormatPot.POT_500G)
                 .dateRecolte(LocalDate.now())
-                .quantite(10)
                 .build();
 
         model.addAttribute("etiquetteRequest", request);
@@ -76,9 +75,9 @@ public class EtiquetteController {
         }
 
         try {
-            log.info("Generating labels: type={}, format={}, date={}, quantity={}",
+            log.info("Generating labels: type={}, format={}, date={}",
                     request.getTypeMiel(), request.getFormatPot(),
-                    request.getDateRecolte(), request.getQuantite());
+                    request.getDateRecolte());
 
             // Build label data
             EtiquetteData data = etiquetteService.buildEtiquetteData(request);
@@ -93,11 +92,12 @@ public class EtiquetteController {
                         request.getTypeMiel(), request.getFormatPot());
             }
 
-            // Generate PDF
-            byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, request.getQuantite());
+            // Generate PDF (one full page)
+            byte[] pdfBytes = pdfService.generateEtiquetteSheet(data);
 
             // Save history record
-            etiquetteService.saveHistorique(request, data, price);
+            int labelsPerPage = pdfService.getLabelsPerPage();
+            etiquetteService.saveHistorique(request, data, price, labelsPerPage);
 
             // Build filename
             String filename = buildFilename(request, data.getNumeroLot());
@@ -152,14 +152,12 @@ public class EtiquetteController {
             @org.springframework.web.bind.annotation.RequestParam("type") String typeMiel,
             @org.springframework.web.bind.annotation.RequestParam("format") String formatPot,
             @org.springframework.web.bind.annotation.RequestParam("date") @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate dateRecolte,
-            @org.springframework.web.bind.annotation.RequestParam("quantite") Integer quantite,
             Model model) {
 
         EtiquetteRequest request = EtiquetteRequest.builder()
                 .typeMiel(HoneyType.valueOf(typeMiel))
                 .formatPot(FormatPot.valueOf(formatPot))
                 .dateRecolte(dateRecolte)
-                .quantite(quantite)
                 .build();
 
         model.addAttribute("etiquetteRequest", request);

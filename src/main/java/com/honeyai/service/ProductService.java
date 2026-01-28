@@ -104,7 +104,7 @@ public class ProductService {
     public BigDecimal findPriceByTypeAndFormat(HoneyType honeyType, FormatPot formatPot) {
         int currentYear = LocalDate.now().getYear();
 
-        return productRepository.findByTypeAndUnit(honeyType, formatPot.getDisplayLabel())
+        return productRepository.findByTypeAndUnit(honeyType, formatPot.getUnitLabel())
                 .flatMap(product -> priceRepository.findByProductIdAndYear(product.getId(), currentYear))
                 .map(Price::getPrice)
                 .orElse(null);
@@ -115,6 +115,6 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public Optional<Product> findByTypeAndFormat(HoneyType honeyType, FormatPot formatPot) {
-        return productRepository.findByTypeAndUnit(honeyType, formatPot.getDisplayLabel());
+        return productRepository.findByTypeAndUnit(honeyType, formatPot.getUnitLabel());
     }
 }

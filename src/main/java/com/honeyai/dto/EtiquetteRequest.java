@@ -41,10 +41,4 @@ public class EtiquetteRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateRecolte;
 
-    /**
-     * Number of labels to generate.
-     */
-    @NotNull(message = "La quantite est obligatoire")
-    @Min(value = 1, message = "La quantite doit etre au moins 1")
-    private Integer quantite;
 }

@@ -67,7 +67,7 @@
                                     <span class="badge bg-secondary" th:text="${h.quantite}">10</span>
                                 </td>
                                 <td class="text-end">
-                                    <a th:href="@{/etiquettes/regenerer(type=${h.typeMiel}, format=${h.formatPot}, date=${h.dateRecolte}, quantite=${h.quantite})}"
+                                    <a th:href="@{/etiquettes/regenerer(type=${h.typeMiel}, format=${h.formatPot}, date=${h.dateRecolte})}"
                                        class="btn btn-sm btn-outline-success"
                                        title="Re-generer avec un nouveau numero de lot">
                                         <i class="fas fa-redo me-1"></i>Re-generer

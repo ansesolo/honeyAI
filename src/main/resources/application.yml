@@ -27,13 +27,15 @@ honeyai:
   etiquettes:
     siret: "511036780015"
     nom-apiculteur: "ALLEMAND Jean Pierre"
-    adresse: "12 chemin des crouzettes Tarreyres 43370 Cussac-sur-Loire"
+    adresse: "12 chemin des crouzettes, Tarreyres 43370 Cussac-sur-Loire"
     telephone: "Tel: 04.71.03.12.43"
     dluo-duree-jours: 730
     label-width-mm: 60.0
     label-height-mm: 40.0
     labels-per-row: 3
     labels-per-column: 7
+    margin-top-mm: 10.0
+    margin-left-mm: 10.0
 
 logging:
   level:

@@ -383,7 +383,6 @@ class EtiquetteServiceTest {
                 .typeMiel(HoneyType.TOUTES_FLEURS)
                 .formatPot(FormatPot.POT_500G)
                 .dateRecolte(LocalDate.of(2024, 8, 15))
-                .quantite(10)
                 .build();
 
         when(etiquetteConfig.getDluoDureeJours()).thenReturn(730);
@@ -428,7 +427,6 @@ class EtiquetteServiceTest {
                 .typeMiel(HoneyType.FORET)
                 .formatPot(FormatPot.POT_1KG)
                 .dateRecolte(LocalDate.of(2024, 9, 1))
-                .quantite(5)
                 .build();
 
         when(etiquetteConfig.getDluoDureeJours()).thenReturn(730);
@@ -460,7 +458,6 @@ class EtiquetteServiceTest {
                 .typeMiel(HoneyType.TOUTES_FLEURS)
                 .formatPot(FormatPot.POT_500G)
                 .dateRecolte(LocalDate.of(2024, 8, 15))
-                .quantite(10)
                 .build();
 
         EtiquetteData data = EtiquetteData.builder()
@@ -478,7 +475,7 @@ class EtiquetteServiceTest {
                 });
 
         // When
-        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, price);
+        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, price, 21);
 
         // Then
         assertThat(saved).isNotNull();
@@ -493,7 +490,7 @@ class EtiquetteServiceTest {
         assertThat(captured.getDateRecolte()).isEqualTo(LocalDate.of(2024, 8, 15));
         assertThat(captured.getDluo()).isEqualTo(LocalDate.of(2026, 8, 15));
         assertThat(captured.getNumeroLot()).isEqualTo("2024-TF-001");
-        assertThat(captured.getQuantite()).isEqualTo(10);
+        assertThat(captured.getQuantite()).isEqualTo(21);
         assertThat(captured.getDateGeneration()).isNotNull();
         assertThat(captured.getPrixUnitaire()).isEqualByComparingTo("8.50");
     }
@@ -505,7 +502,6 @@ class EtiquetteServiceTest {
                 .typeMiel(HoneyType.FORET)
                 .formatPot(FormatPot.POT_1KG)
                 .dateRecolte(LocalDate.of(2024, 9, 1))
-                .quantite(5)
                 .build();
 
         EtiquetteData data = EtiquetteData.builder()
@@ -517,7 +513,7 @@ class EtiquetteServiceTest {
                 .thenAnswer(inv -> inv.getArgument(0));
 
         // When
-        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, null);
+        HistoriqueEtiquettes saved = etiquetteService.saveHistorique(request, data, null, 21);
 
         // Then
         ArgumentCaptor<HistoriqueEtiquettes> captor = ArgumentCaptor.forClass(HistoriqueEtiquettes.class);

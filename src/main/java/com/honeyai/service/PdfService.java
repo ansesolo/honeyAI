@@ -182,31 +182,31 @@ public class PdfService {
     // ==================== Label Rendering ====================
 
     /** Padding inside label border in mm */
-    private static final float PADDING_MM = 2.0f;
+    private static final float PADDING_MM = 1.5f;
 
     /** Line spacing in mm */
-    private static final float LINE_SPACING_MM = 1.2f;
+    private static final float LINE_SPACING_MM = 0.8f;
 
     /** Extra margin for sections in mm */
-    private static final float SECTION_MARGIN_MM = 2.5f;
+    private static final float SECTION_MARGIN_MM = 1.2f;
 
     /** Border line width in points */
-    private static final float BORDER_WIDTH_PT = 1.0f;
+    private static final float BORDER_WIDTH_PT = 0.5f;
 
     /** Font size for header line */
-    private static final float FONT_SIZE_HEADER = 7.0f;
+    private static final float FONT_SIZE_HEADER = 5.5f;
 
     /** Font size for exploitation name (bold) */
-    private static final float FONT_SIZE_NAME = 9.0f;
+    private static final float FONT_SIZE_NAME = 6.5f;
 
     /** Font size for address/contact info */
-    private static final float FONT_SIZE_INFO = 7.0f;
+    private static final float FONT_SIZE_INFO = 5.5f;
 
     /** Font size for weight (bold) */
-    private static final float FONT_SIZE_WEIGHT = 10.0f;
+    private static final float FONT_SIZE_WEIGHT = 7.0f;
 
     /** Font size for price (bold, larger) */
-    private static final float FONT_SIZE_PRICE = 12.0f;
+    private static final float FONT_SIZE_PRICE = 8.0f;
 
     /**
      * Renders a single honey label at the specified position on the page.
@@ -258,7 +258,7 @@ public class PdfService {
 
             // Line 2: Exploitation name (bold, with margins)
             if (data.getNomApiculteur() != null && !data.getNomApiculteur().isBlank()) {
-                currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, FONT_SIZE_NAME,
+                currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, FONT_SIZE_HEADER,
                         contentX, currentY, contentWidth);
             }
             currentY -= sectionMarginPt;
@@ -577,59 +577,35 @@ public class PdfService {
 
     // ==================== Multi-Label Sheet Generation ====================
 
-    /** Page margins in mm */
-    private static final float MARGIN_TOP_MM = 10.0f;
-    private static final float MARGIN_LEFT_MM = 10.0f;
-    private static final float MARGIN_RIGHT_MM = 10.0f;
-    private static final float MARGIN_BOTTOM_MM = 15.0f;
-
-    /** Gap between labels in mm */
-    private static final float HORIZONTAL_GAP_MM = 2.0f;
-    private static final float VERTICAL_GAP_MM = 2.0f;
-
     /**
-     * Generates a multi-label sheet PDF with labels arranged in a grid.
-     * Supports multi-page output for large quantities.
+     * Generates a single-page label sheet PDF with all label positions filled.
+     * Grid layout and dimensions are determined by EtiquetteConfig.
+     * Gaps between labels are calculated from remaining space on the A4 page.
      *
-     * @param data     the label data to repeat on all labels
-     * @param quantity the number of labels to generate
+     * @param data the label data to repeat on all labels
      * @return byte array containing the PDF document
      */
-    public byte[] generateEtiquetteSheet(EtiquetteData data, int quantity) {
+    public byte[] generateEtiquetteSheet(EtiquetteData data) {
         if (data == null) {
             throw new IllegalArgumentException("Les données d'étiquette sont obligatoires");
         }
-        if (quantity < 1) {
-            throw new IllegalArgumentException("La quantité doit être au moins 1");
-        }
-
-        log.info("Generating label sheet: {} labels", quantity);
-        long startTime = System.currentTimeMillis();
 
         int labelsPerPage = etiquetteConfig.getLabelsPerPage();
-        int totalPages = (int) Math.ceil((double) quantity / labelsPerPage);
+        log.info("Generating label sheet: {} labels ({}x{})",
+                labelsPerPage, etiquetteConfig.getLabelsPerRow(), etiquetteConfig.getLabelsPerColumn());
+        long startTime = System.currentTimeMillis();
 
         try (PDDocument document = createDocument();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-            int labelsRemaining = quantity;
-
-            for (int pageNum = 0; pageNum < totalPages; pageNum++) {
-                PDPage page = createA4Page();
-                document.addPage(page);
-
-                int labelsOnThisPage = Math.min(labelsRemaining, labelsPerPage);
-                renderLabelsOnPage(document, page, data, labelsOnThisPage);
-
-                labelsRemaining -= labelsOnThisPage;
-                log.debug("Page {} rendered with {} labels", pageNum + 1, labelsOnThisPage);
-            }
+            PDPage page = createA4Page();
+            document.addPage(page);
+            renderLabelsOnPage(document, page, data);
 
             document.save(baos);
 
             long duration = System.currentTimeMillis() - startTime;
-            log.info("Label sheet generated: {} labels on {} pages in {}ms",
-                    quantity, totalPages, duration);
+            log.info("Label sheet generated: {} labels on 1 page in {}ms", labelsPerPage, duration);
 
             return baos.toByteArray();
 
@@ -639,45 +615,45 @@ public class PdfService {
     }
 
     /**
-     * Renders multiple labels on a single page in a grid layout.
+     * Renders all labels on a single page in a grid layout.
+     * Gaps between labels are calculated from remaining space after placing
+     * labels with configured dimensions and margins.
      *
-     * @param document    the PDF document
-     * @param page        the page to render on
-     * @param data        the label data
-     * @param labelCount  number of labels to render on this page
+     * @param document the PDF document
+     * @param page     the page to render on
+     * @param data     the label data
      */
-    private void renderLabelsOnPage(PDDocument document, PDPage page, EtiquetteData data, int labelCount) {
-        float pageWidth = page.getMediaBox().getWidth();
+    private void renderLabelsOnPage(PDDocument document, PDPage page, EtiquetteData data) {
         float pageHeight = page.getMediaBox().getHeight();
 
-        float marginTopPt = mmToPoints(MARGIN_TOP_MM);
-        float marginLeftPt = mmToPoints(MARGIN_LEFT_MM);
-        float marginBottomPt = mmToPoints(MARGIN_BOTTOM_MM);
+        float marginTopPt = mmToPoints(etiquetteConfig.getMarginTopMm());
+        float marginLeftPt = mmToPoints(etiquetteConfig.getMarginLeftMm());
 
         float labelWidthMm = etiquetteConfig.getLabelWidthMm();
         float labelHeightMm = etiquetteConfig.getLabelHeightMm();
         float labelWidthPt = mmToPoints(labelWidthMm);
         float labelHeightPt = mmToPoints(labelHeightMm);
 
-        float hGapPt = mmToPoints(HORIZONTAL_GAP_MM);
-        float vGapPt = mmToPoints(VERTICAL_GAP_MM);
-
         int cols = etiquetteConfig.getLabelsPerRow();
         int rows = etiquetteConfig.getLabelsPerColumn();
+
+        // Calculate gaps from remaining space
+        float pageWidthPt = page.getMediaBox().getWidth();
+        float usedWidth = marginLeftPt + (cols * labelWidthPt);
+        float usedHeight = marginTopPt + (rows * labelHeightPt);
+        float hGapPt = cols > 1 ? (pageWidthPt - usedWidth - marginLeftPt) / (cols - 1) : 0;
+        float vGapPt = rows > 1 ? (pageHeight - usedHeight - marginTopPt) / (rows - 1) : 0;
 
         // Starting position (top-left of first label)
         float startX = marginLeftPt;
         float startY = pageHeight - marginTopPt - labelHeightPt;
 
-        int labelIndex = 0;
-
-        for (int row = 0; row < rows && labelIndex < labelCount; row++) {
-            for (int col = 0; col < cols && labelIndex < labelCount; col++) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
                 float x = startX + col * (labelWidthPt + hGapPt);
                 float y = startY - row * (labelHeightPt + vGapPt);
 
                 renderLabel(document, page, data, x, y, labelWidthMm, labelHeightMm);
-                labelIndex++;
             }
         }
     }
@@ -691,16 +667,4 @@ public class PdfService {
         return etiquetteConfig.getLabelsPerPage();
     }
 
-    /**
-     * Calculates the number of pages needed for a given quantity.
-     *
-     * @param quantity total number of labels
-     * @return number of pages required
-     */
-    public int calculatePageCount(int quantity) {
-        if (quantity < 1) {
-            return 0;
-        }
-        return (int) Math.ceil((double) quantity / getLabelsPerPage());
-    }
 }

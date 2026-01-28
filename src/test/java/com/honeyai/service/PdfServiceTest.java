@@ -41,6 +41,8 @@ class PdfServiceTest {
         etiquetteConfig.setLabelHeightMm(40.0f);
         etiquetteConfig.setLabelsPerRow(3);
         etiquetteConfig.setLabelsPerColumn(7);
+        etiquetteConfig.setMarginTopMm(10.0f);
+        etiquetteConfig.setMarginLeftMm(10.0f);
 
         pdfService = new PdfService(etiquetteConfig);
     }
@@ -442,12 +444,12 @@ class PdfServiceTest {
     // ==================== Multi-Label Sheet Tests ====================
 
     @Test
-    void generateEtiquetteSheet_shouldGenerateSinglePage_forSmallQuantity() throws IOException {
+    void generateEtiquetteSheet_shouldGenerateOneFullPage() throws IOException {
         // Given
         EtiquetteData data = createTestLabelData();
 
-        // When - request 10 labels (less than 21 per page)
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 10);
+        // When
+        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data);
 
         // Then
         assertThat(pdfBytes).isNotNull();
@@ -455,147 +457,41 @@ class PdfServiceTest {
 
         try (PDDocument document = Loader.loadPDF(pdfBytes)) {
             assertThat(document.getNumberOfPages()).isEqualTo(1);
-        }
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldGenerateFullPage_for21Labels() throws IOException {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When - request exactly 21 labels (one full page)
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 21);
-
-        // Then
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
-            assertThat(document.getNumberOfPages()).isEqualTo(1);
 
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(document);
 
-            // Should contain label content multiple times
             assertThat(text).contains("FRANCE");
+            assertThat(text).contains("8.50 EUR");
         }
     }
 
     @Test
-    void generateEtiquetteSheet_shouldGenerateMultiplePages_forLargeQuantity() throws IOException {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When - request 25 labels (21 + 4 = 2 pages)
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 25);
-
-        // Then
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
-            assertThat(document.getNumberOfPages()).isEqualTo(2);
-        }
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldGenerateCorrectPages_for50Labels() throws IOException {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When - request 50 labels (21 + 21 + 8 = 3 pages)
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 50);
-
-        // Then
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
-            assertThat(document.getNumberOfPages()).isEqualTo(3);
-        }
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldCompleteWithin5Seconds_for100Labels() {
+    void generateEtiquetteSheet_shouldCompleteWithin5Seconds() {
         // Given
         EtiquetteData data = createTestLabelData();
 
         // When
         long startTime = System.currentTimeMillis();
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 100);
+        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data);
         long duration = System.currentTimeMillis() - startTime;
 
-        // Then - should complete in <5 seconds per NFR3
+        // Then
         assertThat(duration).isLessThan(5000);
         assertThat(pdfBytes).isNotNull();
-
-        // Verify 5 pages (100 / 21 = 4.76 -> 5 pages)
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
-            assertThat(document.getNumberOfPages()).isEqualTo(5);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
     void generateEtiquetteSheet_shouldThrowException_forNullData() {
         // When/Then
-        assertThatThrownBy(() -> pdfService.generateEtiquetteSheet(null, 10))
+        assertThatThrownBy(() -> pdfService.generateEtiquetteSheet(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("données d'étiquette");
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldThrowException_forZeroQuantity() {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When/Then
-        assertThatThrownBy(() -> pdfService.generateEtiquetteSheet(data, 0))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("quantité");
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldThrowException_forNegativeQuantity() {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When/Then
-        assertThatThrownBy(() -> pdfService.generateEtiquetteSheet(data, -5))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("quantité");
     }
 
     @Test
     void getLabelsPerPage_shouldReturnConfigValue() {
         // The config is set to 3x7 = 21
         assertThat(pdfService.getLabelsPerPage()).isEqualTo(21);
-    }
-
-    @Test
-    void calculatePageCount_shouldReturnCorrectCount() {
-        assertThat(pdfService.calculatePageCount(1)).isEqualTo(1);
-        assertThat(pdfService.calculatePageCount(21)).isEqualTo(1);
-        assertThat(pdfService.calculatePageCount(22)).isEqualTo(2);
-        assertThat(pdfService.calculatePageCount(42)).isEqualTo(2);
-        assertThat(pdfService.calculatePageCount(43)).isEqualTo(3);
-        assertThat(pdfService.calculatePageCount(100)).isEqualTo(5);
-    }
-
-    @Test
-    void calculatePageCount_shouldReturnZero_forInvalidQuantity() {
-        assertThat(pdfService.calculatePageCount(0)).isZero();
-        assertThat(pdfService.calculatePageCount(-1)).isZero();
-    }
-
-    @Test
-    void generateEtiquetteSheet_shouldGenerateSingleLabel() throws IOException {
-        // Given
-        EtiquetteData data = createTestLabelData();
-
-        // When - request just 1 label
-        byte[] pdfBytes = pdfService.generateEtiquetteSheet(data, 1);
-
-        // Then
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
-            assertThat(document.getNumberOfPages()).isEqualTo(1);
-
-            PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(document);
-
-            assertThat(text).contains("FRANCE");
-        }
     }
 }

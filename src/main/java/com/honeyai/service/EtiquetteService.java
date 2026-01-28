@@ -199,14 +199,14 @@ public class EtiquetteService {
      * @param prixUnitaire  the price used (may be null)
      * @return the saved history record
      */
-    public HistoriqueEtiquettes saveHistorique(EtiquetteRequest request, EtiquetteData data, BigDecimal prixUnitaire) {
+    public HistoriqueEtiquettes saveHistorique(EtiquetteRequest request, EtiquetteData data, BigDecimal prixUnitaire, int labelsPerPage) {
         HistoriqueEtiquettes historique = HistoriqueEtiquettes.builder()
                 .typeMiel(request.getTypeMiel().name())
                 .formatPot(request.getFormatPot().name())
                 .dateRecolte(request.getDateRecolte())
                 .dluo(data.getDluo())
                 .numeroLot(data.getNumeroLot())
-                .quantite(request.getQuantite())
+                .quantite(labelsPerPage)
                 .dateGeneration(LocalDateTime.now())
                 .prixUnitaire(prixUnitaire)
                 .build();

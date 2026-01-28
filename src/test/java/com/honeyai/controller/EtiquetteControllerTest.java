@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -88,14 +87,6 @@ class EtiquetteControllerTest {
     }
 
     @Test
-    void showForm_shouldHaveDefaultQuantity() throws Exception {
-        mockMvc.perform(get("/etiquettes"))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("etiquetteRequest",
-                        hasProperty("quantite", equalTo(10))));
-    }
-
-    @Test
     void showForm_shouldHaveDefaultHoneyType() throws Exception {
         mockMvc.perform(get("/etiquettes"))
                 .andExpect(status().isOk())
@@ -135,14 +126,14 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(new BigDecimal("8.50"));
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
+        when(pdfService.getLabelsPerPage()).thenReturn(21);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
-                        .param("dateRecolte", "2024-08-15")
-                        .param("quantite", "10"))
+                        .param("dateRecolte", "2024-08-15"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-Disposition",
@@ -151,19 +142,18 @@ class EtiquetteControllerTest {
                         containsString("etiquettes-toutes-fleurs-2024-08-15-2024-TF-001.pdf")));
 
         verify(etiquetteService).buildEtiquetteData(any(EtiquetteRequest.class));
-        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), eq(10));
+        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class));
     }
 
     @Test
     void generatePdf_shouldReturnFormWithErrors_whenValidationFails() throws Exception {
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
-                        .param("formatPot", "POT_500G")
-                        .param("dateRecolte", "2024-08-15")
-                        .param("quantite", "0")) // Invalid: must be >= 1
+                        .param("formatPot", "POT_500G"))
+                // Missing dateRecolte -> validation error
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
-                .andExpect(model().attributeHasFieldErrors("etiquetteRequest", "quantite"));
+                .andExpect(model().attributeHasFieldErrors("etiquetteRequest", "dateRecolte"));
 
         verify(etiquetteService, never()).buildEtiquetteData(any());
     }
@@ -178,8 +168,7 @@ class EtiquetteControllerTest {
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
-                        .param("dateRecolte", "2024-08-15")
-                        .param("quantite", "10"))
+                        .param("dateRecolte", "2024-08-15"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
                 .andExpect(model().attribute("error", containsString("Erreur")));
@@ -199,14 +188,14 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(null); // No price
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
+        when(pdfService.getLabelsPerPage()).thenReturn(21);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
                         .param("formatPot", "POT_500G")
-                        .param("dateRecolte", "2024-08-15")
-                        .param("quantite", "10"))
+                        .param("dateRecolte", "2024-08-15"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF));
     }
@@ -215,8 +204,7 @@ class EtiquetteControllerTest {
     void generatePdf_shouldRequireTypeMiel() throws Exception {
         mockMvc.perform(post("/etiquettes/generer")
                         .param("formatPot", "POT_500G")
-                        .param("dateRecolte", "2024-08-15")
-                        .param("quantite", "10"))
+                        .param("dateRecolte", "2024-08-15"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
                 .andExpect(model().attributeHasFieldErrors("etiquetteRequest", "typeMiel"));
@@ -226,8 +214,7 @@ class EtiquetteControllerTest {
     void generatePdf_shouldRequireDateRecolte() throws Exception {
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "TOUTES_FLEURS")
-                        .param("formatPot", "POT_500G")
-                        .param("quantite", "10"))
+                        .param("formatPot", "POT_500G"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
                 .andExpect(model().attributeHasFieldErrors("etiquetteRequest", "dateRecolte"));
@@ -247,20 +234,20 @@ class EtiquetteControllerTest {
 
         when(etiquetteService.buildEtiquetteData(any(EtiquetteRequest.class))).thenReturn(mockData);
         when(productService.findPriceByTypeAndFormat(any(), any())).thenReturn(new BigDecimal("15.00"));
-        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class), anyInt())).thenReturn(mockPdfBytes);
+        when(pdfService.generateEtiquetteSheet(any(EtiquetteData.class))).thenReturn(mockPdfBytes);
+        when(pdfService.getLabelsPerPage()).thenReturn(21);
 
         // When/Then
         mockMvc.perform(post("/etiquettes/generer")
                         .param("typeMiel", "FORET")
                         .param("formatPot", "POT_1KG")
-                        .param("dateRecolte", "2024-09-01")
-                        .param("quantite", "25"))
+                        .param("dateRecolte", "2024-09-01"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-Disposition",
                         containsString("etiquettes-foret-2024-09-01-2024-FOR-001.pdf")));
 
-        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), eq(25));
+        verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class));
     }
 
     // ==================== GET /etiquettes/historique Tests ====================
@@ -308,8 +295,7 @@ class EtiquetteControllerTest {
         mockMvc.perform(get("/etiquettes/regenerer")
                         .param("type", "TOUTES_FLEURS")
                         .param("format", "POT_500G")
-                        .param("date", "2024-08-15")
-                        .param("quantite", "10"))
+                        .param("date", "2024-08-15"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
                 .andExpect(model().attribute("etiquetteRequest",
@@ -317,9 +303,7 @@ class EtiquetteControllerTest {
                 .andExpect(model().attribute("etiquetteRequest",
                         hasProperty("formatPot", equalTo(FormatPot.POT_500G))))
                 .andExpect(model().attribute("etiquetteRequest",
-                        hasProperty("dateRecolte", equalTo(LocalDate.of(2024, 8, 15)))))
-                .andExpect(model().attribute("etiquetteRequest",
-                        hasProperty("quantite", equalTo(10))));
+                        hasProperty("dateRecolte", equalTo(LocalDate.of(2024, 8, 15)))));
     }
 
     @Test
@@ -327,8 +311,7 @@ class EtiquetteControllerTest {
         mockMvc.perform(get("/etiquettes/regenerer")
                         .param("type", "FORET")
                         .param("format", "POT_1KG")
-                        .param("date", "2024-09-01")
-                        .param("quantite", "25"))
+                        .param("date", "2024-09-01"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("etiquettes/form"))
                 .andExpect(model().attribute("etiquetteRequest",

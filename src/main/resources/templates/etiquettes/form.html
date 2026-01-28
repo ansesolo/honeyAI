@@ -122,25 +122,6 @@
                                        required>
                             </div>
 
-                            <!-- Quantite -->
-                            <div class="mb-4">
-                                <label for="quantite" class="form-label form-label-lg">
-                                    <i class="fas fa-sort-numeric-up me-1 text-secondary"></i>
-                                    Quantite d'etiquettes <span class="text-danger">*</span>
-                                </label>
-                                <input type="number"
-                                       class="form-control form-control-lg"
-                                       id="quantite"
-                                       th:field="*{quantite}"
-                                       min="1"
-                                       max="500"
-                                       required>
-                                <div class="help-text mt-2">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Nombre d'etiquettes a imprimer (21 par feuille A4)
-                                </div>
-                            </div>
-
                             <!-- Submit Button -->
                             <div class="d-grid gap-2 mt-5">
                                 <button type="submit" id="submitBtn" class="btn btn-success btn-lg py-3">
@@ -196,7 +177,7 @@
                             <li class="mb-2">Le <strong>numero de lot</strong> est genere automatiquement (format: AAAA-TYPE-NNN)</li>
                             <li class="mb-2">La <strong>DLUO</strong> (Date Limite d'Utilisation Optimale) est calculee automatiquement (2 ans apres la recolte)</li>
                             <li class="mb-2">Les informations de l'exploitation sont extraites de la configuration</li>
-                            <li>Format d'impression: <strong>A4</strong> avec grille <strong>3x7</strong> (21 etiquettes par page)</li>
+                            <li>Format d'impression: <strong>A4</strong> - grille et dimensions configurables dans <code>application.yml</code></li>
                         </ul>
                     </div>
                 </div>
@@ -229,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get form data
         const formData = new FormData(form);
-        const quantite = formData.get('quantite');
 
         // Submit form via fetch to get PDF
         fetch(form.action, {
@@ -269,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(a);
 
             // Show success message
-            successMessage.textContent = 'PDF genere avec succes (' + quantite + ' etiquettes)';
+            successMessage.textContent = 'PDF genere avec succes (1 page d\'etiquettes)';
             successAlert.classList.remove('d-none');
 
             // Reset button state

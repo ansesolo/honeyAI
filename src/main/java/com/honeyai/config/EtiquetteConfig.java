@@ -76,6 +76,20 @@ public class EtiquetteConfig {
     private Integer labelsPerColumn = 7;
 
     /**
+     * Top margin in millimeters.
+     */
+    @NotNull
+    @Min(0)
+    private Float marginTopMm = 10.0f;
+
+    /**
+     * Left margin in millimeters.
+     */
+    @NotNull
+    @Min(0)
+    private Float marginLeftMm = 10.0f;
+
+    /**
      * Total labels per A4 page.
      */
     public int getLabelsPerPage() {
