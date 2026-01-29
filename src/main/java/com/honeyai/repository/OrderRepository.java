@@ -78,4 +78,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     @Query("SELECT DISTINCT o.orderDate FROM Order o ORDER BY o.orderDate DESC")
     List<LocalDate> findAllOrderDates();
+
+    /**
+     * Find paid orders within a date range with lines and products eagerly loaded.
+     */
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.lines l LEFT JOIN FETCH l.product " +
+           "WHERE o.status = 'PAID' AND o.orderDate >= :start AND o.orderDate <= :end")
+    List<Order> findPaidOrdersWithLinesBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 }
