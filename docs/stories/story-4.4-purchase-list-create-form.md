@@ -1,7 +1,7 @@
 # Story 4.4: Purchase List & Create Form
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 4.2, Story 1.4
 
@@ -37,7 +37,33 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] List displays correctly with filters
-- [ ] Quick-add form works
+- [x] All acceptance criteria met
+- [x] List displays correctly with filters
+- [x] Quick-add form works
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/controller/AchatController.java` (NEW)
+- `src/main/resources/templates/achats/list.html` (NEW)
+- `src/test/java/com/honeyai/controller/AchatControllerTest.java` (NEW)
+
+### Change Log
+- Created AchatController with GET /achats (list with year/category filters) and POST /achats (save with validation)
+- Created achats/list.html template with: quick-add form, filter bar (year + category), purchase table with category badges, total in header and footer, empty state, flash messages
+- Category badge colors: CIRE=warning, POTS=info, COUVERCLES=secondary, NOURRISSEMENT=success, AUTRE=dark
+- Navigation "Achats" link already present in layout.html sidebar
+- Created 7 controller tests with MockMvc: list view, empty state, filter by year, filter by category, total calculation, save success redirect, validation errors
+- Full regression: 244 tests passing, 0 failures
+
+### Completion Notes
+- Quick-add form uses inline row layout for fast data entry
+- Available years: current year + 2 previous years
+- Filter supports combined year + category filtering
+- Total is computed from displayed (filtered) achats list

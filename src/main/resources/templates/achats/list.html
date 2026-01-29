@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Achats</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}">Message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h1>
+                    <i class="fas fa-receipt me-2"></i>Achats
+                </h1>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <span class="fs-4">
+                    Total : <strong th:text="${#numbers.formatDecimal(total, 1, 2)} + ' EUR'">0.00 EUR</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Quick-Add Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-plus me-2"></i>Ajouter un achat
+            </div>
+            <div class="card-body">
+                <form th:action="@{/achats}" th:object="${achat}" method="post">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-2">
+                            <label for="dateAchat" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="dateAchat"
+                                   th:field="*{dateAchat}"
+                                   th:classappend="${#fields.hasErrors('dateAchat')} ? 'is-invalid' : ''"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateAchat')}"
+                                 th:errors="*{dateAchat}">Erreur</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="designation" class="form-label">Designation</label>
+                            <input type="text" class="form-control" id="designation"
+                                   th:field="*{designation}"
+                                   th:classappend="${#fields.hasErrors('designation')} ? 'is-invalid' : ''"
+                                   placeholder="Ex: Pots verre 500g"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('designation')}"
+                                 th:errors="*{designation}">Erreur</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="montant" class="form-label">Montant (EUR)</label>
+                            <input type="number" class="form-control" id="montant"
+                                   th:field="*{montant}"
+                                   th:classappend="${#fields.hasErrors('montant')} ? 'is-invalid' : ''"
+                                   step="0.01" min="0.01"
+                                   placeholder="0.00"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('montant')}"
+                                 th:errors="*{montant}">Erreur</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="categorie" class="form-label">Categorie</label>
+                            <select class="form-select" id="categorie" th:field="*{categorie}" required>
+                                <option value="">-- Choisir --</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat}"
+                                        th:text="${cat.displayLabel}">Categorie</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="notes" class="form-label">Notes</label>
+                            <input type="text" class="form-control" id="notes"
+                                   th:field="*{notes}"
+                                   placeholder="Optionnel">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <form th:action="@{/achats}" method="get" class="d-flex gap-3 align-items-end">
+                    <div>
+                        <label for="yearFilter" class="form-label mb-0 small">Annee</label>
+                        <select class="form-select form-select-sm" id="yearFilter" name="year">
+                            <option value="">Toutes</option>
+                            <option th:each="y : ${availableYears}"
+                                    th:value="${y}"
+                                    th:text="${y}"
+                                    th:selected="${selectedYear != null and selectedYear == y}">2025</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="catFilter" class="form-label mb-0 small">Categorie</label>
+                        <select class="form-select form-select-sm" id="catFilter" name="categorie">
+                            <option value="">Toutes</option>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat}"
+                                    th:text="${cat.displayLabel}"
+                                    th:selected="${selectedCategorie != null and selectedCategorie == cat}">Cat</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-filter me-1"></i>Filtrer
+                        </button>
+                        <a th:href="@{/achats}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i>Effacer
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(achats)}" class="text-center py-5">
+            <i class="fas fa-receipt fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">Aucun achat enregistre</h3>
+            <p class="text-muted">Utilisez le formulaire ci-dessus pour ajouter votre premier achat.</p>
+        </div>
+
+        <!-- Purchase Table -->
+        <div th:unless="${#lists.isEmpty(achats)}" class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Designation</th>
+                        <th>Categorie</th>
+                        <th class="text-end">Montant</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${achats}">
+                        <td th:text="${#temporals.format(a.dateAchat, 'dd/MM/yyyy')}">01/01/2025</td>
+                        <td th:text="${a.designation}">Designation</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${a.categorie.name() == 'CIRE'} ? 'bg-warning text-dark' :
+                                                  (${a.categorie.name() == 'POTS'} ? 'bg-info text-dark' :
+                                                  (${a.categorie.name() == 'COUVERCLES'} ? 'bg-secondary' :
+                                                  (${a.categorie.name() == 'NOURRISSEMENT'} ? 'bg-success' : 'bg-dark')))"
+                                  th:text="${a.categorie.displayLabel}">Categorie</span>
+                        </td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(a.montant, 1, 2)} + ' EUR'">0.00 EUR</td>
+                        <td class="text-muted" th:text="${a.notes ?: '-'}">-</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-light fw-bold">
+                        <td colspan="3">Total</td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(total, 1, 2)} + ' EUR'">0.00 EUR</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
