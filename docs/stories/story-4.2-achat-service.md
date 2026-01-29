@@ -1,7 +1,7 @@
 # Story 4.2: AchatService with Expense Calculation Logic
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 4.1
 
@@ -37,7 +37,32 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Calculation methods accurate
-- [ ] Unit tests passing
+- [x] All acceptance criteria met
+- [x] Calculation methods accurate
+- [x] Unit tests passing
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/service/AchatService.java` (NEW)
+- `src/test/java/com/honeyai/service/AchatServiceTest.java` (NEW)
+
+### Change Log
+- Created AchatService with @Service, @Transactional, @RequiredArgsConstructor, @Slf4j
+- Implemented CRUD: findAll(), findById(), save(), delete()
+- Implemented query: findByPeriod(), findByCategorie()
+- Implemented calculations: calculateTotalDepenses() (sum with BigDecimal.ZERO default), calculateDepensesByCategorie() (EnumMap grouping)
+- Read-only transactions on all read methods
+- Created 12 unit tests with Mockito (all passing): CRUD, period/category filtering, sum calculation, category grouping, empty period edge cases
+- Full regression: 229 tests passing, 0 failures
+
+### Completion Notes
+- Validation (montant positive, designation not blank) enforced via entity-level annotations (@Positive, @NotBlank on Achat entity from story 4.1)
+- EnumMap used for category grouping for performance
+- BigDecimal.ZERO returned when no purchases in period
