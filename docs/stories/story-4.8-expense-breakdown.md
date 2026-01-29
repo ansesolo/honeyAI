@@ -1,7 +1,7 @@
 # Story 4.8: Expense Breakdown by Category
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P2 - Medium
 **Depends On:** Story 4.6
 
@@ -36,7 +36,37 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Expense breakdown displays correctly
-- [ ] Percentages accurate
+- [x] All acceptance criteria met
+- [x] Expense breakdown displays correctly
+- [x] Percentages accurate
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/dto/DepenseCategorieDto.java` (NEW)
+- `src/main/java/com/honeyai/controller/HomeController.java` (MODIFIED - added AchatService injection, depensesParCategorie model attribute, buildDepensesParCategorie method)
+- `src/main/resources/templates/home.html` (MODIFIED - added "Repartition des Depenses" section)
+- `src/test/java/com/honeyai/controller/HomeControllerTest.java` (MODIFIED - added AchatService mock, 2 new tests)
+
+### Change Log
+- Created DepenseCategorieDto with categorie, montant, pourcentage fields
+- Injected AchatService in HomeController
+- Added buildDepensesParCategorie() private method: calls calculateDepensesByCategorie, computes percentage per category, sorts by montant desc
+- Added "Repartition des Depenses" section in home.html between Top Produits and Quick Links
+- Category badges with same color scheme as achats list (CIRE=warning, POTS=info, etc.)
+- CSS progress bars colored per category, width = percentage
+- Empty state: "Aucune depense sur cette periode"
+- Added setUp stub for achatService.calculateDepensesByCategorie
+- Added 2 new tests: depensesParCategorie with data (2 categories), empty state
+- Full regression: 256 tests passing, 0 failures
+
+### Completion Notes
+- Percentages computed with BigDecimal divide + HALF_UP rounding
+- Categories sorted by amount descending (largest expense first)
+- CSS progress bars used (no Chart.js dependency, consistent with project style)

@@ -63,14 +63,14 @@ Tableau de bord financier et suivi des achats.
 
 | Story | Titre | Priorite | Statut |
 |-------|-------|----------|--------|
-| [4.1](./story-4.1-achat-entity-repository.md) | Achat Entity & Repository for Purchase Tracking | P0 | Pending |
-| [4.2](./story-4.2-achat-service.md) | AchatService with Expense Calculation Logic | P0 | Pending |
-| [4.3](./story-4.3-dashboard-service.md) | DashboardService with Financial Aggregations | P0 | Pending |
-| [4.4](./story-4.4-purchase-list-create-form.md) | Purchase List & Create Form | P1 | Pending |
-| [4.5](./story-4.5-purchase-edit-delete.md) | Purchase Edit & Delete | P1 | Pending |
-| [4.6](./story-4.6-financial-dashboard.md) | Financial Dashboard Main View | P0 | Pending |
-| [4.7](./story-4.7-top-products-widget.md) | Top Products Widget & Simple Charts | P2 | Pending |
-| [4.8](./story-4.8-expense-breakdown.md) | Expense Breakdown by Category | P2 | Pending |
+| [4.1](./story-4.1-achat-entity-repository.md) | Achat Entity & Repository for Purchase Tracking | P0 | Done |
+| [4.2](./story-4.2-achat-service.md) | AchatService with Expense Calculation Logic | P0 | Done |
+| [4.3](./story-4.3-dashboard-service.md) | DashboardService with Financial Aggregations | P0 | Done |
+| [4.4](./story-4.4-purchase-list-create-form.md) | Purchase List & Create Form | P1 | Done |
+| [4.5](./story-4.5-purchase-edit-delete.md) | Purchase Edit & Delete | P1 | Done |
+| [4.6](./story-4.6-financial-dashboard.md) | Financial Dashboard Main View | P0 | Done |
+| [4.7](./story-4.7-top-products-widget.md) | Top Products Widget & Simple Charts | P2 | Done |
+| [4.8](./story-4.8-expense-breakdown.md) | Expense Breakdown by Category | P2 | Done |
 
 ---
 

@@ -1,9 +1,11 @@
 package com.honeyai.controller;
 
 import com.honeyai.dto.TopProduitDto;
+import com.honeyai.enums.CategorieAchat;
 import com.honeyai.enums.OrderStatus;
 import com.honeyai.model.Order;
 import com.honeyai.repository.OrderRepository;
+import com.honeyai.service.AchatService;
 import com.honeyai.service.DashboardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +37,9 @@ class HomeControllerTest {
     private DashboardService dashboardService;
 
     @MockBean
+    private AchatService achatService;
+
+    @MockBean
     private OrderRepository orderRepository;
 
     @BeforeEach
@@ -47,6 +53,8 @@ class HomeControllerTest {
                 .thenReturn(BigDecimal.ZERO);
         when(dashboardService.getTopProduits(any(), any(), anyInt()))
                 .thenReturn(Collections.emptyList());
+        when(achatService.calculateDepensesByCategorie(any(), any()))
+                .thenReturn(Collections.emptyMap());
         when(orderRepository.findByStatus(OrderStatus.PAID))
                 .thenReturn(Collections.emptyList());
     }
@@ -66,7 +74,8 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
                 .andExpect(model().attributeExists("ca", "depenses", "benefice",
-                        "commandesPayees", "topProduits", "selectedYear", "availableYears"))
+                        "commandesPayees", "topProduits", "depensesParCategorie",
+                        "selectedYear", "availableYears"))
                 .andExpect(model().attribute("activeMenu", "dashboard"))
                 .andExpect(model().attribute("ca", comparesEqualTo(new BigDecimal("500.00"))))
                 .andExpect(model().attribute("depenses", comparesEqualTo(new BigDecimal("150.00"))))
@@ -150,5 +159,29 @@ class HomeControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("topProduits", empty()));
+    }
+
+    @Test
+    void home_shouldIncludeDepensesParCategorie() throws Exception {
+        // Given
+        when(dashboardService.calculateTotalDepenses(any(), any()))
+                .thenReturn(new BigDecimal("100.00"));
+        when(achatService.calculateDepensesByCategorie(any(), any()))
+                .thenReturn(Map.of(
+                        CategorieAchat.CIRE, new BigDecimal("60.00"),
+                        CategorieAchat.POTS, new BigDecimal("40.00")));
+
+        // When / Then
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("depensesParCategorie", hasSize(2)));
+    }
+
+    @Test
+    void home_shouldShowEmptyDepenses_whenNoExpenses() throws Exception {
+        // When / Then (default from setUp returns empty map)
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("depensesParCategorie", empty()));
     }
 }
