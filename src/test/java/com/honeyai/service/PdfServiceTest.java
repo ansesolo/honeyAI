@@ -195,7 +195,7 @@ class PdfServiceTest {
                 .siret("12345678901234")
                 .telephone("06 12 34 56 78")
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot("2024-TF-001")
+
                 .prixUnitaire(new BigDecimal("8.50"))
                 .build();
     }
@@ -262,7 +262,7 @@ class PdfServiceTest {
                 .siret("12345678901234")
                 .telephone("06 12 34 56 78")
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot("2024-CHA-001")
+
                 .prixUnitaire(new BigDecimal("12.00"))
                 .build();
 
@@ -297,7 +297,7 @@ class PdfServiceTest {
                 .nomApiculteur("Test")
                 .siret("12345678901234")
                 .dluo(LocalDate.of(2026, 12, 31))
-                .numeroLot("2024-FOR-001")
+
                 // telephone is null
                 // prixUnitaire is null
                 // adresse is null
@@ -328,7 +328,7 @@ class PdfServiceTest {
                 .adresse("123 Rue des Abeilles, 12345 Ville")
                 .siret("12345678901234")
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot("2024-TF-001")
+
                 .build();
 
         Path outputPath = tempDir.resolve("label-split-address.pdf");
@@ -386,7 +386,7 @@ class PdfServiceTest {
                 .nomApiculteur("Autre Apiculteur")
                 .siret("98765432109876")
                 .dluo(LocalDate.of(2027, 1, 15))
-                .numeroLot("2024-FOR-001")
+
                 .prixUnitaire(new BigDecimal("15.00"))
                 .build();
 

@@ -39,11 +39,6 @@ public class EtiquetteData {
     private LocalDate dluo;
 
     /**
-     * Generated lot number (e.g., "L2025-08-001").
-     */
-    private String numeroLot;
-
-    /**
      * Beekeeper/exploitation name.
      */
     private String nomApiculteur;

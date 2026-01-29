@@ -38,9 +38,6 @@ public class HistoriqueEtiquettes {
     @Column(name = "dluo", nullable = false)
     private LocalDate dluo;
 
-    @Column(name = "numero_lot", nullable = false)
-    private String numeroLot;
-
     @Column(nullable = false)
     private Integer quantite;
 

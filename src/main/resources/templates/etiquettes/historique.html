@@ -44,7 +44,6 @@
                                 <th>Format</th>
                                 <th>Date recolte</th>
                                 <th>DLUO</th>
-                                <th>Lot</th>
                                 <th class="text-center">Quantite</th>
                                 <th class="text-end">Actions</th>
                             </tr>
@@ -60,16 +59,13 @@
                                 <td th:text="${h.formatPot}">POT_500G</td>
                                 <td th:text="${#temporals.format(h.dateRecolte, 'dd/MM/yyyy')}">15/08/2024</td>
                                 <td th:text="${#temporals.format(h.dluo, 'MM/yyyy')}">08/2026</td>
-                                <td>
-                                    <code th:text="${h.numeroLot}">2024-TF-001</code>
-                                </td>
                                 <td class="text-center">
                                     <span class="badge bg-secondary" th:text="${h.quantite}">10</span>
                                 </td>
                                 <td class="text-end">
                                     <a th:href="@{/etiquettes/regenerer(type=${h.typeMiel}, format=${h.formatPot}, date=${h.dateRecolte})}"
                                        class="btn btn-sm btn-outline-success"
-                                       title="Re-generer avec un nouveau numero de lot">
+                                       title="Re-generer">
                                         <i class="fas fa-redo me-1"></i>Re-generer
                                     </a>
                                 </td>
@@ -80,7 +76,7 @@
             </div>
             <div th:unless="${#lists.isEmpty(historique)}" class="card-footer text-muted small">
                 <i class="fas fa-info-circle me-1"></i>
-                Affichage des 20 dernieres generations. Le bouton "Re-generer" cree un nouveau numero de lot.
+                Affichage des 20 dernieres generations.
             </div>
         </div>
     </div>

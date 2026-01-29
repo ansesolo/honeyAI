@@ -150,7 +150,6 @@ class EtiquetteControllerTest {
         EtiquetteData mockData = EtiquetteData.builder()
                 .typeMiel("Toutes Fleurs")
                 .formatPot("500g")
-                .numeroLot("2024-TF-001")
                 .dluo(LocalDate.of(2026, 8, 15))
                 .build();
 
@@ -170,7 +169,7 @@ class EtiquetteControllerTest {
                 .andExpect(header().string("Content-Disposition",
                         containsString("attachment; filename=")))
                 .andExpect(header().string("Content-Disposition",
-                        containsString("etiquettes-toutes-fleurs-2024-08-15-2024-TF-001.pdf")));
+                        containsString("etiquettes-toutes-fleurs-2024-08-15.pdf")));
 
         verify(etiquetteService).buildEtiquetteData(any(EtiquetteRequest.class));
         verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class));
@@ -211,7 +210,6 @@ class EtiquetteControllerTest {
         EtiquetteData mockData = EtiquetteData.builder()
                 .typeMiel("Toutes Fleurs")
                 .formatPot("500g")
-                .numeroLot("2024-TF-001")
                 .dluo(LocalDate.of(2026, 8, 15))
                 .build();
 
@@ -256,7 +254,6 @@ class EtiquetteControllerTest {
         EtiquetteData mockData = EtiquetteData.builder()
                 .typeMiel("Foret")
                 .formatPot("1kg")
-                .numeroLot("2024-FOR-001")
                 .dluo(LocalDate.of(2026, 9, 1))
                 .build();
 
@@ -274,7 +271,7 @@ class EtiquetteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-Disposition",
-                        containsString("etiquettes-foret-2024-09-01-2024-FOR-001.pdf")));
+                        containsString("etiquettes-foret-2024-09-01.pdf")));
 
         verify(pdfService).generateEtiquetteSheet(any(EtiquetteData.class), any(LabelPreset.class));
     }
@@ -303,7 +300,6 @@ class EtiquetteControllerTest {
                 .formatPot("POT_500G")
                 .dateRecolte(LocalDate.of(2024, 8, 15))
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot("2024-TF-001")
                 .quantite(10)
                 .dateGeneration(LocalDateTime.now())
                 .prixUnitaire(new BigDecimal("8.50"))

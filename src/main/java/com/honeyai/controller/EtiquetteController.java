@@ -112,7 +112,7 @@ public class EtiquetteController {
             etiquetteService.saveHistorique(request, data, price, labelsPerPage);
 
             // Build filename
-            String filename = buildFilename(request, data.getNumeroLot());
+            String filename = buildFilename(request);
 
             log.info("PDF generated successfully: {} bytes, filename={}",
                     pdfBytes.length, filename);
@@ -139,13 +139,13 @@ public class EtiquetteController {
 
     /**
      * Build the PDF filename.
-     * Format: etiquettes-{type}-{date}-{lot}.pdf
+     * Format: etiquettes-{type}-{date}.pdf
      */
-    private String buildFilename(EtiquetteRequest request, String lotNumber) {
+    private String buildFilename(EtiquetteRequest request) {
         String typeName = request.getTypeMiel().name().toLowerCase().replace("_", "-");
         String dateStr = request.getDateRecolte().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
-        return String.format("etiquettes-%s-%s-%s.pdf", typeName, dateStr, lotNumber);
+        return String.format("etiquettes-%s-%s.pdf", typeName, dateStr);
     }
 
     /**

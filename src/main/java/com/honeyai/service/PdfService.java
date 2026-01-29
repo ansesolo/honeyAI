@@ -264,17 +264,19 @@ public class PdfService {
             PDFont fontBold = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
             PDFont fontRegular = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
+            currentY -= 2 * sectionMarginPt;
+
             // Line 1: "Récolté en FRANCE et mis en pot par l'apiculteur" (FRANCE in bold)
             currentY = drawMixedTextCentered(cs, "Recolté en ", "FRANCE", " et mis en pot par l'apiculteur",
                     fontRegular, fontBold, fontHeader, contentX, currentY, contentWidth);
-            currentY -= sectionMarginPt;
+            currentY -= 2 * sectionMarginPt;
 
             // Line 2: Exploitation name (bold, with margins)
             if (data.getNomApiculteur() != null && !data.getNomApiculteur().isBlank()) {
                 currentY = drawCenteredText(cs, data.getNomApiculteur(), fontBold, fontHeader,
                         contentX, currentY, contentWidth);
             }
-            currentY -= sectionMarginPt;
+            currentY -= 2 * sectionMarginPt;
 
             // Lines 3-4: Address (split into 2 lines if needed)
             if (data.getAdresse() != null && !data.getAdresse().isBlank()) {
@@ -306,7 +308,7 @@ public class PdfService {
             String dluoLine = "A consommer de preference avant fin: " + data.getDluoFormatted();
             currentY = drawCenteredText(cs, dluoLine, fontRegular, fontInfo,
                     contentX, currentY, contentWidth);
-            currentY -= sectionMarginPt;
+            currentY -= 2 * sectionMarginPt;
 
             // Line 8: Weight in grams (bold, with space above)
             String weightLine = getWeightInGrams(data.getFormatPot());

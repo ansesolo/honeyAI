@@ -30,9 +30,9 @@ class HistoriqueEtiquettesRepositoryTest {
     @Test
     void findTop20ByOrderByDateGenerationDesc_shouldReturnOrderedByDateDesc() {
         // Given
-        HistoriqueEtiquettes older = createHistorique("2024-TF-001", LocalDateTime.now().minusDays(2));
-        HistoriqueEtiquettes newer = createHistorique("2024-TF-002", LocalDateTime.now().minusDays(1));
-        HistoriqueEtiquettes newest = createHistorique("2024-TF-003", LocalDateTime.now());
+        HistoriqueEtiquettes older = createHistorique(LocalDateTime.now().minusDays(2));
+        HistoriqueEtiquettes newer = createHistorique(LocalDateTime.now().minusDays(1));
+        HistoriqueEtiquettes newest = createHistorique(LocalDateTime.now());
 
         repository.save(older);
         repository.save(newer);
@@ -43,18 +43,15 @@ class HistoriqueEtiquettesRepositoryTest {
 
         // Then
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getNumeroLot()).isEqualTo("2024-TF-003");
-        assertThat(result.get(1).getNumeroLot()).isEqualTo("2024-TF-002");
-        assertThat(result.get(2).getNumeroLot()).isEqualTo("2024-TF-001");
+        assertThat(result.get(0).getDateGeneration()).isAfter(result.get(1).getDateGeneration());
+        assertThat(result.get(1).getDateGeneration()).isAfter(result.get(2).getDateGeneration());
     }
 
     @Test
     void findTop20ByOrderByDateGenerationDesc_shouldLimitTo20() {
         // Given - create 25 records
         for (int i = 0; i < 25; i++) {
-            HistoriqueEtiquettes h = createHistorique(
-                    "2024-TF-" + String.format("%03d", i),
-                    LocalDateTime.now().minusMinutes(25 - i));
+            HistoriqueEtiquettes h = createHistorique(LocalDateTime.now().minusMinutes(25 - i));
             repository.save(h);
         }
 
@@ -63,8 +60,6 @@ class HistoriqueEtiquettesRepositoryTest {
 
         // Then
         assertThat(result).hasSize(20);
-        // Most recent should be first
-        assertThat(result.get(0).getNumeroLot()).isEqualTo("2024-TF-024");
     }
 
     @Test
@@ -75,7 +70,6 @@ class HistoriqueEtiquettesRepositoryTest {
                 .formatPot("POT_500G")
                 .dateRecolte(LocalDate.of(2024, 8, 15))
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot("2024-TF-001")
                 .quantite(10)
                 .dateGeneration(LocalDateTime.now())
                 .prixUnitaire(new BigDecimal("8.50"))
@@ -90,7 +84,6 @@ class HistoriqueEtiquettesRepositoryTest {
         assertThat(saved.getFormatPot()).isEqualTo("POT_500G");
         assertThat(saved.getDateRecolte()).isEqualTo(LocalDate.of(2024, 8, 15));
         assertThat(saved.getDluo()).isEqualTo(LocalDate.of(2026, 8, 15));
-        assertThat(saved.getNumeroLot()).isEqualTo("2024-TF-001");
         assertThat(saved.getQuantite()).isEqualTo(10);
         assertThat(saved.getPrixUnitaire()).isEqualByComparingTo("8.50");
     }
@@ -98,7 +91,7 @@ class HistoriqueEtiquettesRepositoryTest {
     @Test
     void save_shouldAllowNullPrice() {
         // Given
-        HistoriqueEtiquettes h = createHistorique("2024-TF-001", LocalDateTime.now());
+        HistoriqueEtiquettes h = createHistorique(LocalDateTime.now());
         h.setPrixUnitaire(null);
 
         // When
@@ -109,13 +102,12 @@ class HistoriqueEtiquettesRepositoryTest {
         assertThat(saved.getPrixUnitaire()).isNull();
     }
 
-    private HistoriqueEtiquettes createHistorique(String lotNumber, LocalDateTime dateGeneration) {
+    private HistoriqueEtiquettes createHistorique(LocalDateTime dateGeneration) {
         return HistoriqueEtiquettes.builder()
                 .typeMiel("TOUTES_FLEURS")
                 .formatPot("POT_500G")
                 .dateRecolte(LocalDate.of(2024, 8, 15))
                 .dluo(LocalDate.of(2026, 8, 15))
-                .numeroLot(lotNumber)
                 .quantite(10)
                 .dateGeneration(dateGeneration)
                 .prixUnitaire(new BigDecimal("8.50"))
