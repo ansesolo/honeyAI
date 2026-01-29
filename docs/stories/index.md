@@ -12,14 +12,14 @@ Infrastructure technique et gestion des clients.
 
 | Story | Titre | Priorite | Statut |
 |-------|-------|----------|--------|
-| [1.1](./story-1.1-project-bootstrap.md) | Project Bootstrap & Core Configuration | P0 | Pending |
-| [1.2](./story-1.2-client-entity-repository.md) | Client Entity & Repository with Soft Delete | P0 | Pending |
-| [1.3](./story-1.3-client-service.md) | Client Service with Business Logic | P0 | Pending |
-| [1.4](./story-1.4-base-layout-navigation.md) | Base Layout & Navigation with Bootstrap | P0 | Pending |
-| [1.5](./story-1.5-client-list-search.md) | Client List & Search Interface | P0 | Pending |
-| [1.6](./story-1.6-client-detail-view.md) | Client Detail View with History Placeholder | P1 | Pending |
-| [1.7](./story-1.7-client-create-edit-forms.md) | Client Create & Edit Forms | P0 | Pending |
-| [1.8](./story-1.8-client-soft-delete.md) | Client Soft Delete with Confirmation | P1 | Pending |
+| [1.1](./story-1.1-project-bootstrap.md) | Project Bootstrap & Core Configuration | P0 | Done |
+| [1.2](./story-1.2-client-entity-repository.md) | Client Entity & Repository with Soft Delete | P0 | Done |
+| [1.3](./story-1.3-client-service.md) | Client Service with Business Logic | P0 | Done |
+| [1.4](./story-1.4-base-layout-navigation.md) | Base Layout & Navigation with Bootstrap | P0 | Done |
+| [1.5](./story-1.5-client-list-search.md) | Client List & Search Interface | P0 | Done |
+| [1.6](./story-1.6-client-detail-view.md) | Client Detail View with History Placeholder | P1 | Done |
+| [1.7](./story-1.7-client-create-edit-forms.md) | Client Create & Edit Forms | P0 | Done |
+| [1.8](./story-1.8-client-soft-delete.md) | Client Soft Delete with Confirmation | P1 | Done |
 
 ---
 
@@ -29,14 +29,14 @@ Gestion des orders et catalogue produits.
 
 | Story | Titre | Priorite | Statut |
 |-------|-------|----------|--------|
-| [2.1](./story-2.1-product-tarif-entities.md) | Product & Tarif Entities with Year-based Pricing | P0 | Pending |
-| [2.2](./story-2.2-order-lignecommande-entities.md) | Commande & LigneCommande Entities with Status Workflow | P0 | Pending |
-| [2.3](./story-2.3-order-produit-services.md) | CommandeService & ProduitService with Business Logic | P0 | Pending |
-| [2.4](./story-2.4-product-catalog-ui.md) | Product Catalog & Tarif Management UI | P1 | Pending |
-| [2.5](./story-2.5-order-list-filters.md) | Order List with Filters and Status Badges | P0 | Pending |
-| [2.6](./story-2.6-create-order-form.md) | Create Order Form with Dynamic Product Lines | P0 | Pending |
-| [2.7](./story-2.7-order-detail-status-transitions.md) | Order Detail View with Status Transitions | P0 | Pending |
-| [2.8](./story-2.8-client-order-history.md) | Client Detail - Display Order History | P1 | Pending |
+| [2.1](./story-2.1-product-tarif-entities.md) | Product & Tarif Entities with Year-based Pricing | P0 | Done |
+| [2.2](./story-2.2-order-lignecommande-entities.md) | Commande & LigneCommande Entities with Status Workflow | P0 | Done |
+| [2.3](./story-2.3-order-produit-services.md) | CommandeService & ProduitService with Business Logic | P0 | Done |
+| [2.4](./story-2.4-product-catalog-ui.md) | Product Catalog & Tarif Management UI | P1 | Done |
+| [2.5](./story-2.5-order-list-filters.md) | Order List with Filters and Status Badges | P0 | Done |
+| [2.6](./story-2.6-create-order-form.md) | Create Order Form with Dynamic Product Lines | P0 | Done |
+| [2.7](./story-2.7-order-detail-status-transitions.md) | Order Detail View with Status Transitions | P0 | Done |
+| [2.8](./story-2.8-client-order-history.md) | Client Detail - Display Order History | P1 | Done |
 
 ---
 
@@ -46,14 +46,14 @@ Generation d'etiquettes PDF reglementaires.
 
 | Story | Titre | Priorite | Statut |
 |-------|-------|----------|--------|
-| [3.1](./story-3.1-pdf-service-foundation.md) | PDF Service Foundation with Apache PDFBox | P0 | Pending |
-| [3.2](./story-3.2-etiquette-configuration.md) | Etiquette Configuration & Data Model | P0 | Pending |
-| [3.3](./story-3.3-dluo-lot-number-logic.md) | DLUO Calculation & Lot Number Generation Logic | P0 | Pending |
-| [3.4](./story-3.4-single-label-layout.md) | Single Label PDF Layout & Rendering | P0 | Pending |
-| [3.5](./story-3.5-multi-label-sheet.md) | Multi-Label Sheet Generation | P0 | Pending |
-| [3.6](./story-3.6-label-generation-form.md) | Label Generation Form UI | P0 | Pending |
-| [3.7](./story-3.7-pdf-download-endpoint.md) | PDF Download Endpoint & File Response | P0 | Pending |
-| [3.8](./story-3.8-label-history-tracking.md) | Label Generation History & Lot Number Tracking | P2 | Pending |
+| [3.1](./story-3.1-pdf-service-foundation.md) | PDF Service Foundation with Apache PDFBox | P0 | Done |
+| [3.2](./story-3.2-etiquette-configuration.md) | Etiquette Configuration & Data Model | P0 | Done |
+| [3.3](./story-3.3-dluo-lot-number-logic.md) | DLUO Calculation & Lot Number Generation Logic | P0 | Done |
+| [3.4](./story-3.4-single-label-layout.md) | Single Label PDF Layout & Rendering | P0 | Done |
+| [3.5](./story-3.5-multi-label-sheet.md) | Multi-Label Sheet Generation | P0 | Done |
+| [3.6](./story-3.6-label-generation-form.md) | Label Generation Form UI | P0 | Done |
+| [3.7](./story-3.7-pdf-download-endpoint.md) | PDF Download Endpoint & File Response | P0 | Done |
+| [3.8](./story-3.8-label-history-tracking.md) | Label Generation History & Lot Number Tracking | P2 | Done |
 
 ---
 

@@ -1,7 +1,7 @@
 # Story 4.1: Achat Entity & Repository for Purchase Tracking
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P0 - Critical Path
 **Depends On:** Story 1.1
 
@@ -38,7 +38,32 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Unit tests passing
-- [ ] Seed data loads correctly
+- [x] All acceptance criteria met
+- [x] Unit tests passing
+- [x] Seed data loads correctly
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/enums/CategorieAchat.java` (NEW)
+- `src/main/java/com/honeyai/model/Achat.java` (NEW)
+- `src/main/java/com/honeyai/repository/AchatRepository.java` (NEW)
+- `src/test/java/com/honeyai/repository/AchatRepositoryTest.java` (NEW)
+
+### Change Log
+- Created CategorieAchat enum with 5 values and French display labels
+- Created Achat entity with all required fields, validation annotations, and auditing
+- Created AchatRepository with findByDateAchatBetween, findByCategorie, findAllByOrderByDateAchatDesc
+- Created 7 unit tests (all passing) covering save, findById, date range filter, category filter, ordering, empty results, BigDecimal precision
+- Full regression: 217 tests passing, 0 failures
+
+### Completion Notes
+- Followed existing project conventions (Builder, AuditingEntityListener, @ActiveProfiles("test"))
+- 5 seed achats in tests covering all 5 categories
+- BigDecimal with precision=10, scale=2 for currency
