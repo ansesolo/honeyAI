@@ -37,6 +37,7 @@ public class HomeController {
         model.addAttribute("depenses", depenses);
         model.addAttribute("benefice", benefice);
         model.addAttribute("commandesPayees", commandesPayees);
+        model.addAttribute("topProduits", dashboardService.getTopProduits(start, end, 3));
         model.addAttribute("selectedYear", selectedYear);
         model.addAttribute("availableYears", getAvailableYears());
         model.addAttribute("activeMenu", "dashboard");

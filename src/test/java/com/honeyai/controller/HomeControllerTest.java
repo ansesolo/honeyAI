@@ -1,9 +1,11 @@
 package com.honeyai.controller;
 
+import com.honeyai.dto.TopProduitDto;
 import com.honeyai.enums.OrderStatus;
 import com.honeyai.model.Order;
 import com.honeyai.repository.OrderRepository;
 import com.honeyai.service.DashboardService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,8 +17,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,6 +36,21 @@ class HomeControllerTest {
     @MockBean
     private OrderRepository orderRepository;
 
+    @BeforeEach
+    void setUp() {
+        // Default stubs for all tests
+        when(dashboardService.calculateChiffreAffaires(any(), any()))
+                .thenReturn(BigDecimal.ZERO);
+        when(dashboardService.calculateTotalDepenses(any(), any()))
+                .thenReturn(BigDecimal.ZERO);
+        when(dashboardService.calculateBenefice(any(), any()))
+                .thenReturn(BigDecimal.ZERO);
+        when(dashboardService.getTopProduits(any(), any(), anyInt()))
+                .thenReturn(Collections.emptyList());
+        when(orderRepository.findByStatus(OrderStatus.PAID))
+                .thenReturn(Collections.emptyList());
+    }
+
     @Test
     void home_shouldReturnDashboardView_withDefaultYear() throws Exception {
         // Given
@@ -42,15 +60,13 @@ class HomeControllerTest {
                 .thenReturn(new BigDecimal("150.00"));
         when(dashboardService.calculateBenefice(any(), any()))
                 .thenReturn(new BigDecimal("350.00"));
-        when(orderRepository.findByStatus(OrderStatus.PAID))
-                .thenReturn(Collections.emptyList());
 
         // When / Then
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
                 .andExpect(model().attributeExists("ca", "depenses", "benefice",
-                        "commandesPayees", "selectedYear", "availableYears"))
+                        "commandesPayees", "topProduits", "selectedYear", "availableYears"))
                 .andExpect(model().attribute("activeMenu", "dashboard"))
                 .andExpect(model().attribute("ca", comparesEqualTo(new BigDecimal("500.00"))))
                 .andExpect(model().attribute("depenses", comparesEqualTo(new BigDecimal("150.00"))))
@@ -63,14 +79,6 @@ class HomeControllerTest {
         when(dashboardService.calculateChiffreAffaires(
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31)))
                 .thenReturn(new BigDecimal("200.00"));
-        when(dashboardService.calculateTotalDepenses(
-                LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31)))
-                .thenReturn(new BigDecimal("80.00"));
-        when(dashboardService.calculateBenefice(
-                LocalDate.of(2025, 1, 1), LocalDate.of(2025, 12, 31)))
-                .thenReturn(new BigDecimal("120.00"));
-        when(orderRepository.findByStatus(OrderStatus.PAID))
-                .thenReturn(Collections.emptyList());
 
         // When / Then
         mockMvc.perform(get("/").param("year", "2025"))
@@ -91,12 +99,6 @@ class HomeControllerTest {
                 .status(OrderStatus.PAID)
                 .build();
 
-        when(dashboardService.calculateChiffreAffaires(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
-        when(dashboardService.calculateTotalDepenses(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
-        when(dashboardService.calculateBenefice(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
         when(orderRepository.findByStatus(OrderStatus.PAID))
                 .thenReturn(List.of(paidInYear, paidOutOfYear));
 
@@ -108,20 +110,45 @@ class HomeControllerTest {
 
     @Test
     void home_shouldShowZeroMetrics_whenNoData() throws Exception {
+        // When / Then (all defaults from setUp)
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("ca", comparesEqualTo(BigDecimal.ZERO)))
+                .andExpect(model().attribute("commandesPayees", 0L))
+                .andExpect(model().attribute("topProduits", empty()));
+    }
+
+    @Test
+    void home_shouldIncludeTopProduits() throws Exception {
         // Given
-        when(dashboardService.calculateChiffreAffaires(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
-        when(dashboardService.calculateTotalDepenses(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
-        when(dashboardService.calculateBenefice(any(), any()))
-                .thenReturn(BigDecimal.ZERO);
-        when(orderRepository.findByStatus(OrderStatus.PAID))
-                .thenReturn(Collections.emptyList());
+        List<TopProduitDto> topProduits = List.of(
+                TopProduitDto.builder()
+                        .produitNom("Miel Toutes Fleurs 500g")
+                        .typeMiel("Toutes Fleurs")
+                        .quantiteTotale(20L)
+                        .chiffreAffaires(new BigDecimal("170.00"))
+                        .build(),
+                TopProduitDto.builder()
+                        .produitNom("Miel de Foret 1kg")
+                        .typeMiel("Foret")
+                        .quantiteTotale(10L)
+                        .chiffreAffaires(new BigDecimal("150.00"))
+                        .build()
+        );
+        when(dashboardService.getTopProduits(any(), any(), anyInt()))
+                .thenReturn(topProduits);
 
         // When / Then
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("ca", comparesEqualTo(BigDecimal.ZERO)))
-                .andExpect(model().attribute("commandesPayees", 0L));
+                .andExpect(model().attribute("topProduits", hasSize(2)));
+    }
+
+    @Test
+    void home_shouldShowEmptyTopProduits_whenNoSales() throws Exception {
+        // When / Then (default from setUp returns empty list)
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("topProduits", empty()));
     }
 }

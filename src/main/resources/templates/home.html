@@ -87,6 +87,53 @@
             </div>
         </div>
 
+        <!-- Top 3 Produits -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-trophy me-2 text-warning"></i>Top 3 Produits
+                        </h5>
+
+                        <!-- Empty State -->
+                        <div th:if="${#lists.isEmpty(topProduits)}" class="text-center py-3">
+                            <p class="text-muted mb-0">Aucune vente sur cette periode.</p>
+                        </div>
+
+                        <!-- Product Ranking -->
+                        <div th:unless="${#lists.isEmpty(topProduits)}">
+                            <div th:each="p,iter : ${topProduits}" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div>
+                                        <span class="badge bg-warning text-dark me-2"
+                                              th:text="'#' + ${iter.count}">1</span>
+                                        <strong th:text="${p.produitNom}">Produit</strong>
+                                        <small class="text-muted ms-1" th:if="${p.typeMiel}"
+                                               th:text="'(' + ${p.typeMiel} + ')'"></small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span th:text="${p.quantiteTotale} + ' vendus'">0 vendus</span>
+                                        <span class="text-muted ms-2"
+                                              th:text="'(' + ${#numbers.formatDecimal(p.chiffreAffaires, 1, 2)} + ' EUR)'">
+                                            (0.00 EUR)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-warning"
+                                         role="progressbar"
+                                         th:style="'width: ' + ${topProduits[0].quantiteTotale > 0 ? (p.quantiteTotale * 100 / topProduits[0].quantiteTotale) : 0} + '%'"
+                                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Links -->
         <div class="row">
             <div class="col-12">

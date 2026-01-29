@@ -1,7 +1,7 @@
 # Story 4.7: Top Products Widget & Simple Charts
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P2 - Medium
 **Depends On:** Story 4.6
 
@@ -36,7 +36,34 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Top products display correctly
-- [ ] Period filter works
+- [x] All acceptance criteria met
+- [x] Top products display correctly
+- [x] Period filter works
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/controller/HomeController.java` (MODIFIED - added topProduits model attribute)
+- `src/main/resources/templates/home.html` (MODIFIED - added Top 3 Produits section with progress bars)
+- `src/test/java/com/honeyai/controller/HomeControllerTest.java` (MODIFIED - added setUp, 2 new tests, refactored existing)
+
+### Change Log
+- Added `dashboardService.getTopProduits(start, end, 3)` call in HomeController, passed as "topProduits" model attribute
+- Added "Top 3 Produits" section in home.html between metric cards and quick links
+- Ranked list with: position badge (#1/#2/#3), product name, honey type, quantity sold, revenue
+- CSS progress bars proportional to top product quantity (first product = 100% width)
+- Empty state: "Aucune vente sur cette periode"
+- Period filter applies (same year start/end as other metrics)
+- Refactored HomeControllerTest: added @BeforeEach with default stubs to avoid repetition
+- Added 2 new tests: topProduits present with data, empty topProduits when no sales
+- Full regression: 254 tests passing, 0 failures
+
+### Completion Notes
+- Simple CSS progress bars chosen over Chart.js (no external dependency, matches project simplicity)
+- Progress bar width calculated relative to #1 product quantity for visual comparison
