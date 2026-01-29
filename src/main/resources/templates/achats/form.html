@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Modifier un achat</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-edit me-2"></i>Modifier un achat
+                </h1>
+            </div>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{/achats/{id}(id=${achat.id})}" th:object="${achat}" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="dateAchat" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="dateAchat"
+                                   th:field="*{dateAchat}"
+                                   th:classappend="${#fields.hasErrors('dateAchat')} ? 'is-invalid' : ''"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateAchat')}"
+                                 th:errors="*{dateAchat}">Erreur</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="designation" class="form-label">Designation</label>
+                            <input type="text" class="form-control" id="designation"
+                                   th:field="*{designation}"
+                                   th:classappend="${#fields.hasErrors('designation')} ? 'is-invalid' : ''"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('designation')}"
+                                 th:errors="*{designation}">Erreur</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="montant" class="form-label">Montant (EUR)</label>
+                            <input type="number" class="form-control" id="montant"
+                                   th:field="*{montant}"
+                                   th:classappend="${#fields.hasErrors('montant')} ? 'is-invalid' : ''"
+                                   step="0.01" min="0.01"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('montant')}"
+                                 th:errors="*{montant}">Erreur</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="categorie" class="form-label">Categorie</label>
+                            <select class="form-select" id="categorie" th:field="*{categorie}" required>
+                                <option value="">-- Choisir --</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat}"
+                                        th:text="${cat.displayLabel}">Categorie</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="notes" class="form-label">Notes</label>
+                            <input type="text" class="form-control" id="notes"
+                                   th:field="*{notes}"
+                                   placeholder="Optionnel">
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Enregistrer
+                        </button>
+                        <a th:href="@{/achats}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Retour
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

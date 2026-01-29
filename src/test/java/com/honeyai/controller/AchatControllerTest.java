@@ -161,4 +161,76 @@ class AchatControllerTest {
 
         verify(achatService, never()).save(any(Achat.class));
     }
+
+    @Test
+    void editForm_shouldReturnFormView() throws Exception {
+        // Given
+        Achat achat = Achat.builder()
+                .id(1L)
+                .dateAchat(LocalDate.of(2025, 4, 10))
+                .designation("Cire gaufrée")
+                .montant(new BigDecimal("45.00"))
+                .categorie(CategorieAchat.CIRE)
+                .build();
+        when(achatService.findById(1L)).thenReturn(achat);
+
+        // When / Then
+        mockMvc.perform(get("/achats/1/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("achats/form"))
+                .andExpect(model().attributeExists("achat", "categories"))
+                .andExpect(model().attribute("activeMenu", "achats"));
+    }
+
+    @Test
+    void update_shouldRedirectOnSuccess() throws Exception {
+        // Given
+        Achat updated = Achat.builder()
+                .id(1L)
+                .dateAchat(LocalDate.of(2025, 5, 1))
+                .designation("Cire modifiee")
+                .montant(new BigDecimal("50.00"))
+                .categorie(CategorieAchat.CIRE)
+                .build();
+        when(achatService.save(any(Achat.class))).thenReturn(updated);
+
+        // When / Then
+        mockMvc.perform(post("/achats/1")
+                        .param("dateAchat", "2025-05-01")
+                        .param("designation", "Cire modifiee")
+                        .param("montant", "50.00")
+                        .param("categorie", "CIRE"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/achats"))
+                .andExpect(flash().attributeExists("successMessage"));
+
+        verify(achatService).save(any(Achat.class));
+    }
+
+    @Test
+    void update_shouldReturnFormWithErrors_whenValidationFails() throws Exception {
+        // When / Then
+        mockMvc.perform(post("/achats/1")
+                        .param("designation", "")
+                        .param("montant", ""))
+                .andExpect(status().isOk())
+                .andExpect(view().name("achats/form"))
+                .andExpect(model().attributeHasErrors("achat"));
+
+        verify(achatService, never()).save(any(Achat.class));
+    }
+
+    @Test
+    void delete_shouldRedirectWithSuccessMessage() throws Exception {
+        // Given
+        doNothing().when(achatService).delete(1L);
+
+        // When / Then
+        mockMvc.perform(post("/achats/1/delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/achats"))
+                .andExpect(flash().attributeExists("successMessage"));
+
+        verify(achatService).delete(1L);
+    }
 }

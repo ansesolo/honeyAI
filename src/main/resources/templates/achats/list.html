@@ -145,6 +145,7 @@
                         <th>Categorie</th>
                         <th class="text-end">Montant</th>
                         <th>Notes</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,17 +162,78 @@
                         </td>
                         <td class="text-end" th:text="${#numbers.formatDecimal(a.montant, 1, 2)} + ' EUR'">0.00 EUR</td>
                         <td class="text-muted" th:text="${a.notes ?: '-'}">-</td>
+                        <td class="text-end">
+                            <a th:href="@{/achats/{id}/edit(id=${a.id})}"
+                               class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    th:data-achat-id="${a.id}"
+                                    th:data-achat-designation="${a.designation}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr class="table-light fw-bold">
                         <td colspan="3">Total</td>
                         <td class="text-end" th:text="${#numbers.formatDecimal(total, 1, 2)} + ' EUR'">0.00 EUR</td>
-                        <td></td>
+                        <td colspan="2"></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>Confirmer la suppression
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Etes-vous sur de vouloir supprimer l'achat <strong id="deleteAchatDesignation">Designation</strong> ?</p>
+                        <p class="text-muted small mb-0">
+                            Cette action est irreversible.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Annuler
+                        </button>
+                        <form id="deleteForm" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var deleteModal = document.getElementById('deleteModal');
+                if (deleteModal) {
+                    deleteModal.addEventListener('show.bs.modal', function(event) {
+                        var button = event.relatedTarget;
+                        var achatId = button.getAttribute('data-achat-id');
+                        var achatDesignation = button.getAttribute('data-achat-designation');
+
+                        document.getElementById('deleteAchatDesignation').textContent = achatDesignation;
+                        document.getElementById('deleteForm').action = '/achats/' + achatId + '/delete';
+                    });
+                }
+            });
+        </script>
+    </th:block>
 </body>
 </html>

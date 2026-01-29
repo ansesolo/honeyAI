@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -88,6 +89,43 @@ public class AchatController {
         achatService.save(achat);
         log.info("Achat enregistre: {} - {} EUR", achat.getDesignation(), achat.getMontant());
         redirectAttributes.addFlashAttribute("successMessage", "Achat enregistre avec succes");
+        return "redirect:/achats";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        Achat achat = achatService.findById(id);
+        model.addAttribute("achat", achat);
+        model.addAttribute("categories", CategorieAchat.values());
+        model.addAttribute("activeMenu", "achats");
+        return "achats/form";
+    }
+
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("achat") Achat achat,
+                         BindingResult bindingResult,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", CategorieAchat.values());
+            model.addAttribute("activeMenu", "achats");
+            return "achats/form";
+        }
+
+        achat.setId(id);
+        achatService.save(achat);
+        log.info("Achat #{} mis a jour: {}", id, achat.getDesignation());
+        redirectAttributes.addFlashAttribute("successMessage", "Achat mis a jour avec succes");
+        return "redirect:/achats";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        achatService.delete(id);
+        log.info("Achat #{} supprime", id);
+        redirectAttributes.addFlashAttribute("successMessage", "Achat supprime avec succes");
         return "redirect:/achats";
     }
 

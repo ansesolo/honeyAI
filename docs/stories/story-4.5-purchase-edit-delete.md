@@ -1,7 +1,7 @@
 # Story 4.5: Purchase Edit & Delete
 
 **Epic:** Epic 4 - Financial Dashboard & Purchases
-**Status:** Pending
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 4.4
 
@@ -35,7 +35,38 @@
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] Edit form works correctly
-- [ ] Delete with confirmation works
+- [x] All acceptance criteria met
+- [x] Edit form works correctly
+- [x] Delete with confirmation works
 - [ ] Code committed to repository
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+Claude Opus 4.5
+
+### File List
+- `src/main/java/com/honeyai/controller/AchatController.java` (MODIFIED - added edit/update/delete endpoints)
+- `src/main/resources/templates/achats/form.html` (NEW)
+- `src/main/resources/templates/achats/list.html` (MODIFIED - added Actions column, edit/delete buttons, delete modal, script)
+- `src/test/java/com/honeyai/controller/AchatControllerTest.java` (MODIFIED - added 4 tests for edit/update/delete)
+
+### Change Log
+- Added GET /achats/{id}/edit endpoint returning achats/form view with existing achat data
+- Added POST /achats/{id} endpoint for updating an existing achat with validation
+- Added POST /achats/{id}/delete endpoint for hard delete
+- Created achats/form.html edit template with all fields pre-populated, Save/Back buttons
+- Updated achats/list.html: added Actions column with edit (link) and delete (modal trigger) buttons per row
+- Added Bootstrap delete confirmation modal with dynamic designation display
+- Added JavaScript to wire modal data attributes to form action URL
+- Flash success messages for update and delete operations
+- Added 4 new controller tests: edit form view, update success, update validation errors, delete success
+- Full regression: 248 tests passing, 0 failures
+
+### Completion Notes
+- Hard delete as specified (no soft delete for purchases)
+- Modal confirmation prevents accidental deletion
+- Edit form reuses same field layout as quick-add but in full card layout
+- Validation errors on update return to form view (not list)
