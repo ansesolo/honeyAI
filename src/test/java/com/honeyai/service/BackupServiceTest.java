@@ -11,6 +11,8 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import com.honeyai.dto.BackupFileDto;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BackupServiceTest {
@@ -148,6 +150,134 @@ class BackupServiceTest {
         // Then
         assertThat(Files.exists(otherFile)).isTrue();
     }
+
+    // --- listRecentBackups tests ---
+
+    @Test
+    void listRecentBackups_shouldReturnBackupsSortedByDateDescending() throws IOException {
+        // Given
+        Files.createDirectories(backupDirectory);
+        Path older = backupDirectory.resolve("honeyai-backup-2026-01-01-020000.db");
+        Path newer = backupDirectory.resolve("honeyai-backup-2026-01-15-020000.db");
+        Files.writeString(older, "old");
+        Files.writeString(newer, "new");
+        Files.setLastModifiedTime(older,
+                FileTime.from(Instant.now().minus(15, ChronoUnit.DAYS)));
+        Files.setLastModifiedTime(newer,
+                FileTime.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+
+        // When
+        var result = backupService.listRecentBackups();
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getFilename()).contains("01-15");
+        assertThat(result.get(1).getFilename()).contains("01-01");
+    }
+
+    @Test
+    void listRecentBackups_shouldReturnEmptyList_whenNoBackupsExist() {
+        // Given - backup directory doesn't exist yet
+
+        // When
+        var result = backupService.listRecentBackups();
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void listRecentBackups_shouldIgnoreNonBackupFiles() throws IOException {
+        // Given
+        Files.createDirectories(backupDirectory);
+        Files.writeString(backupDirectory.resolve("honeyai-backup-2026-01-10-020000.db"), "backup");
+        Files.writeString(backupDirectory.resolve("other-file.txt"), "not a backup");
+
+        // When
+        var result = backupService.listRecentBackups();
+
+        // Then
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void listRecentBackups_shouldReturnDtoWithCorrectFields() throws IOException {
+        // Given
+        Files.createDirectories(backupDirectory);
+        String filename = "honeyai-backup-2026-01-20-020000.db";
+        Files.writeString(backupDirectory.resolve(filename), "backup data here");
+
+        // When
+        var result = backupService.listRecentBackups();
+
+        // Then
+        assertThat(result).hasSize(1);
+        BackupFileDto dto = result.get(0);
+        assertThat(dto.getFilename()).isEqualTo(filename);
+        assertThat(dto.getLastModified()).isNotNull();
+        assertThat(dto.getSizeBytes()).isGreaterThan(0);
+        assertThat(dto.getFormattedSize()).contains("Ko");
+    }
+
+    // --- getBackupFile tests ---
+
+    @Test
+    void getBackupFile_shouldReturnPath_whenValidFilename() throws IOException {
+        // Given
+        Files.createDirectories(backupDirectory);
+        String filename = "honeyai-backup-2026-01-10-020000.db";
+        Files.writeString(backupDirectory.resolve(filename), "backup data");
+
+        // When
+        Path result = backupService.getBackupFile(filename);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getFileName().toString()).isEqualTo(filename);
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenPathTraversal() {
+        // When
+        Path result = backupService.getBackupFile("../etc/passwd");
+
+        // Then
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenFilenameContainsSlash() {
+        assertThat(backupService.getBackupFile("sub/honeyai-backup-2026-01-10-020000.db")).isNull();
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenFilenameContainsBackslash() {
+        assertThat(backupService.getBackupFile("sub\\honeyai-backup-2026-01-10-020000.db")).isNull();
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenInvalidPattern() {
+        assertThat(backupService.getBackupFile("malicious-file.db")).isNull();
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenFileDoesNotExist() {
+        assertThat(backupService.getBackupFile("honeyai-backup-9999-01-01-020000.db")).isNull();
+    }
+
+    @Test
+    void getBackupFile_shouldReturnNull_whenNull() {
+        assertThat(backupService.getBackupFile(null)).isNull();
+    }
+
+    // --- getDatabasePath test ---
+
+    @Test
+    void getDatabasePath_shouldReturnConfiguredPath() {
+        assertThat(backupService.getDatabasePath()).isEqualTo(databasePath);
+    }
+
+    // --- existing tests ---
 
     @Test
     void performBackup_shouldRunCleanupAfterBackup() throws IOException {

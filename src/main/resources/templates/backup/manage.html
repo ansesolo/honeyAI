@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}"
+      lang="fr">
+<head>
+    <title>Sauvegarde</title>
+</head>
+<body>
+    <div layout:fragment="content">
+
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}">Message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}">Erreur</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+
+        <h1 class="mb-4"><i class="fas fa-database me-2"></i>Sauvegarde</h1>
+
+        <!-- Info Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-info-circle me-2"></i>Systeme de sauvegarde
+            </div>
+            <div class="card-body">
+                <p class="mb-1">
+                    <i class="fas fa-clock me-2 text-muted"></i>
+                    <strong>Sauvegarde automatique :</strong> Chaque jour a 2h du matin, une copie de votre base de donnees est creee automatiquement.
+                </p>
+                <p class="mb-0">
+                    <i class="fas fa-trash-alt me-2 text-muted"></i>
+                    <strong>Retention :</strong> Les sauvegardes de plus de 30 jours sont supprimees automatiquement.
+                </p>
+            </div>
+        </div>
+
+        <!-- Help Text Card -->
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-lightbulb me-2"></i>
+            <strong>Conseil :</strong> Copiez regulierement vos sauvegardes sur une cle USB pour une protection maximale.
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-3 mb-4">
+            <form th:action="@{/backup/manual}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Creer une sauvegarde maintenant
+                </button>
+            </form>
+            <a th:href="@{/backup/export-db}" class="btn btn-secondary">
+                <i class="fas fa-download me-2"></i>Exporter la base de donnees
+            </a>
+        </div>
+
+        <!-- Recent Backups Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-history me-2"></i>Sauvegardes recentes
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(backups)}" class="text-center py-5 text-muted">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <p class="fs-5">Aucune sauvegarde disponible</p>
+                    <p>Cliquez sur "Creer une sauvegarde maintenant" pour commencer.</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(backups)}" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fichier</th>
+                                <th>Date</th>
+                                <th>Taille</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="backup : ${backups}">
+                                <td>
+                                    <i class="fas fa-file-archive me-2 text-muted"></i>
+                                    <span th:text="${backup.filename}">honeyai-backup.db</span>
+                                </td>
+                                <td th:text="${#temporals.format(backup.lastModified, 'dd/MM/yyyy HH:mm')}">
+                                    01/01/2026 02:00
+                                </td>
+                                <td th:text="${backup.formattedSize}">
+                                    1.2 Mo
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/backup/download/{filename}(filename=${backup.filename})}"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Telecharger">
+                                        <i class="fas fa-download"></i> Telecharger
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

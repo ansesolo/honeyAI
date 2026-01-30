@@ -61,6 +61,11 @@
                             <i class="fas fa-receipt me-1"></i>Achats
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/backup}" th:classappend="${activeMenu == 'backup'} ? 'active' : ''">
+                            <i class="fas fa-database me-1"></i>Sauvegarde
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
