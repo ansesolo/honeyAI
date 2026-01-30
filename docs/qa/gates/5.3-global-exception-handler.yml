@@ -1,0 +1,8 @@
+schema: 1
+story: '5.3'
+gate: PASS
+status_reason: 'All acceptance criteria met. Exception handlers correctly implemented with proper HTTP status codes, French user-facing messages, logging, and 6 unit tests passing. Full regression 292/292.'
+reviewer: 'Quinn'
+updated: '2026-01-30T21:05:00Z'
+top_issues: []
+waiver: { active: false }

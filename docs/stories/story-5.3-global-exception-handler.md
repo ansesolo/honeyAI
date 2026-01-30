@@ -165,4 +165,32 @@ No debug issues encountered.
 ---
 
 ## QA Results
-_To be filled by QA agent_
+
+### Review Date: 2026-01-30
+
+### Reviewed By: Quinn (Test Architect)
+
+**Acceptance Criteria Validation:**
+
+| AC | Description | Status |
+|----|-------------|--------|
+| AC1 | GlobalExceptionHandler with @ControllerAdvice handles all exception types | PASS |
+| AC2 | @ExceptionHandler for all 5 specified exception types | PASS |
+| AC3 | Custom error pages: 404.html verified, 500.html created, error.html created | PASS |
+| AC4 | French messages, no stack traces, "Retour a l'accueil" button | PASS |
+| AC5 | Validation BindingResult pattern unchanged | PASS |
+| AC6 | All exceptions logged with @Slf4j (error for 500s, warn for 4xx) | PASS |
+| AC7 | Test scenarios for 404, 409, 500 | PASS |
+
+**Code Review Notes:**
+- Handler structure is clean and follows existing codebase conventions
+- Proper separation: `log.warn()` for 4xx, `log.error()` with stack trace for 5xx
+- Added bonus `NoResourceFoundException` handler to prevent Spring framework 404s from being caught by generic handler as 500 - good defensive coding
+- Templates follow consistent visual pattern with existing 404.html
+- Tests use Given-When-Then structure and project naming convention
+- No security concerns: all templates use `th:text` (not `th:utext`)
+- 292/292 tests pass with 0 regressions
+
+### Gate Status
+
+Gate: PASS -> docs/qa/gates/5.3-global-exception-handler.yml
