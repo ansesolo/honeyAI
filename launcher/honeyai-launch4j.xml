@@ -10,7 +10,7 @@
     <jdkPreference>preferJre</jdkPreference>
     <initialHeapSize>128</initialHeapSize>
     <maxHeapSize>512</maxHeapSize>
-    <opts>-Dfile.encoding=UTF-8</opts>
+    <opts>-Dfile.encoding=UTF-8 -Dspring.profiles.active=prod</opts>
   </jre>
   <splash>
     <file>splash.bmp</file>

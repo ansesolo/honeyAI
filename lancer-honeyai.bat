@@ -22,7 +22,7 @@ if %ERRORLEVEL% neq 0 (
 )
 
 REM Demarrer l'application (sans fenetre console)
-start "" javaw -jar honeyai-1.0.0.jar
+start "" javaw -jar honeyai-1.0.0.jar --spring.profiles.active=prod
 
 REM Attendre le demarrage du serveur
 echo   Demarrage de HoneyAI en cours...
