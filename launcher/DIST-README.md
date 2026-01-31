@@ -15,36 +15,26 @@ HoneyAI/
 
 ## Comment creer le package de distribution
 
-### Prerequis sur la machine de build (WSL)
+### Prerequis sur la machine de build
 
 - Java 21 (JDK)
 - Maven 3.8+
-- launch4j 3.50+ (voir section installation ci-dessous)
-
-### Installation de launch4j sous WSL
-
-```bash
-# Option 1 : Telecharger et definir LAUNCH4J_HOME
-wget https://sourceforge.net/projects/launch4j/files/launch4j-3/3.50/launch4j-3.50-linux-x64.tgz
-tar xzf launch4j-3.50-linux-x64.tgz
-export LAUNCH4J_HOME=$(pwd)/launch4j
-
-# Option 2 : Ajouter au PATH
-export PATH=$PATH:$(pwd)/launch4j
-```
 
 ### Etapes
 
 1. **Construire le JAR et l'EXE :**
    ```bash
-   ./build-exe.sh
+   mvn clean package -Pexe -DskipTests
    ```
+   Cela genere :
+   - `target/honeyai-1.0.0.jar` (application)
+   - `target/HoneyAI.exe` (lanceur Windows)
 
 2. **Creer le dossier de distribution :**
    ```bash
    mkdir -p dist/HoneyAI
-   cp HoneyAI.exe dist/HoneyAI/
-   cp honeyai-1.0.0.jar dist/HoneyAI/
+   cp target/HoneyAI.exe dist/HoneyAI/
+   cp target/honeyai-1.0.0.jar dist/HoneyAI/
    cp lancer-honeyai.bat dist/HoneyAI/
    cp README-INSTALLATION.txt dist/HoneyAI/
    ```
@@ -63,4 +53,5 @@ export PATH=$PATH:$(pwd)/launch4j
 - Java 21 doit etre installe sur la machine cible (Windows). L'EXE affiche un message d'erreur en francais si Java est absent.
 - Les dossiers `data/` et `backups/` sont crees automatiquement au premier lancement.
 - Le script `lancer-honeyai.bat` sert de methode de lancement alternative si l'EXE pose probleme.
-- Le build se fait sous WSL, la cible de deploiement est Windows 10/11.
+- Le build se fait sous WSL (ou tout environnement Linux/Mac), la cible de deploiement est Windows 10/11.
+- La configuration launch4j est dans le `pom.xml` (profil `exe`), pas dans un fichier XML separe.
