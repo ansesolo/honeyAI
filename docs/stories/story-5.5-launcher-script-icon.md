@@ -1,7 +1,7 @@
 # Story 5.5: Application Launcher Script & Icon
 
 **Epic:** Epic 5 - Backup, Packaging & Production Readiness
-**Status:** Approved
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 1.1
 
@@ -28,27 +28,26 @@
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create launcher directory and icon (AC: 1)
-  - [ ] Create `launcher/` directory at project root
-  - [ ] Create or source `launcher/icon.ico` with honey/bee theme, multi-resolution (16, 32, 48, 256 px)
-  - [ ] NOTE: Icon creation may require an external tool (ImageMagick, GIMP, or online converter). If not possible to generate, create a placeholder text file `launcher/icon.ico.README` describing the icon requirements
+- [x] Task 1: Create launcher directory and icon (AC: 1)
+  - [x] Create `launcher/` directory at project root
+  - [x] Create placeholder `launcher/icon.ico.README` describing icon requirements (binary icon generation not possible from CLI agent)
 
-- [ ] Task 2: Create launcher batch script (AC: 2, 4, 5, 6)
-  - [ ] Create `lancer-honeyai.bat` at project root
-  - [ ] Check Java availability: `where javaw >nul 2>&1` - if error, display French message "Java n'est pas installe. Veuillez installer Java 21 depuis https://adoptium.net" and pause
-  - [ ] Start application: `start "" javaw -jar honeyai-1.0.0.jar` (no console window)
-  - [ ] Wait 4 seconds: `timeout /t 4 /nobreak >nul`
-  - [ ] Open browser: `start http://localhost:8080`
-  - [ ] Use `@echo off` and `chcp 65001` for UTF-8 support in console messages
+- [x] Task 2: Create launcher batch script (AC: 2, 4, 5, 6)
+  - [x] Create `lancer-honeyai.bat` at project root
+  - [x] Check Java availability: `where javaw >nul 2>&1` - if error, display French message and pause
+  - [x] Start application: `start "" javaw -jar honeyai-1.0.0.jar` (no console window)
+  - [x] Wait 4 seconds: `timeout /t 4 /nobreak >nul`
+  - [x] Open browser: `start http://localhost:8080`
+  - [x] Use `@echo off` and `chcp 65001` for UTF-8 support in console messages
 
-- [ ] Task 3: Create installation README (AC: 3)
-  - [ ] Create `README-INSTALLATION.txt` at project root (plain text, UTF-8 with BOM for Windows Notepad)
-  - [ ] Content in French: prerequisites (Java 21), installation steps, how to launch, how to stop (close browser + Ctrl+C or close terminal), where data is stored (./data/), how to backup (./backups/)
-  - [ ] Keep simple and non-technical for family user
+- [x] Task 3: Create installation README (AC: 3)
+  - [x] Create `README-INSTALLATION.txt` at project root (plain text, UTF-8 with BOM for Windows Notepad)
+  - [x] Content in French: prerequisites (Java 21), installation steps, how to launch, how to stop, where data is stored (./data/), how to backup (./backups/)
+  - [x] Keep simple and non-technical for family user
 
-- [ ] Task 4: Verify and test (AC: 2, 4, 5, 6)
-  - [ ] Describe manual test plan: double-click .bat on Windows, verify no console window visible, browser opens after ~4s, app accessible at localhost:8080
-  - [ ] Describe error test: rename java temporarily, verify error message displays
+- [x] Task 4: Verify and test (AC: 2, 4, 5, 6)
+  - [x] Full regression: 292 tests pass, 0 failures
+  - [x] Manual test plan documented in Completion Notes below
 
 ---
 
@@ -127,16 +126,26 @@ honeyAI/
 ## Dev Agent Record
 
 ### Agent Model Used
-_To be filled by dev agent_
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
-_To be filled by dev agent_
+No debug issues encountered.
 
 ### Completion Notes List
-_To be filled by dev agent_
+- Created `launcher/` directory and `icon.ico.README` placeholder with detailed icon creation instructions (ImageMagick, GIMP, online tools) and free icon sources
+- Created `lancer-honeyai.bat` with: @echo off, chcp 65001 (UTF-8), javaw check with French error message, `start "" javaw -jar` for hidden console, 4s timeout, auto browser open
+- Created `README-INSTALLATION.txt` with UTF-8 BOM for Windows Notepad compatibility. Content: prerequisites, installation, launch/stop instructions, data location, troubleshooting - all in simple French for family users
+- AC1 partial: icon.ico placeholder only (binary generation not possible). README describes exact requirements for manual creation
+- Manual test plan for Windows:
+  1. Double-click `lancer-honeyai.bat` -> verify javaw starts app without visible console
+  2. After ~4s, verify browser opens at http://localhost:8080
+  3. Error test: temporarily rename/remove Java from PATH, run .bat -> verify French error message appears with adoptium.net link
+  4. Verify README-INSTALLATION.txt opens correctly in Windows Notepad (UTF-8 BOM)
 
 ### File List
-_To be filled by dev agent_
+- `launcher/icon.ico.README` (NEW - placeholder with icon creation instructions)
+- `lancer-honeyai.bat` (NEW)
+- `README-INSTALLATION.txt` (NEW)
 
 ---
 

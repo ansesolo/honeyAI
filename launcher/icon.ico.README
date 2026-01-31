@@ -1,0 +1,22 @@
+Icon Requirements for HoneyAI
+==============================
+
+Format: ICO (Windows icon format)
+Required sizes: 16x16, 32x32, 48x48, 256x256 pixels
+
+Theme: Honey pot, bee, or honeycomb
+Colors: Golden/amber tones (#F4B942, #D4A030) matching the app honey palette
+Background: Transparent
+
+How to create:
+1. Design or source a honey/bee themed icon (PNG, 256x256 minimum)
+2. Convert to ICO with multiple resolutions using one of:
+   - ImageMagick: convert icon.png -define icon:auto-resize=256,48,32,16 icon.ico
+   - GIMP: Export as .ico, select all sizes
+   - Online: https://convertico.com or https://icoconvert.com
+3. Place the resulting icon.ico file in this directory
+
+Free icon sources (open license):
+- https://www.flaticon.com (search "honey" or "bee")
+- https://icons8.com
+- https://www.svgrepo.com
