@@ -1,7 +1,7 @@
 # Story 5.6: launch4j Configuration & .exe Wrapper
 
 **Epic:** Epic 5 - Backup, Packaging & Production Readiness
-**Status:** Approved
+**Status:** Ready for Review
 **Priority:** P1 - High
 **Depends On:** Story 5.5
 
@@ -29,40 +29,29 @@
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create launch4j XML configuration (AC: 1, 3, 6, 7)
-  - [ ] Create `launcher/honeyai-launch4j.xml`
-  - [ ] Configure: input JAR `honeyai-1.0.0.jar`, output `HoneyAI.exe`
-  - [ ] Set icon: `icon.ico` (from Story 5.5)
-  - [ ] JVM options: `-Xms128m -Xmx512m -Dfile.encoding=UTF-8`
-  - [ ] Minimum JRE version: `21`
-  - [ ] JRE search: registry + JAVA_HOME + PATH
-  - [ ] Error title: "HoneyAI - Erreur"
-  - [ ] Error message: "Java 21 n'a pas ete trouve. Veuillez installer Java depuis https://adoptium.net"
-  - [ ] Header type: GUI (no console window)
+- [x] Task 1: Create launch4j XML configuration (AC: 1, 3, 6, 7)
+  - [x] Create `launcher/honeyai-launch4j.xml`
+  - [x] Configure: input JAR `honeyai-1.0.0.jar`, output `HoneyAI.exe`
+  - [x] Set icon: `icon.ico` (from Story 5.5)
+  - [x] JVM options: `-Xms128m -Xmx512m -Dfile.encoding=UTF-8`
+  - [x] Minimum JRE version: `21`
+  - [x] JRE search: registry + JAVA_HOME + PATH (launch4j default with preferJre)
+  - [x] Error title: "HoneyAI - Erreur"
+  - [x] Error message: "Java 21 n'a pas ete trouve. Veuillez installer Java depuis https://adoptium.net"
+  - [x] Header type: GUI (no console window)
 
-- [ ] Task 2: Create splash screen BMP (AC: 2)
-  - [ ] Create `launcher/splash.bmp` - 400x300 pixels, 24-bit BMP
-  - [ ] Content: "HoneyAI" title, "Demarrage..." subtitle, honey/amber color scheme
-  - [ ] LIMITATION: Dev agent cannot generate binary BMP. Create a placeholder `launcher/splash.bmp.README` describing requirements, or generate a simple BMP programmatically if possible
+- [x] Task 2: Create splash screen BMP (AC: 2)
+  - [x] Create `launcher/splash.bmp.README` placeholder describing requirements (binary BMP generation not possible from CLI agent)
 
-- [ ] Task 3: Create build script (AC: 4)
-  - [ ] Create `build-exe.bat` at project root
-  - [ ] Steps: `mvn clean package -DskipTests`, then invoke `launch4j launcher/honeyai-launch4j.xml`
-  - [ ] Prerequisite check: verify launch4j is installed and on PATH
-  - [ ] Output: `HoneyAI.exe` in project root or `dist/` directory
+- [x] Task 3: Create build script (AC: 4)
+  - [x] Create `build-exe.bat` at project root
+  - [x] Steps: `mvn clean package -DskipTests`, copy JAR, invoke `launch4jc`
+  - [x] Prerequisite checks: verify Maven and launch4j are installed and on PATH
+  - [x] Output: `HoneyAI.exe` at project root
 
-- [ ] Task 4: Document distribution package structure (AC: 5)
-  - [ ] Create `launcher/DIST-README.md` with the distribution folder structure:
-    ```
-    HoneyAI/
-    ├── HoneyAI.exe
-    ├── honeyai-1.0.0.jar
-    ├── lancer-honeyai.bat (fallback)
-    ├── README-INSTALLATION.txt
-    ├── data/           (created at runtime)
-    └── backups/        (created at runtime)
-    ```
-  - [ ] Include instructions for packaging a distribution ZIP
+- [x] Task 4: Document distribution package structure (AC: 5)
+  - [x] Create `launcher/DIST-README.md` with distribution folder structure
+  - [x] Include step-by-step instructions for packaging a distribution ZIP
 
 ---
 
@@ -158,16 +147,26 @@ build-exe.bat                       (NEW)
 ## Dev Agent Record
 
 ### Agent Model Used
-_To be filled by dev agent_
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
-_To be filled by dev agent_
+No debug issues encountered.
 
 ### Completion Notes List
-_To be filled by dev agent_
+- Created `launcher/honeyai-launch4j.xml` with full launch4j config: GUI header, dontWrapJar=true, icon.ico reference, JVM opts (-Xms128m -Xmx512m -Dfile.encoding=UTF-8), JRE 21 minimum, splash.bmp config, French error message, version info (1.0.0, HoneyAI - Gestion Apicole)
+- Created `launcher/splash.bmp.README` placeholder with detailed specs (400x300, 24-bit BMP, honey amber color scheme) and creation instructions for GIMP, Paint, and ImageMagick
+- Created `build-exe.bat` with 3-step build: Maven package, JAR copy, launch4j EXE generation. Includes prerequisite checks for Maven and launch4j with French error messages
+- Created `launcher/DIST-README.md` documenting distribution package structure and step-by-step ZIP creation instructions
+- AC2 partial: splash.bmp placeholder only (binary BMP generation not possible). README describes exact specs
+- AC7: References icon.ico from Story 5.5 (also placeholder pending binary creation)
+- Manual test plan: run build-exe.bat on Windows with Maven + launch4j installed -> verify HoneyAI.exe generated -> double-click -> verify splash, app start, French error if no JRE
+- Full regression: 292 tests pass, 0 failures
 
 ### File List
-_To be filled by dev agent_
+- `launcher/honeyai-launch4j.xml` (NEW)
+- `launcher/splash.bmp.README` (NEW - placeholder)
+- `launcher/DIST-README.md` (NEW)
+- `build-exe.bat` (NEW)
 
 ---
 

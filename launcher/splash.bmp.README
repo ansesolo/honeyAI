@@ -1,0 +1,38 @@
+Splash Screen Requirements for HoneyAI
+=======================================
+
+Format: BMP (Windows Bitmap), 24-bit color
+Size: 400 x 300 pixels
+
+Content:
+  - Title: "HoneyAI" (large, centered, top third)
+  - Subtitle: "Demarrage..." (smaller, centered, below title)
+  - Optional: honey/bee themed graphic or honeycomb pattern
+
+Colors:
+  - Background: Honey amber gradient (#F4B942 to #D4A030)
+  - Title text: Dark forest green (#2D5016) or white
+  - Subtitle text: Dark brown or white
+
+How to create:
+1. Using GIMP:
+   - New image 400x300, fill with honey amber color
+   - Add "HoneyAI" text (bold, ~48pt)
+   - Add "Demarrage..." text (~18pt)
+   - Export as BMP (Windows BMP, 24-bit, no RLE compression)
+
+2. Using Paint (Windows):
+   - New canvas 400x300
+   - Fill background with amber color
+   - Add text
+   - Save As -> BMP (24-bit)
+
+3. Using ImageMagick:
+   convert -size 400x300 xc:"#F4B942" \
+     -font Arial-Bold -pointsize 48 -fill "#2D5016" \
+     -gravity North -annotate +0+80 "HoneyAI" \
+     -pointsize 18 -fill "#5A3A1A" \
+     -annotate +0+150 "Demarrage..." \
+     BMP3:splash.bmp
+
+Place the resulting splash.bmp file in this directory.
