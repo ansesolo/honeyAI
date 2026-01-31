@@ -112,8 +112,9 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#deleteModal"
                                     th:data-client-id="${client.id}"
-                                    th:data-client-name="${client.name}">
-                                <i class="fas fa-trash"></i>
+                                    th:data-client-name="${client.name}"
+                                    aria-label="Supprimer">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
                             </button>
                         </td>
                     </tr>
@@ -158,8 +159,9 @@
                                 data-bs-toggle="modal"
                                 data-bs-target="#deleteModal"
                                 th:data-client-id="${client.id}"
-                                th:data-client-name="${client.name}">
-                            <i class="fas fa-trash"></i>
+                                th:data-client-name="${client.name}"
+                                aria-label="Supprimer">
+                            <i class="fas fa-trash" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>

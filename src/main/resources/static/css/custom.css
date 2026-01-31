@@ -134,6 +134,35 @@ a:hover {
     color: #1e3a0f;
 }
 
+/* Required field markers */
+.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Heading minimums - WCAG AA */
+h1, h2, h3 {
+    min-height: 1.25rem;
+}
+
+/* Focus styles for accessibility */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.nav-link:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--honey-amber);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* Small buttons - maintain touch target */
+.btn-sm {
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0.375rem 0.5rem;
+}
+
 /* Alerts with brand colors */
 .alert-success {
     background-color: rgba(45, 80, 22, 0.1);

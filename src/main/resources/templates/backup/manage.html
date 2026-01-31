@@ -36,9 +36,13 @@
 
         <!-- Action Buttons -->
         <div class="d-flex gap-3 mb-4">
-            <form th:action="@{/backup/manual}" method="post" class="d-inline">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-2"></i>Creer une sauvegarde maintenant
+            <form th:action="@{/backup/manual}" method="post" class="d-inline" id="backupForm">
+                <button type="submit" class="btn btn-primary" id="backupBtn">
+                    <span id="backupBtnText"><i class="fas fa-plus-circle me-2"></i>Creer une sauvegarde maintenant</span>
+                    <span id="backupSpinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Sauvegarde en cours...
+                    </span>
                 </button>
             </form>
             <a th:href="@{/backup/export-db}" class="btn btn-secondary">
@@ -94,5 +98,16 @@
         </div>
 
     </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            document.getElementById('backupForm').addEventListener('submit', function() {
+                var btn = document.getElementById('backupBtn');
+                document.getElementById('backupBtnText').classList.add('d-none');
+                document.getElementById('backupSpinner').classList.remove('d-none');
+                btn.disabled = true;
+            });
+        </script>
+    </th:block>
 </body>
 </html>

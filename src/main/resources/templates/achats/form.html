@@ -23,7 +23,7 @@
                 <form th:action="@{/achats/{id}(id=${achat.id})}" th:object="${achat}" method="post">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <label for="dateAchat" class="form-label">Date</label>
+                            <label for="dateAchat" class="form-label required">Date</label>
                             <input type="date" class="form-control" id="dateAchat"
                                    th:field="*{dateAchat}"
                                    th:classappend="${#fields.hasErrors('dateAchat')} ? 'is-invalid' : ''"
@@ -32,7 +32,7 @@
                                  th:errors="*{dateAchat}">Erreur</div>
                         </div>
                         <div class="col-md-4">
-                            <label for="designation" class="form-label">Designation</label>
+                            <label for="designation" class="form-label required">Designation</label>
                             <input type="text" class="form-control" id="designation"
                                    th:field="*{designation}"
                                    th:classappend="${#fields.hasErrors('designation')} ? 'is-invalid' : ''"
@@ -41,7 +41,7 @@
                                  th:errors="*{designation}">Erreur</div>
                         </div>
                         <div class="col-md-2">
-                            <label for="montant" class="form-label">Montant (EUR)</label>
+                            <label for="montant" class="form-label required">Montant (EUR)</label>
                             <input type="number" class="form-control" id="montant"
                                    th:field="*{montant}"
                                    th:classappend="${#fields.hasErrors('montant')} ? 'is-invalid' : ''"
@@ -51,7 +51,7 @@
                                  th:errors="*{montant}">Erreur</div>
                         </div>
                         <div class="col-md-3">
-                            <label for="categorie" class="form-label">Categorie</label>
+                            <label for="categorie" class="form-label required">Categorie</label>
                             <select class="form-select" id="categorie" th:field="*{categorie}" required>
                                 <option value="">-- Choisir --</option>
                                 <option th:each="cat : ${categories}"
