@@ -15,32 +15,44 @@ HoneyAI/
 
 ## Comment creer le package de distribution
 
-### Prerequis sur la machine de build
+### Prerequis sur la machine de build (WSL)
 
 - Java 21 (JDK)
 - Maven 3.8+
-- launch4j 3.50+ (dans le PATH)
+- launch4j 3.50+ (voir section installation ci-dessous)
+
+### Installation de launch4j sous WSL
+
+```bash
+# Option 1 : Telecharger et definir LAUNCH4J_HOME
+wget https://sourceforge.net/projects/launch4j/files/launch4j-3/3.50/launch4j-3.50-linux-x64.tgz
+tar xzf launch4j-3.50-linux-x64.tgz
+export LAUNCH4J_HOME=$(pwd)/launch4j
+
+# Option 2 : Ajouter au PATH
+export PATH=$PATH:$(pwd)/launch4j
+```
 
 ### Etapes
 
 1. **Construire le JAR et l'EXE :**
-   ```bat
-   build-exe.bat
+   ```bash
+   ./build-exe.sh
    ```
 
 2. **Creer le dossier de distribution :**
-   ```bat
-   mkdir dist\HoneyAI
-   copy HoneyAI.exe dist\HoneyAI\
-   copy honeyai-1.0.0.jar dist\HoneyAI\
-   copy lancer-honeyai.bat dist\HoneyAI\
-   copy README-INSTALLATION.txt dist\HoneyAI\
+   ```bash
+   mkdir -p dist/HoneyAI
+   cp HoneyAI.exe dist/HoneyAI/
+   cp honeyai-1.0.0.jar dist/HoneyAI/
+   cp lancer-honeyai.bat dist/HoneyAI/
+   cp README-INSTALLATION.txt dist/HoneyAI/
    ```
 
 3. **Creer le ZIP :**
-   ```bat
+   ```bash
    cd dist
-   powershell Compress-Archive -Path HoneyAI -DestinationPath HoneyAI-1.0.0.zip
+   zip -r HoneyAI-1.0.0.zip HoneyAI/
    ```
 
 4. **Livrer** le fichier `HoneyAI-1.0.0.zip` a l'utilisateur.
@@ -48,6 +60,7 @@ HoneyAI/
 ## Notes importantes
 
 - L'EXE ne contient PAS le JAR (`dontWrapJar=true`). Le fichier `honeyai-1.0.0.jar` doit etre dans le meme repertoire que `HoneyAI.exe`.
-- Java 21 doit etre installe sur la machine cible. L'EXE affiche un message d'erreur en francais si Java est absent.
+- Java 21 doit etre installe sur la machine cible (Windows). L'EXE affiche un message d'erreur en francais si Java est absent.
 - Les dossiers `data/` et `backups/` sont crees automatiquement au premier lancement.
 - Le script `lancer-honeyai.bat` sert de methode de lancement alternative si l'EXE pose probleme.
+- Le build se fait sous WSL, la cible de deploiement est Windows 10/11.
