@@ -89,7 +89,7 @@ class ProductControllerTest {
                         .param("price", "9.50"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/products"))
-                .andExpect(flash().attributeExists("success"));
+                .andExpect(flash().attributeExists("successMessage"));
 
         verify(productService).updatePrice(eq(1L), eq(2026), eq(new BigDecimal("9.50")));
     }

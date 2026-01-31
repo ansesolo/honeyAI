@@ -229,7 +229,7 @@ class OrderControllerTest {
                         .param("lines[0].unitPrice", "12.50"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/1"))
-                .andExpect(flash().attribute("success", "Commande creee avec succes"));
+                .andExpect(flash().attribute("successMessage", "Commande creee avec succes"));
 
         verify(orderService).create(any(Order.class));
     }
@@ -304,7 +304,7 @@ class OrderControllerTest {
                         .param("newStatus", "RECOVERED"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/1"))
-                .andExpect(flash().attributeExists("success"));
+                .andExpect(flash().attributeExists("successMessage"));
 
         verify(orderService).updateStatus(1L, OrderStatus.RECOVERED);
     }
@@ -320,7 +320,7 @@ class OrderControllerTest {
                         .param("newStatus", "PAID"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/1"))
-                .andExpect(flash().attribute("error", "Transition invalide"));
+                .andExpect(flash().attribute("errorMessage", "Transition invalide"));
 
         verify(orderService).updateStatus(1L, OrderStatus.PAID);
     }
@@ -360,7 +360,7 @@ class OrderControllerTest {
                         .param("lines[0].unitPrice", "12.50"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/orders/1"))
-                .andExpect(flash().attribute("success", "Commande modifiee avec succes"));
+                .andExpect(flash().attribute("successMessage", "Commande modifiee avec succes"));
 
         verify(orderService).save(any(Order.class));
     }

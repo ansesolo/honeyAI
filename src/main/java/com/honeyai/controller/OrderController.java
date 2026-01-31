@@ -145,7 +145,7 @@ public class OrderController {
             Order saved = orderService.create(order);
             log.info("Created order #{}", saved.getId());
 
-            redirectAttributes.addFlashAttribute("success", "Commande creee avec succes");
+            redirectAttributes.addFlashAttribute("successMessage", "Commande creee avec succes");
             return "redirect:/orders/" + saved.getId();
 
         } catch (Exception e) {
@@ -177,14 +177,14 @@ public class OrderController {
         try {
             Order updated = orderService.updateStatus(id, newStatus);
             log.info("Updated order #{} status to {}", id, newStatus);
-            redirectAttributes.addFlashAttribute("success",
+            redirectAttributes.addFlashAttribute("successMessage",
                     "Statut mis a jour: " + updated.getStatus().getDisplayLabel());
         } catch (InvalidStatusTransitionException e) {
             log.warn("Invalid status transition for order #{}: {}", id, e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Transition invalide");
+            redirectAttributes.addFlashAttribute("errorMessage", "Transition invalide");
         } catch (Exception e) {
             log.error("Error updating status for order #{}", id, e);
-            redirectAttributes.addFlashAttribute("error",
+            redirectAttributes.addFlashAttribute("errorMessage",
                     "Erreur lors de la mise a jour du statut: " + e.getMessage());
         }
 
@@ -283,7 +283,7 @@ public class OrderController {
             orderService.save(order);
             log.info("Updated order #{}", id);
 
-            redirectAttributes.addFlashAttribute("success", "Commande modifiee avec succes");
+            redirectAttributes.addFlashAttribute("successMessage", "Commande modifiee avec succes");
             return "redirect:/orders/" + id;
 
         } catch (Exception e) {

@@ -48,7 +48,7 @@ public class ProductController {
 
         productService.updatePrice(id, year, price);
 
-        redirectAttributes.addFlashAttribute("success",
+        redirectAttributes.addFlashAttribute("successMessage",
                 String.format("Prix mis à jour pour %s en %d", product.getName(), year));
 
         return "redirect:/products";

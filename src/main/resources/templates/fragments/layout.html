@@ -73,6 +73,7 @@
 
     <!-- Main Content -->
     <main class="container-fluid py-4">
+        <div th:replace="~{fragments/flash-messages :: alerts}"></div>
         <div layout:fragment="content">
             <!-- Page content will be inserted here -->
         </div>
@@ -88,12 +89,19 @@
     <!-- Bootstrap 5.3.2 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Initialize Bootstrap tooltips globally -->
+    <!-- Initialize Bootstrap tooltips + auto-dismiss alerts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            document.querySelectorAll('.alert-dismissible').forEach(function(alert) {
+                setTimeout(function() {
+                    var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                    bsAlert.close();
+                }, 5000);
             });
         });
     </script>
